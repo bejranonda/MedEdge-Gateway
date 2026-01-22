@@ -67,3 +67,6 @@ logs/
 TestResults/
 coverage/
 *.trx
+
+# Claude AI
+.claude/
