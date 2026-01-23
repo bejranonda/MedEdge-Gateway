@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedEdge Gateway - Medical Device IoT Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .service-icon.fhir { background: #fef3c7; }
+        .service-icon.iot { background: #dbeafe; }
+        .service-icon.ai { background: #dcfce7; }
+        .service-icon.dashboard { background: #f3e8ff; }
+        .service-icon.mqtt { background: #fed7aa; }
+        .service-icon.edge { background: #fecaca; }
+
+        .service-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .service-info .url {
+            font-size: 13px;
+            color: var(--text-light);
+            font-family: 'Courier New', monospace;
+            background: var(--light);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .service-description {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .service-status.online {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .service-status.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .service-status.online .status-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .quick-action {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-action:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .quick-action-icon {
+            font-size: 20px;
+        }
+
+        .architecture-diagram {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .arch-layer {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .arch-layer-label {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--dark);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .arch-content {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .arch-arrow {
+            font-size: 20px;
+            color: var(--text-light);
+        }
+
+        .api-endpoints {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .endpoint-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .endpoint-item:last-child {
+            border-bottom: none;
+        }
+
+        .endpoint-method {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .endpoint-copy {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-light);
+            padding: 5px;
+        }
+
+        .endpoint-copy:hover {
+            color: var(--primary);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: white;
+        }
+
+        .footer p {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🏥</div>
+                MedEdge Gateway
+            </div>
+            <span class="badge">v2.0.0</span>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Medical Device IoT Platform</h1>
+        <p>Azure IoT Hub patterns • FHIR R4 interoperability • Real-time clinical intelligence</p>
+    </div>
+
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Services</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">50+</div>
+                <div class="stat-label">API Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Demo Devices</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">FHIR</div>
+                <div class="stat-label">R4 Compliant</div>
+            </div>
+        </div>
+
+        <!-- Services -->
+        <div class="section">
+            <div class="section-title">
+                <div class="section-icon">⚡</div>
+                Available Services
+            </div>
+            <div class="services-grid">
+                <!-- IoT Hub Simulator -->
+                <div class="service-card" onclick="window.open('http://localhost:8080')">
+                    <div class="service-header">
+                        <div class="service-icon iot">🔷</div>
+                        <div class="service-info">
+                            <h3>Azure IoT Hub Simulator</h3>
+                            <span class="url">http://localhost:8080</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Device Registry, Twins, Direct Methods, DPS, TPM 2.0 Attestation, SAS Tokens</p>
+                    <div class="service-status online">
+                        <span class="status-dot"></span>
+                        Online
+                    </div>
+                </div>
+
+                <!-- FHIR API -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon fhir">🏥</div>
+                        <div class="service-info">
+                            <h3>FHIR R4 API</h3>
+                            <span class="url">http://localhost:5001</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Healthcare data exchange with Patient, Device, Observation resources</p>
+                    <div class="service-status offline">
+                        <span class="status-dot"></span>
+                        Requires Build
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon dashboard">📊</div>
+                        <div class="service-info">
+                            <h3>Clinical Dashboard</h3>
+                            <span class="url">http://localhost:5000</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Real-time patient monitoring, fleet status, vital signs charts</p>
+                    <div class="service-status offline">
+                        <span class="status-dot"></span>
+                        Requires Build
+                    </div>
+                </div>
+
+                <!-- MQTT Broker -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon mqtt">📨</div>
+                        <div class="service-info">
+                            <h3>MQTT Broker</h3>
+                            <span class="url">localhost:1883</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Eclipse Mosquitto - Message bus for device telemetry</p>
+                    <div class="service-status online">
+                        <span class="status-dot"></span>
+                        Running
+                    </div>
+                </div>
+
+                <!-- Edge Gateway -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon edge">🔄</div>
+                        <div class="service-info">
+                            <h3>Edge Gateway</h3>
+                            <span class="url">Docker Container</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Modbus → MQTT translation, offline buffering</p>
+                    <div class="service-status offline">
+                        <span class="status-dot"></span>
+                        Requires Build
+                    </div>
+                </div>
+
+                <!-- AI Engine -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon ai">🤖</div>
+                        <div class="service-info">
+                            <h3>AI Clinical Engine</h3>
+                            <span class="url">Docker Container</span>
+                        </div>
+                    </div>
+                    <p class="service-description">Real-time anomaly detection, clinical recommendations</p>
+                    <div class="service-status offline">
+                        <span class="status-dot"></span>
+                        Requires Build
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+            <div class="section-title">
+                <div class="section-icon">🚀</div>
+                Quick Actions
+            </div>
+            <div class="quick-actions">
+                <button class="quick-action" onclick="testDevices()">
+                    <span class="quick-action-icon">📱</span>
+                    List Devices
+                </button>
+                <button class="quick-action" onclick="testTPM()">
+                    <span class="quick-action-icon">🔐</span>
+                    TPM Identities
+                </button>
+                <button class="quick-action" onclick="testDiagnostics()">
+                    <span class="quick-action-icon">🔧</span>
+                    Run Diagnostics
+                </button>
+                <button class="quick-action" onclick="testTwin()">
+                    <span class="quick-action-icon">⚙️</span>
+                    Get Device Twin
+                </button>
+                <button class="quick-action" onclick="testEmergencyStop()">
+                    <span class="quick-action-icon">🛑</span>
+                    Emergency Stop
+                </button>
+                <button class="quick-action" onclick="testToken()">
+                    <span class="quick-action-icon">🎫</span>
+                    Generate SAS Token
+                </button>
+            </div>
+            <pre id="action-result" style="display:none; background:#2c3e50;color:#ecf0f1;padding:15px;border-radius:8px;margin-top:20px;overflow-x:auto;"></pre>
+        </div>
+
+        <!-- Architecture -->
+        <div class="section">
+            <div class="section-title">
+                <div class="section-icon">🏗️</div>
+                System Architecture
+            </div>
+            <div class="architecture-diagram">
+                <div class="arch-layer">
+                    <span class="arch-layer-label">EDGE LAYER</span>
+                    <div class="arch-content">
+                        <div class="arch-box">Medical Devices</div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-box">Edge Gateway</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓ MQTT</div>
+                <div class="arch-layer">
+                    <span class="arch-layer-label">MESSAGING</span>
+                    <div class="arch-content">
+                        <div class="arch-box">Mosquitto MQTT Broker</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-layer">
+                    <span class="arch-layer-label">CLOUD LAYER</span>
+                    <div class="arch-content">
+                        <div class="arch-box">IoT Hub Simulator</div>
+                        <div class="arch-box">FHIR API</div>
+                        <div class="arch-box">AI Engine</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓ SignalR</div>
+                <div class="arch-layer">
+                    <span class="arch-layer-label">PRESENTATION</span>
+                    <div class="arch-content">
+                        <div class="arch-box">Blazor Dashboard</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="section">
+            <div class="section-title">
+                <div class="section-icon">📡</div>
+                Key IoT Hub Endpoints
+            </div>
+            <div class="api-endpoints">
+                <div class="endpoint-item">
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/iot/devices</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/iot/devices')" title="Copy">📋</button>
+                </div>
+                <div class="endpoint-item">
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/iot/devices/{id}/twin</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/iot/devices/{id}/twin')" title="Copy">📋</button>
+                </div>
+                <div class="endpoint-item">
+                    <span class="endpoint-method">POST</span>
+                    <span class="endpoint-path">/iot/devices/{id}/methods</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/iot/devices/{id}/methods')" title="Copy">📋</button>
+                </div>
+                <div class="endpoint-item">
+                    <span class="endpoint-method">POST</span>
+                    <span class="endpoint-path">/iot/tpm/attest</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/iot/tpm/attest')" title="Copy">📋</button>
+                </div>
+                <div class="endpoint-item">
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/iot/auth/tokens/sas</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/iot/auth/tokens/sas')" title="Copy">📋</button>
+                </div>
+                <div class="endpoint-item">
+                    <span class="endpoint-method">GET</span>
+                    <span class="endpoint-path">/health</span>
+                    <button class="endpoint-copy" onclick="copyToClipboard('/health')" title="Copy">📋</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>MedEdge Gateway v2.0.0 - Medical Device IoT Platform</p>
+        <p>© 2026 | Azure IoT Hub • FHIR R4 • .NET 8.0</p>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+
+        function showResult(data) {
+            const resultEl = document.getElementById('action-result');
+            resultEl.style.display = 'block';
+            resultEl.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testDevices() {
+            const result = await fetch(`${API_BASE}/iot/devices`);
+            const data = await result.json();
+            showResult(data);
+        }
+
+        async function testTPM() {
+            const result = await fetch(`${API_BASE}/iot/tpm/identities`);
+            const data = await result.json();
+            showResult(data);
+        }
+
+        async function testDiagnostics() {
+            const result = await fetch(`${API_BASE}/iot/devices/medical-dialysis-modern-001/methods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ methodName: 'GetDiagnostics', correlationId: 'test-001' })
+            });
+            const data = await result.json();
+            showResult(data);
+        }
+
+        async function testTwin() {
+            const result = await fetch(`${API_BASE}/iot/devices/medical-dialysis-legacy-001/twin`);
+            const data = await result.json();
+            showResult(data);
+        }
+
+        async function testEmergencyStop() {
+            const result = await fetch(`${API_BASE}/iot/devices/medical-dialysis-legacy-001/methods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    methodName: 'EmergencyStop',
+                    payload: { reason: 'Patient safety', requestedBy: 'Dashboard' },
+                    correlationId: 'emergency-001'
+                })
+            });
+            const data = await result.json();
+            showResult(data);
+        }
+
+        async function testToken() {
+            const result = await fetch(`${API_BASE}/iot/auth/tokens/sas?deviceId=medical-dialysis-legacy-001&expiry=01:00:00`, {
+                method: 'POST'
+            });
+            const data = await result.json();
+            showResult(data);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(`http://localhost:8080${text}`);
+            alert(`Copied: http://localhost:8080${text}`);
+        }
+
+        // Check service status on load
+        async function checkServices() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    console.log('✓ IoT Hub Simulator is running');
+                }
+            } catch (e) {
+                console.log('✗ IoT Hub Simulator is not accessible');
+            }
+        }
+
+        checkServices();
+    </script>
+</body>
+</html>

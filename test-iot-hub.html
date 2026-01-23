@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MedEdge IoT Hub Simulator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .endpoint { background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .endpoint h3 { margin: 0 0 10px 0; color: #2980b9; }
+        .endpoint p { margin: 5px 0; }
+        code { background: #34495e; color: #ecf0f1; padding: 2px 6px; border-radius: 3px; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #2980b9; }
+        pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .result { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 MedEdge IoT Hub Simulator</h1>
+        <p>Azure IoT Hub patterns for medical device connectivity</p>
+
+        <h2>Available Endpoints</h2>
+
+        <div class="endpoint">
+            <h3>1. Device Registry</h3>
+            <p>List all medical devices</p>
+            <code>GET /iot/devices</code>
+            <button onclick="testDevices()">Test</button>
+            <pre id="devices-result" class="result">Click Test to see results...</pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>2. Device Twin</h3>
+            <p>Get device configuration (legacy device)</p>
+            <code>GET /iot/devices/medical-dialysis-legacy-001/twin</code>
+            <button onclick="testTwin()">Test</button>
+            <pre id="twin-result" class="result">Click Test to see results...</pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>3. Direct Methods</h3>
+            <p>Invoke GetDiagnostics on modern device</p>
+            <code>POST /iot/devices/medical-dialysis-modern-001/methods</code>
+            <button onclick="testMethod()">Test</button>
+            <pre id="method-result" class="result">Click Test to see results...</pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>4. TPM Identities</h3>
+            <p>Get TPM hardware security info</p>
+            <code>GET /iot/tpm/identities</code>
+            <button onclick="testTPM()">Test</button>
+            <pre id="tpm-result" class="result">Click Test to see results...</pre>
+        </div>
+
+        <div class="endpoint">
+            <h3>5. SAS Token</h3>
+            <p>Generate authentication token</p>
+            <code>POST /iot/auth/tokens/sas</code>
+            <button onclick="testToken()">Test</button>
+            <pre id="token-result" class="result">Click Test to see results...</pre>
+        </div>
+
+        <h2>Pre-loaded Devices</h2>
+        <ul>
+            <li><strong>medical-dialysis-legacy-001</strong> - MedTech Corp Dialysis Pro+ (Legacy)</li>
+            <li><strong>medical-dialysis-modern-001</strong> - MedTech Corp Dialysis iQ (Modern with TPM)</li>
+        </ul>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+
+        async function testDevices() {
+            const result = await fetch(`${API_BASE}/iot/devices`);
+            const data = await result.json();
+            document.getElementById('devices-result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testTwin() {
+            const result = await fetch(`${API_BASE}/iot/devices/medical-dialysis-legacy-001/twin`);
+            const data = await result.json();
+            document.getElementById('twin-result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testMethod() {
+            const result = await fetch(`${API_BASE}/iot/devices/medical-dialysis-modern-001/methods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ methodName: 'GetDiagnostics', correlationId: 'test-001' })
+            });
+            const data = await result.json();
+            document.getElementById('method-result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testTPM() {
+            const result = await fetch(`${API_BASE}/iot/tpm/identities`);
+            const data = await result.json();
+            document.getElementById('tpm-result').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testToken() {
+            const result = await fetch(`${API_BASE}/iot/auth/tokens/sas?deviceId=medical-dialysis-legacy-001&expiry=01:00:00`, {
+                method: 'POST'
+            });
+            const data = await result.json();
+            document.getElementById('token-result').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
