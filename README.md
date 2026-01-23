@@ -296,6 +296,88 @@ The database includes seed data for immediate testing:
 - **Patterns:** Clean Architecture, Repository, Dependency Injection
 - **Testing:** Unit & integration tests with >80% coverage target
 
+## 🚀 Deployment Options
+
+### Docker Compose (Recommended)
+```bash
+docker-compose up -d
+```
+- Full stack deployment with all 7 services
+- Dashboard: http://localhost:5000
+- API: http://localhost:5001/swagger
+
+### Cloudflare Pages (Static Frontend)
+Deploy the Blazor Dashboard to Cloudflare Pages with external backend hosting.
+
+#### Prerequisites
+- Cloudflare account (Free tier available)
+- GitHub repository connected to Cloudflare Pages
+
+#### Deployment Steps
+
+1. **Build Dashboard Locally**
+   ```bash
+   cd src/Web/MedEdge.Dashboard
+   dotnet publish -c Release -o ./publish
+   ```
+
+2. **Configure Runtime URLs**
+   Edit `wwwroot/config.js` to point to your backend API:
+   ```javascript
+   window.MedEdgeConfig = {
+       // For external backend hosting
+       apiBaseUrl: 'https://your-backend-api.com',
+       fhirBaseUrl: 'https://your-backend-api.com',
+       signalHubUrl: 'https://your-backend-api.com/hubs/telemetry',
+
+       // Enable features
+       enableSignalR: true,
+       enableFhirInspector: true
+   };
+   ```
+
+3. **Cloudflare Pages Setup**
+   - Go to Cloudflare Dashboard → Workers & Pages → Pages
+   - Connect to GitHub repository
+   - Build command: `dotnet publish src/Web/MedEdge.Dashboard/MedEdge.Dashboard.csproj -c Release -o ./publish`
+   - Output directory: `publish/wwwroot`
+
+4. **Backend Configuration**
+   Ensure your backend API supports CORS:
+   ```csharp
+   services.AddCors(options =>
+   {
+       options.AddPolicy("CloudflarePages", policy =>
+       {
+           policy.WithOrigins("https://your-dashboard.pages.dev")
+                 .AllowAnyHeader()
+                 .AllowAnyMethod();
+       });
+   });
+   ```
+
+#### Architecture
+```
+Cloudflare Pages (Dashboard)
+├── Blazor WASM (Static)
+└── config.js (Runtime config)
+
+External Backend (Required)
+├── FHIR API (REST/Swagger)
+├── SignalR Hub (WebSocket)
+├── Device API (Real-time)
+└── AI Service (Anomaly detection)
+```
+
+#### Features
+- ⚡ **Caching**: Static assets cached for 1 year
+- 🔒 **Security**: Automatic HTTPS, DDoS protection
+- 🌍 **CDN**: Global edge distribution
+- 💰 **Free Tier**: $0 for 500 builds/month
+
+### Azure/AWS/Google Cloud
+See [DEPLOYMENT.md](DEPLOYMENT.md) for cloud-specific guides.
+
 ## 🔒 Security
 
 - TLS 1.2+ for all communications (Phase 2+)
@@ -322,6 +404,6 @@ This project is under active development. See [DEVELOPMENT.md](docs/DEVELOPMENT.
 
 ---
 
-**Current Phase:** 1/5 Complete
-**Last Updated:** 2026-01-16
-**Status:** In Development
+**Current Phase:** 5/5 Complete ✅
+**Last Updated:** 2026-01-23
+**Status:** Production Ready

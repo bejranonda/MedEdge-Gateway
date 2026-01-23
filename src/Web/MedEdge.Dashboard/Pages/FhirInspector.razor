@@ -1,7 +1,9 @@
 @page "/fhir-inspector"
 @using System.Net.Http.Json
 @using System.Text.Json
+@using MedEdge.Dashboard.Services
 @inject HttpClient Http
+@inject IAppConfigurationService ConfigService
 @inject ISnackbar Snackbar
 @implements IAsyncDisposable
 
@@ -115,6 +117,7 @@
     private ResourceSummary? selectedResource;
     private string resourceJson = string.Empty;
     private bool isLoading = false;
+    private AppConfiguration? _config;
 
     private class ResourceSummary
     {
@@ -128,6 +131,11 @@
         public JsonElement FullResource { get; set; }
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await ConfigService.LoadConfigurationAsync();
+    }
+
     private async Task LoadResources()
     {
         isLoading = true;
@@ -139,10 +147,10 @@
 
             string url = selectedResourceType switch
             {
-                ResourceType.Patient => "http://localhost:5001/fhir/Patient",
-                ResourceType.Device => "http://localhost:5001/fhir/Device",
+                ResourceType.Patient => _config?.FhirPatientUrl ?? "http://localhost:5001/fhir/Patient",
+                ResourceType.Device => _config?.FhirDeviceUrl ?? "http://localhost:5001/fhir/Device",
                 ResourceType.Observation =>
-                    $"http://localhost:5001/fhir/Observation" +
+                    $"{_config?.FhirObservationUrl ?? "http://localhost:5001/fhir/Observation"}" +
                     $"{(!string.IsNullOrEmpty(filterPatientId) ? $"?patient={filterPatientId}" : "")}" +
                     $"{(!string.IsNullOrEmpty(filterDeviceId) ? (string.IsNullOrEmpty(filterPatientId) ? "?" : "&") + $"device={filterDeviceId}" : "")}",
                 _ => ""

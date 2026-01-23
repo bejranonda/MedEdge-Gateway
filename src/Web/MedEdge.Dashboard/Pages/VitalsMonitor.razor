@@ -1,8 +1,10 @@
 @page "/vitals-monitor"
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.SignalR.Client
+@using MedEdge.Dashboard.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject IAppConfigurationService ConfigService
 @inject ISnackbar Snackbar
 @implements IAsyncDisposable
 
@@ -155,6 +157,7 @@
     private string statusMessage = string.Empty;
     private Severity statusSeverity = Severity.Info;
     private List<ClinicalAlert> alerts = new();
+    private AppConfiguration? _config;
 
     private class ClinicalAlert
     {
@@ -165,10 +168,21 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _config = await ConfigService.LoadConfigurationAsync();
+
+        if (_config?.EnableSignalR != true)
+        {
+            statusMessage = "SignalR is disabled in configuration";
+            statusSeverity = Severity.Warning;
+            return;
+        }
+
         try
         {
+            var hubUrl = _config?.SignalHubUrl ?? "http://localhost:5001/hubs/telemetry";
+
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(Navigation.ToAbsoluteUri("http://localhost:5001/hubs/telemetry"))
+                .WithUrl(Navigation.ToAbsoluteUri(hubUrl))
                 .WithAutomaticReconnect()
                 .Build();
 
