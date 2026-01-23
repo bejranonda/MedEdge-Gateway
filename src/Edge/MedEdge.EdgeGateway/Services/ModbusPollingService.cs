@@ -4,6 +4,7 @@ using NModbus;
 using NModbus.IO;
 using System.Net.Sockets;
 using MedEdge.EdgeGateway.Models;
+using System.Threading.Channels;
 
 namespace MedEdge.EdgeGateway.Services;
 
@@ -82,7 +83,8 @@ public class ModbusPollingService : BackgroundService
                         SendTimeout = _options.TimeoutMs
                     };
                     await client.ConnectAsync(deviceConfig.Host, deviceConfig.Port, stoppingToken);
-                    master = _modbusFactory.CreateMaster(new TcpClientAdapter(client));
+                    var factory = new ModbusFactory();
+                    master = factory.CreateMaster(client);
                     _logger.LogInformation("Connected to device {DeviceId}", deviceConfig.DeviceId);
                 }
 
@@ -135,7 +137,7 @@ public class ModbusPollingService : BackgroundService
 
                 await Task.Delay(_options.PollIntervalMs, stoppingToken);
             }
-            catch (ConnectFailedException ex)
+            catch (IOException ex)
             {
                 _logger.LogWarning(ex, "Failed to connect to device {DeviceId}, retrying...", deviceConfig.DeviceId);
                 client?.Dispose();

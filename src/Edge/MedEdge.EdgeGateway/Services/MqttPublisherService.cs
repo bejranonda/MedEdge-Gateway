@@ -6,7 +6,7 @@ using MQTTnet.Exceptions;
 using System.Text.Json;
 using MedEdge.EdgeGateway.Models;
 using Polly;
-using Polly.Core;
+using System.Threading.Channels;
 
 namespace MedEdge.EdgeGateway.Services;
 
@@ -54,12 +54,10 @@ public class MqttPublisherService : BackgroundService
                 onBreak: (outcome, duration) =>
                 {
                     _logger.LogWarning("MQTT circuit breaker opened for {Duration}", duration);
-                    return Task.CompletedTask;
                 },
                 onReset: () =>
                 {
                     _logger.LogInformation("MQTT circuit breaker reset");
-                    return Task.CompletedTask;
                 }
             );
 
