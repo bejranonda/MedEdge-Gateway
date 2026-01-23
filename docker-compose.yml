@@ -88,6 +88,28 @@ services:
     networks:
       - medEdge-network
 
+  # Azure IoT Hub Simulator
+  # Demonstrates: Device Registry, Twins, Direct Methods, Telemetry, DPS, TPM Attestation
+  # For B. Braun: Shows how medical devices connect to Azure without requiring actual Azure
+  iot-hub-simulator:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.IotHubSimulator/Dockerfile
+    container_name: mededge-iot-hub
+    ports:
+      - "6000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   dashboard:
     build:
       context: .

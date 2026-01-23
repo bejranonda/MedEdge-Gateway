@@ -1,13 +1,14 @@
 # MedEdge Gateway - Medical Device IoT Platform
 
-> Production-Grade Medical Device IoT with Real-Time Clinical Intelligence
+> Production-Grade Medical Device Connectivity with Azure IoT Hub Patterns
 
 A production-grade implementation demonstrating:
+- **Azure IoT Hub Patterns** — Device Registry, Twins, Direct Methods, DPS, TPM Attestation
 - **Industrial IoT Architecture** — Edge gateway bridging medical devices to cloud infrastructure
 - **FHIR R4 Interoperability** — Standards-compliant healthcare data exchange
 - **AI-Powered Clinical Intelligence** — Real-time anomaly detection and decision support
 - **Professional Dashboard** — Blazor WebAssembly UI with real-time monitoring
-- **Bi-Directional Communication** — Seamless device ↔ cloud interaction
+- **Hardware Security** — TPM 2.0 attestation, X.509 certificates, SAS tokens
 
 ## 🎯 Project Status
 
@@ -42,7 +43,7 @@ A production-grade implementation demonstrating:
 - ✅ Nginx deployment
 
 **Phase 5: Integration & Documentation** - ✅ COMPLETE
-- ✅ 7-service Docker Compose orchestration
+- ✅ 8-service Docker Compose orchestration
 - ✅ 400+ page deployment guide
 - ✅ 10-minute demo walkthrough
 - ✅ 640+ pages of documentation
@@ -51,12 +52,21 @@ A production-grade implementation demonstrating:
 - ✅ Health checks & monitoring
 - ✅ Production-ready setup
 
+**Phase 6: Azure IoT Hub Simulator** - ✅ COMPLETE
+- ✅ Device Registry & Identity Management
+- ✅ Device Twins (Desired/Reported Properties)
+- ✅ Direct Methods (Cloud-to-Device Commands)
+- ✅ Device Provisioning Service (DPS) Patterns
+- ✅ TPM 2.0 Hardware Security Attestation
+- ✅ SAS Token & X.509 Certificate Authentication
+- ✅ Complete audit trail for compliance
+
 ## 📐 System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ EDGE LAYER                                                      │
-│ Dialog+/iQ Simulators (Modbus TCP) → Edge Gateway (.NET 8)     │
+│ Medical Device Simulators (Modbus TCP) → Edge Gateway (.NET 8)  │
 └─────────────────────┬───────────────────────────────────────────┘
                       │ MQTT over TLS
 ┌─────────────────────▼───────────────────────────────────────────┐
@@ -67,6 +77,7 @@ A production-grade implementation demonstrating:
 ┌─────────────────────▼───────────────────────────────────────────┐
 │ CLOUD LAYER                                                     │
 │ Transform Service → AI Engine → FHIR R4 API                    │
+│ Azure IoT Hub Simulator (Device Registry, Twins, Methods)     │
 └─────────────────────┬───────────────────────────────────────────┘
                       │ SignalR WebSocket
 ┌─────────────────────▼───────────────────────────────────────────┐
@@ -170,6 +181,13 @@ T+90ms   Clinician: Clicks "View Device" or "Emergency Stop" if needed
 | **docs/FHIR-MAPPING.md** | FHIR resource mapping | 80+ |
 | **IMPLEMENTATION.md** | Implementation summary | 100+ |
 
+### Azure IoT Hub Simulator
+| Document | Purpose | Location |
+|----------|---------|----------|
+| **Swagger UI** | Interactive API documentation | http://localhost:6000 |
+| **Demo Script** | 15-minute interview demo | `Research/azure-iot-hub/` |
+| **Azure Mapping** | Maps simulator to real Azure IoT Hub | `Research/azure-iot-hub/` |
+
 **Choose Your Path:**
 - **New to .NET?** Start with [LEARNING-GUIDE.md](LEARNING-GUIDE.md)
 - **Want to understand how it works?** Start with [TECHNICAL-GUIDE.md](TECHNICAL-GUIDE.md)
@@ -188,6 +206,8 @@ T+90ms   Clinician: Clicks "View Device" or "Emergency Stop" if needed
 | **Database** | SQLite / PostgreSQL | - |
 | **ORM** | Entity Framework Core | 8.0 |
 | **Testing** | xUnit, FluentAssertions | Latest |
+| **IoT Simulation** | Azure IoT Hub patterns | - |
+| **Security** | JWT, X.509, TPM 2.0 | - |
 
 ## 🚀 Quick Start
 
@@ -216,13 +236,25 @@ dotnet run
 
 The API will be available at `http://localhost:5000`
 
-## 📚 Documentation
+### Azure IoT Hub Simulator
 
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Detailed system design
-- [FHIR-MAPPING.md](docs/FHIR-MAPPING.md) - Telemetry to FHIR resource mapping
-- [PHASES.md](docs/PHASES.md) - Implementation phase details
+```bash
+# Start the IoT Hub Simulator
+docker-compose up iot-hub-simulator
 
-## 📊 FHIR API Endpoints (Phase 1)
+# Open Swagger UI
+# http://localhost:6000
+```
+
+**Simulator demonstrates:**
+- Device Registry (pre-loaded with medical devices)
+- Device Twins (desired/reported properties)
+- Direct Methods (EmergencyStop, GetDiagnostics, Reboot)
+- TPM 2.0 Attestation (hardware-backed security)
+- SAS Token & X.509 Certificate authentication
+- Full audit trail for healthcare compliance
+
+## 📊 FHIR API Endpoints
 
 ### Patients
 ```
@@ -284,9 +316,9 @@ The database includes seed data for immediate testing:
 - Robert Johnson (MRN: P003) - Male, DOB: 1958-11-30
 
 **Devices:**
-- Device-001 (Dialog+, Serial: DG001) - Assigned to P001
-- Device-002 (Dialog iQ, Serial: DQ002) - Assigned to P002
-- Device-003 (Dialog+, Serial: DG003) - Assigned to P003
+- Device-001 (Dialysis Pro+, Serial: DG001) - Assigned to P001
+- Device-002 (Dialysis iQ, Serial: DQ002) - Assigned to P002
+- Device-003 (Dialysis Pro+, Serial: DG003) - Assigned to P003
 
 ## 📖 Code Quality Standards
 
@@ -302,9 +334,10 @@ The database includes seed data for immediate testing:
 ```bash
 docker-compose up -d
 ```
-- Full stack deployment with all 7 services
+- Full stack deployment with all 8 services
 - Dashboard: http://localhost:5000
 - API: http://localhost:5001/swagger
+- IoT Hub Simulator: http://localhost:6000
 
 ### Cloudflare Pages (Static Frontend)
 Deploy the Blazor Dashboard to Cloudflare Pages with external backend hosting.
@@ -380,9 +413,11 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for cloud-specific guides.
 
 ## 🔒 Security
 
-- TLS 1.2+ for all communications (Phase 2+)
-- OAuth 2.0 for FHIR API (Phase 4+)
-- Audit logging for all write operations
+- TLS 1.3 for all communications
+- TPM 2.0 hardware attestation for device identity
+- X.509 certificate validation
+- SAS token authentication
+- Audit logging for all operations
 - Input validation on all API endpoints
 - No secrets in code (environment-based config)
 
@@ -393,8 +428,10 @@ MIT License - See LICENSE file for details
 ## 👨‍💻 Author
 
 Built as a portfolio project demonstrating expertise in:
+- Azure IoT Hub architecture and patterns
 - FHIR R4 healthcare interoperability
 - Industrial IoT architecture
+- Hardware security (TPM, certificates)
 - Real-time clinical decision support
 - Full-stack .NET development
 
@@ -404,6 +441,6 @@ This project is under active development. See [DEVELOPMENT.md](docs/DEVELOPMENT.
 
 ---
 
-**Current Phase:** 5/5 Complete ✅
+**Current Phase:** 6/6 Complete ✅
 **Last Updated:** 2026-01-23
 **Status:** Production Ready
