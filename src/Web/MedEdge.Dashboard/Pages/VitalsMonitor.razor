@@ -10,7 +10,7 @@
 
 <PageTitle>Live Vitals - MedEdge</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Lg">
+<MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4" Class="mb-4">Live Vitals Monitor</MudText>
 
     <MudGrid>
@@ -170,7 +170,7 @@
     {
         _config = await ConfigService.LoadConfigurationAsync();
 
-        if (_config?.EnableSignalR != true)
+        if (_config?.EnableSignalR ?? false != true)
         {
             statusMessage = "SignalR is disabled in configuration";
             statusSeverity = Severity.Warning;
@@ -179,7 +179,7 @@
 
         try
         {
-            var hubUrl = _config?.SignalHubUrl ?? "http://localhost:5001/hubs/telemetry";
+            var hubUrl = _config?.SignalHubUrl ?? "http://localhost:5001/hubs/vitals";
 
             hubConnection = new HubConnectionBuilder()
                 .WithUrl(Navigation.ToAbsoluteUri(hubUrl))

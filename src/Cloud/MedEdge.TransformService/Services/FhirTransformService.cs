@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using MedEdge.Core.DTOs;
 using MedEdge.EdgeGateway.Models;
+using System.Threading.Channels;
 
 namespace MedEdge.TransformService.Services;
 

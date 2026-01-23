@@ -1,3 +1,4 @@
+using MedEdge.AiEngine;
 using MedEdge.AiEngine.Services;
 using Serilog;
 

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using NModbus;
-using NModbus.Serial;
 
 namespace MedEdge.DeviceSimulator.Services;
 

@@ -8,7 +8,7 @@
 
 <PageTitle>Fleet Status - MedEdge</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Lg">
+<MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4" Class="mb-4">Device Fleet Status</MudText>
 
     @if (isLoading)
@@ -170,7 +170,7 @@
 
     private async Task EmergencyStop(string deviceId)
     {
-        var confirmed = await new MudMessageBox().Show();
+        var confirmed = await new MudMessageBox().Show() ?? false;
         if (confirmed)
         {
             try

@@ -1,6 +1,7 @@
 using MedEdge.EdgeGateway.Models;
 using MedEdge.EdgeGateway.Services;
 using Serilog;
+using System.Threading.Channels;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()

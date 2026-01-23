@@ -4,6 +4,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using System.Text.Json;
 using MedEdge.EdgeGateway.Models;
+using System.Threading.Channels;
 
 namespace MedEdge.TransformService.Services;
 
@@ -11,7 +12,7 @@ public class MqttSubscriberOptions
 {
     public string BrokerHost { get; set; } = "localhost";
     public int Port { get; set; } = 1883;
-    public string TopicPrefix { get; set; } = "bbraun/dialysis";
+    public string TopicPrefix { get; set; } = "mededge/dialysis";
 }
 
 public class MqttSubscriberService : BackgroundService

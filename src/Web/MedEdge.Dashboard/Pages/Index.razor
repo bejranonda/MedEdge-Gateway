@@ -2,10 +2,11 @@
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@inject NavigationManager Navigation
 
 <PageTitle>Dashboard - MedEdge</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Lg">
+<MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h3" Class="mb-6">Welcome to MedEdge Gateway</MudText>
 
     <MudGrid>
@@ -87,7 +88,7 @@
                             Monitor Live Vitals
                         </MudButton>
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("fhir-inspector"))">
-                            <MudIcon Icon="@Icons.Material.Filled.SearchBox" Class="mr-2" />
+                            <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" />
                             FHIR Inspector
                         </MudButton>
                     </MudStack>
@@ -167,8 +168,6 @@
     private int totalObservations = 1250;
     private int activeAlerts = 0;
     private DateTime lastUpdateTime = DateTime.UtcNow;
-
-    @inject NavigationManager Navigation;
 
     protected override async Task OnInitializedAsync()
     {
