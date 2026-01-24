@@ -114,12 +114,17 @@ services:
     build:
       context: .
       dockerfile: src/Web/MedEdge.Dashboard/Dockerfile
+      args:
+        - DASHBOARD_USERNAME=${DASHBOARD_USERNAME:-guest}
+        - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
     container_name: medEdge-dashboard
     ports:
       - "5000:8080"
     environment:
       - NGINX_HOST=localhost
       - NGINX_PORT=8080
+      - DASHBOARD_USERNAME=${DASHBOARD_USERNAME:-guest}
+      - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
     depends_on:
       - fhir-api
     restart: unless-stopped
