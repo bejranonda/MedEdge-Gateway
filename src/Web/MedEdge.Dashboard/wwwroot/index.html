@@ -27,7 +27,10 @@
     </div>
 
     <!-- Load configuration before Blazor framework -->
+    <!-- config-env.js is injected during Docker build from environment variables -->
+    <script src="config-env.js" onerror="this.remove();"></script>
     <script src="config.js"></script>
+    <script src="auth-helper.js"></script>
     <script src="_framework/blazor.web.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 </body>
