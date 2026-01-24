@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\MedEdge.Core\MedEdge.Core.csproj" />
-    <ProjectReference Include="..\..\Edge\MedEdge.EdgeGateway\MedEdge.EdgeGateway.csproj" />
+    <ProjectReference Include="..\..\Edge\MedEdge.EdgeGateway\MedEdge.EdgeGateway.csproj" ExcludeAssets="content" />
   </ItemGroup>
 
 </Project>

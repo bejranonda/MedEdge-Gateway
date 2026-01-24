@@ -85,7 +85,7 @@ public class FhirMappingService : IFhirMappingService
             {
                 "active" => Device.FHIRDeviceStatus.Active,
                 "inactive" => Device.FHIRDeviceStatus.Inactive,
-                _ => Device.FHIRDeviceStatus.UnknownStatus
+                _ => null
             },
             Type = new CodeableConcept
             {

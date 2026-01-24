@@ -13,6 +13,10 @@ try
 {
     var host = Host.CreateDefaultBuilder(args)
         .UseSerilog()
+        .ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddJsonFile("appsettings.transform.json", optional: false, reloadOnChange: true);
+        })
         .ConfigureServices((context, services) =>
         {
             services.AddSingleton(Channel.CreateUnbounded<TelemetryMessage>());

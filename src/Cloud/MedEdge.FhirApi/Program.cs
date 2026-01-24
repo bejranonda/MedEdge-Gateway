@@ -3,6 +3,7 @@ using MedEdge.Core.DTOs;
 using MedEdge.FhirApi.Data;
 using MedEdge.FhirApi.Hubs;
 using MedEdge.FhirApi.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -39,7 +40,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -53,7 +53,6 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -74,7 +73,7 @@ app.MapGet("/fhir/Patient", async (IFhirRepository repo, IFhirMappingService map
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)patients.Count,
+        Total = patients.Count,
         Entry = patients.Select(p => new Bundle.EntryComponent
         {
             Resource = mapper.MapPatientEntityToFhir(p),
@@ -116,7 +115,7 @@ app.MapGet("/fhir/Device", async (IFhirRepository repo, IFhirMappingService mapp
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)devices.Count,
+        Total = devices.Count,
         Entry = devices.Select(d => new Bundle.EntryComponent
         {
             Resource = mapper.MapDeviceEntityToFhir(d),
@@ -171,7 +170,7 @@ app.MapGet("/fhir/Observation", async (
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)observations.Count,
+        Total = observations.Count,
         Entry = observations.Select(o => new Bundle.EntryComponent
         {
             Resource = mapper.MapObservationEntityToFhir(o),
@@ -205,9 +204,9 @@ app.MapGet("/api/devices", async (IFhirRepository repo) =>
     var deviceStatuses = devices.Select(d => new
     {
         d.DeviceId,
-        Type = d.ModelNumber ?? "Dialog+",
+        Type = d.Model ?? "Dialog+",
         d.Manufacturer,
-        Model = d.ModelNumber,
+        Model = d.Model,
         SerialNumber = d.SerialNumber,
         CurrentPatientId = "P001", // Would be fetched from relationship
         IsOnline = true, // Would check last telemetry timestamp
