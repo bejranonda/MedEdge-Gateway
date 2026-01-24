@@ -1,26 +1,48 @@
 @namespace MedEdge.Dashboard.Shared
+@using MedEdge.Dashboard.Services
+@inject IAuthenticationService AuthService
 
 <MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
-        Dashboard
-    </MudNavLink>
-    <MudNavLink Href="fleet-view" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.LocalHospital">
-        Fleet Status
-    </MudNavLink>
-    <MudNavLink Href="vitals-monitor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TrendingUp">
-        Live Vitals
-    </MudNavLink>
-    <MudNavLink Href="fhir-inspector" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Search">
-        FHIR Inspector
-    </MudNavLink>
-    <MudDivider Class="my-2" />
-    <MudNavLink Href="settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Settings">
-        Settings
-    </MudNavLink>
-    <MudNavLink Href="help" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Help">
-        Help
-    </MudNavLink>
+    @if (AuthService.IsAuthenticated)
+    {
+        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
+            Dashboard
+        </MudNavLink>
+        <MudNavLink Href="fleet-view" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.LocalHospital">
+            Fleet Status
+        </MudNavLink>
+        <MudNavLink Href="vitals-monitor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TrendingUp">
+            Live Vitals
+        </MudNavLink>
+        <MudNavLink Href="system-health" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HealthAndSafety">
+            System Health
+        </MudNavLink>
+        <MudNavLink Href="system-flow" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">
+            System Flow
+        </MudNavLink>
+        <MudNavLink Href="fhir-inspector" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Search">
+            FHIR Inspector
+        </MudNavLink>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Settings">
+            Settings
+        </MudNavLink>
+        <MudNavLink Href="help" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Help">
+            Help
+        </MudNavLink>
+    }
+    else
+    {
+        <MudNavLink Href="login" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Login">
+            Login
+        </MudNavLink>
+    }
 </MudNavMenu>
 
 @code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AuthService.AuthenticationChanged += (s, e) => StateHasChanged();
+    }
 }

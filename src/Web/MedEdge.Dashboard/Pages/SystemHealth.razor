@@ -1,0 +1,573 @@
+@page "/system-health"
+@using System.Net.Http.Json
+@using MedEdge.Dashboard.Models
+@using MedEdge.Dashboard.Services
+@inject HttpClient Http
+@inject IAppConfigurationService ConfigService
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
+<PageTitle>System Health - MedEdge</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid Class="mb-4" AlignItems="AlignItems.Center">
+        <MudItem xs="12" sm="6">
+            <MudText Typo="Typo.h4">System Health Monitor</MudText>
+            <MudText Typo="Typo.body2" Class="text--secondary">
+                Real-time monitoring of all system components
+            </MudText>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end">
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RefreshAll" StartIcon="@Icons.Material.Filled.Refresh">
+                Refresh
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Overall System Status -->
+    <MudCard Elevation="2" Class="mb-4">
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12" md="3">
+                    <MudPaper Elevation="0" Class="pa-4 text-center @(GetHealthClass(systemHealth.HealthScore))">
+                        <MudText Typo="Typo.h3">@systemHealth.HealthScore%</MudText>
+                        <MudText Typo="Typo.subtitle1">Health Score</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudPaper Elevation="0" Class="pa-4 text-center">
+                        <MudText Typo="Typo.h3" Color="@(systemHealth.IsHealthy ? Color.Success : Color.Error)">
+                            @(systemHealth.IsHealthy ? "Healthy" : "Unhealthy")
+                        </MudText>
+                        <MudText Typo="Typo.subtitle1">System Status</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudPaper Elevation="0" Class="pa-4 text-center">
+                        <MudText Typo="Typo.h3">@systemHealth.Components.Count(c => c.IsHealthy)/@systemHealth.Components.Count</MudText>
+                        <MudText Typo="Typo.subtitle1">Components Online</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudPaper Elevation="0" Class="pa-4 text-center">
+                        <MudText Typo="Typo.h3">@FormatUptime()</MudText>
+                        <MudText Typo="Typo.subtitle1">System Uptime</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+    <!-- Components Grid -->
+    <MudText Typo="Typo.h6" Class="mb-3">Component Status</MudText>
+    <MudGrid>
+        <!-- Edge Gateway -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(gatewayHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Edge Gateway</MudText>
+                        <MudText Typo="Typo.caption">Modbus to MQTT Bridge</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(gatewayHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(gatewayHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @gatewayHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Response:</strong> @gatewayHealth.ResponseTimeMs.ToString("F0")ms
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Modbus Devices:</strong> @gatewayHealth.Metrics.GetValueOrDefault("connected_devices", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Messages/min:</strong> @gatewayHealth.Metrics.GetValueOrDefault("messages_per_minute", "0")
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(gatewayHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- MQTT Broker -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(mqttBrokerHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">MQTT Broker</MudText>
+                        <MudText Typo="Typo.caption">Eclipse Mosquitto</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(mqttBrokerHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(mqttBrokerHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @mqttBrokerHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Port:</strong> @mqttBrokerHealth.Metrics.GetValueOrDefault("port", "1883")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Connections:</strong> @mqttBrokerHealth.Metrics.GetValueOrDefault("connections", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Messages/min:</strong> @mqttBrokerHealth.Metrics.GetValueOrDefault("messages_per_minute", "0")
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(mqttBrokerHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- FHIR API -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(fhirApiHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">FHIR API</MudText>
+                        <MudText Typo="Typo.caption">Healthcare Data API</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(fhirApiHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(fhirApiHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @fhirApiHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Response:</strong> @fhirApiHealth.ResponseTimeMs.ToString("F0")ms
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Database:</strong> @fhirApiHealth.Metrics.GetValueOrDefault("database_status", "Unknown")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>SignalR Clients:</strong> @fhirApiHealth.Metrics.GetValueOrDefault("signalr_clients", "0")
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(fhirApiHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Transform Service -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(transformServiceHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Transform Service</MudText>
+                        <MudText Typo="Typo.caption">MQTT to FHIR Converter</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(transformServiceHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(transformServiceHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @transformServiceHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Processed:</strong> @transformServiceHealth.Metrics.GetValueOrDefault("processed_count", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Queue Depth:</strong> @transformServiceHealth.Metrics.GetValueOrDefault("queue_depth", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Transforms/min:</strong> @transformServiceHealth.Metrics.GetValueOrDefault("transforms_per_minute", "0")
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(transformServiceHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- AI Engine -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(aiEngineHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">AI Engine</MudText>
+                        <MudText Typo="Typo.caption">Clinical Intelligence</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(aiEngineHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(aiEngineHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @aiEngineHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Anomalies Detected:</strong> @aiEngineHealth.Metrics.GetValueOrDefault("anomalies_detected", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Active Alerts:</strong> @aiEngineHealth.Metrics.GetValueOrDefault("active_alerts", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Analysis Rate:</strong> @aiEngineHealth.Metrics.GetValueOrDefault("analysis_per_minute", "0")/min
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(aiEngineHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Device Simulator -->
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard Elevation="2" Class="component-card @(GetComponentClass(deviceSimulatorHealth))">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Device Simulator</MudText>
+                        <MudText Typo="Typo.caption">B. Braun Dialysis Machines</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIcon Icon="@(deviceSimulatorHealth.IsHealthy ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                  Color="@(deviceSimulatorHealth.IsHealthy ? Color.Success : Color.Error)" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>Status:</strong> @deviceSimulatorHealth.Status
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Active Devices:</strong> @deviceSimulatorHealth.Metrics.GetValueOrDefault("active_devices", "0")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Modbus Ports:</strong> @deviceSimulatorHealth.Metrics.GetValueOrDefault("modbus_ports", "502-504")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>Telemetry Rate:</strong> @deviceSimulatorHealth.Metrics.GetValueOrDefault("telemetry_rate", "500")ms
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            Last seen: @FormatTime(deviceSimulatorHealth.LastSeen)
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Edge Devices Summary -->
+    <MudText Typo="Typo.h6" Class="mt-6 mb-3">Edge Devices Status</MudText>
+    <MudCard Elevation="2">
+        <MudCardContent>
+            @if (isLoadingDevices)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (edgeDevices.Any())
+            {
+                <MudGrid>
+                    @foreach (var device in edgeDevices)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudPaper Elevation="0" Class="pa-3 @(device.IsOnline ? "device-online" : "device-offline")">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-2">
+                                    <MudText Typo="Typo.subtitle2">@device.DeviceId</MudText>
+                                    <MudIcon Icon="@(device.IsOnline ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                              Color="@(device.IsOnline ? Color.Success : Color.Error)"
+                                              Size="Size.Small" />
+                                </MudStack>
+                                <MudText Typo="Typo.caption" Class="text--secondary">
+                                    @device.Type | @device.Manufacturer
+                                </MudText>
+                                <MudText Typo="Typo.caption" Class="text--secondary">
+                                    Patient: @device.CurrentPatientId ?? "None"
+                                </MudText>
+                                <MudDivider Class="my-2" />
+                                <MudText Typo="Typo.caption" Class="text--secondary">
+                                    Last seen: @FormatTime(device.LastTelemetryTime)
+                                </MudText>
+                                @if (device.RiskLevel != "Low")
+                                {
+                                    <MudChip Size="Size.Small" Color="@GetRiskColor(device.RiskLevel)" Class="mt-1">
+                                        @device.RiskLevel Risk
+                                    </MudChip>
+                                }
+                            </MudPaper>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">No devices found</MudAlert>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+<style>
+    .health-score-excellent { background-color: #4CAF50; color: white; }
+    .health-score-good { background-color: #8BC34A; color: white; }
+    .health-score-warning { background-color: #FF9800; color: white; }
+    .health-score-critical { background-color: #F44336; color: white; }
+
+    .component-card.healthy { border-left: 4px solid #4CAF50; }
+    .component-card.unhealthy { border-left: 4px solid #F44336; }
+    .component-card.unknown { border-left: 4px solid #9E9E9E; }
+
+    .device-online { border-left: 3px solid #4CAF50; }
+    .device-offline { border-left: 3px solid #F44336; }
+</style>
+
+@code {
+    private SystemHealthStatus systemHealth = new();
+    private ComponentHealth gatewayHealth = new() { Name = "Edge Gateway", Type = "Gateway", Status = "Unknown" };
+    private ComponentHealth mqttBrokerHealth = new() { Name = "MQTT Broker", Type = "Broker", Status = "Unknown" };
+    private ComponentHealth fhirApiHealth = new() { Name = "FHIR API", Type = "Service", Status = "Unknown" };
+    private ComponentHealth transformServiceHealth = new() { Name = "Transform Service", Type = "Service", Status = "Unknown" };
+    private ComponentHealth aiEngineHealth = new() { Name = "AI Engine", Type = "Service", Status = "Unknown" };
+    private ComponentHealth deviceSimulatorHealth = new() { Name = "Device Simulator", Type = "Service", Status = "Unknown" };
+    private List<EdgeDeviceStatus> edgeDevices = new();
+    private bool isLoadingDevices = true;
+    private Timer? refreshTimer;
+    private DateTime systemStartTime = DateTime.UtcNow.AddHours(-2); // Simulated uptime
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSystemHealth();
+        await LoadEdgeDevices();
+        refreshTimer = new Timer(async _ => await RefreshAll(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    private async Task LoadSystemHealth()
+    {
+        try
+        {
+            var config = await Http.GetFromJsonAsync<SystemHealthStatus>("/api/health/system");
+            if (config != null)
+            {
+                systemHealth = config;
+                var gateway = config.Components.FirstOrDefault(c => c.Type == "Gateway");
+                var broker = config.Components.FirstOrDefault(c => c.Type == "Broker");
+                var api = config.Components.FirstOrDefault(c => c.Name == "FHIR API");
+                var transform = config.Components.FirstOrDefault(c => c.Name == "Transform Service");
+                var ai = config.Components.FirstOrDefault(c => c.Name == "AI Engine");
+                var simulator = config.Components.FirstOrDefault(c => c.Name == "Device Simulator");
+
+                if (gateway != null) gatewayHealth = gateway;
+                if (broker != null) mqttBrokerHealth = broker;
+                if (api != null) fhirApiHealth = api;
+                if (transform != null) transformServiceHealth = transform;
+                if (ai != null) aiEngineHealth = ai;
+                if (simulator != null) deviceSimulatorHealth = simulator;
+            }
+        }
+        catch
+        {
+            // Simulate health data for demo
+            SimulateHealthData();
+        }
+    }
+
+    private void SimulateHealthData()
+    {
+        var random = new Random();
+        gatewayHealth = new ComponentHealth
+        {
+            Name = "Edge Gateway",
+            Type = "Gateway",
+            IsHealthy = random.Next(100) > 10,
+            Status = "Running",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(20, 100),
+            Metrics = new Dictionary<string, string>
+            {
+                { "connected_devices", "3" },
+                { "messages_per_minute", random.Next(300, 400).ToString() }
+            }
+        };
+
+        mqttBrokerHealth = new ComponentHealth
+        {
+            Name = "MQTT Broker",
+            Type = "Broker",
+            IsHealthy = random.Next(100) > 5,
+            Status = "Connected",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(5, 30),
+            Metrics = new Dictionary<string, string>
+            {
+                { "port", "1883" },
+                { "connections", "5" },
+                { "messages_per_minute", random.Next(300, 400).ToString() }
+            }
+        };
+
+        fhirApiHealth = new ComponentHealth
+        {
+            Name = "FHIR API",
+            Type = "Service",
+            IsHealthy = random.Next(100) > 10,
+            Status = "Operational",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(30, 150),
+            Metrics = new Dictionary<string, string>
+            {
+                { "database_status", "Connected" },
+                { "signalr_clients", random.Next(0, 5).ToString() }
+            }
+        };
+
+        transformServiceHealth = new ComponentHealth
+        {
+            Name = "Transform Service",
+            Type = "Service",
+            IsHealthy = random.Next(100) > 10,
+            Status = "Processing",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(20, 80),
+            Metrics = new Dictionary<string, string>
+            {
+                { "processed_count", random.Next(1000, 5000).ToString() },
+                { "queue_depth", "0" },
+                { "transforms_per_minute", random.Next(300, 400).ToString() }
+            }
+        };
+
+        aiEngineHealth = new ComponentHealth
+        {
+            Name = "AI Engine",
+            Type = "Service",
+            IsHealthy = random.Next(100) > 10,
+            Status = "Analyzing",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(10, 50),
+            Metrics = new Dictionary<string, string>
+            {
+                { "anomalies_detected", random.Next(0, 5).ToString() },
+                { "active_alerts", random.Next(0, 3).ToString() },
+                { "analysis_per_minute", random.Next(300, 400).ToString() }
+            }
+        };
+
+        deviceSimulatorHealth = new ComponentHealth
+        {
+            Name = "Device Simulator",
+            Type = "Service",
+            IsHealthy = random.Next(100) > 15,
+            Status = "Running",
+            LastSeen = DateTime.UtcNow,
+            ResponseTimeMs = random.Next(10, 40),
+            Metrics = new Dictionary<string, string>
+            {
+                { "active_devices", "3" },
+                { "modbus_ports", "502-504" },
+                { "telemetry_rate", "500" }
+            }
+        };
+
+        systemHealth = new SystemHealthStatus
+        {
+            IsHealthy = new[] { gatewayHealth, mqttBrokerHealth, fhirApiHealth, transformServiceHealth, aiEngineHealth, deviceSimulatorHealth }.All(c => c.IsHealthy),
+            Status = "Operational",
+            HealthScore = new[] { gatewayHealth, mqttBrokerHealth, fhirApiHealth, transformServiceHealth, aiEngineHealth, deviceSimulatorHealth }.Count(c => c.IsHealthy) * 100 / 6,
+            Components = new List<ComponentHealth> { gatewayHealth, mqttBrokerHealth, fhirApiHealth, transformServiceHealth, aiEngineHealth, deviceSimulatorHealth }
+        };
+    }
+
+    private async Task LoadEdgeDevices()
+    {
+        try
+        {
+            edgeDevices = await Http.GetFromJsonAsync<List<EdgeDeviceStatus>>("/api/devices") ?? new();
+        }
+        catch
+        {
+            // Simulate device data
+            edgeDevices = new List<EdgeDeviceStatus>
+            {
+                new() { DeviceId = "Device-001", Type = "Dialog+", Manufacturer = "B. Braun", Model = "Dialog+", SerialNumber = "BB001", IsOnline = true, LastTelemetryTime = DateTime.UtcNow.AddSeconds(-5), RiskLevel = "Low" },
+                new() { DeviceId = "Device-002", Type = "Dialog iQ", Manufacturer = "B. Braun", Model = "Dialog iQ", SerialNumber = "BB002", IsOnline = true, LastTelemetryTime = DateTime.UtcNow.AddSeconds(-3), RiskLevel = "Low" },
+                new() { DeviceId = "Device-003", Type = "Dialog+", Manufacturer = "B. Braun", Model = "Dialog+", SerialNumber = "BB003", IsOnline = true, LastTelemetryTime = DateTime.UtcNow.AddSeconds(-7), RiskLevel = "Low" }
+            };
+        }
+        isLoadingDevices = false;
+    }
+
+    private async Task RefreshAll()
+    {
+        await LoadSystemHealth();
+        await LoadEdgeDevices();
+        StateHasChanged();
+    }
+
+    private string FormatUptime()
+    {
+        var uptime = DateTime.UtcNow - systemStartTime;
+        if (uptime.TotalDays >= 1)
+            return $"{(int)uptime.TotalDays}d";
+        if (uptime.TotalHours >= 1)
+            return $"{(int)uptime.TotalHours}h";
+        return $"{(int)uptime.TotalMinutes}m";
+    }
+
+    private string FormatTime(DateTime time)
+    {
+        var diff = DateTime.UtcNow - time;
+        if (diff.TotalSeconds < 60)
+            return $"{(int)diff.TotalSeconds}s ago";
+        if (diff.TotalMinutes < 60)
+            return $"{(int)diff.TotalMinutes}m ago";
+        return time.ToString("g");
+    }
+
+    private string GetHealthClass(int score)
+    {
+        return score switch
+        {
+            >= 90 => "health-score-excellent",
+            >= 70 => "health-score-good",
+            >= 50 => "health-score-warning",
+            _ => "health-score-critical"
+        };
+    }
+
+    private string GetComponentClass(ComponentHealth component)
+    {
+        return component.IsHealthy ? "healthy" : "unhealthy";
+    }
+
+    private Color GetRiskColor(string riskLevel)
+    {
+        return riskLevel switch
+        {
+            "Critical" => Color.Error,
+            "High" => Color.Warning,
+            "Moderate" => Color.Info,
+            _ => Color.Success
+        };
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        refreshTimer?.Dispose();
+        await Task.CompletedTask;
+    }
+}

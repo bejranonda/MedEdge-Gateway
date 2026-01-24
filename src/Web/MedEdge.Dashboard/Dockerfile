@@ -25,11 +25,21 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 FROM nginx:alpine AS final
 WORKDIR /app
 
+# Build arguments for environment variables
+ARG DASHBOARD_USERNAME=guest
+ARG DASHBOARD_PASSWORD=changeme
+
 # Copy Nginx configuration
 COPY src/Web/MedEdge.Dashboard/nginx.conf /etc/nginx/nginx.conf
 
 # Copy published Blazor WASM app
 COPY --from=publish /app/publish/wwwroot /usr/share/nginx/html
+
+# Create environment configuration file
+RUN echo "window.MedEdgeConfig = {" > /usr/share/nginx/html/config-env.js && \
+    echo "  dashboardUsername: '${DASHBOARD_USERNAME}'," >> /usr/share/nginx/html/config-env.js && \
+    echo "  dashboardPassword: '${DASHBOARD_PASSWORD}'" >> /usr/share/nginx/html/config-env.js && \
+    echo "};" >> /usr/share/nginx/html/config-env.js
 
 # Expose port
 EXPOSE 8080

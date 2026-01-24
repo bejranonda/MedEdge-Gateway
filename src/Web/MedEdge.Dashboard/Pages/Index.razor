@@ -1,76 +1,120 @@
 @page "/"
 @using System.Net.Http.Json
+@using MedEdge.Dashboard.Models
+@using MedEdge.Dashboard.Services
 @inject HttpClient Http
+@inject IAppConfigurationService ConfigService
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
+@implements IAsyncDisposable
 
 <PageTitle>Dashboard - MedEdge</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h3" Class="mb-6">Welcome to MedEdge Gateway</MudText>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <!-- Header with Welcome and Refresh -->
+    <MudGrid Class="mb-4" AlignItems="AlignItems.Center">
+        <MudItem xs="12" sm="6">
+            <MudText Typo="Typo.h3">MedEdge Gateway</MudText>
+            <MudText Typo="Typo.body1" Class="text--secondary">Medical Device Connectivity Platform</MudText>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
+            <MudText Typo="Typo.caption" Class="text--secondary mr-4">
+                Last updated: @lastUpdateTime.ToString("HH:mm:ss")
+            </MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RefreshDashboard" StartIcon="@Icons.Material.Filled.Refresh">
+                Refresh
+            </MudButton>
+        </MudItem>
+    </MudGrid>
 
-    <MudGrid>
+    <!-- Main Statistics Cards -->
+    <MudGrid Class="mb-4">
         <MudItem xs="12" sm="6" md="3">
-            <MudCard Elevation="2">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body2">Active Devices</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
+            <MudCard Elevation="2" Class="stat-card stat-primary">
                 <MudCardContent>
-                    <MudText Typo="Typo.h4">@activeDeviceCount</MudText>
-                    <MudText Typo="Typo.caption">out of 3 online</MudText>
+                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Size="Size.Large" Class="stat-icon" />
+                        <MudText Typo="Typo.h3">@stats.OnlineDevices/@stats.TotalDevices</MudText>
+                        <MudText Typo="Typo.body2">Devices Online</MudText>
+                    </MudStack>
                 </MudCardContent>
             </MudCard>
         </MudItem>
 
         <MudItem xs="12" sm="6" md="3">
-            <MudCard Elevation="2">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body2">Total Observations</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
+            <MudCard Elevation="2" Class="stat-card stat-success">
                 <MudCardContent>
-                    <MudText Typo="Typo.h4">@totalObservations</MudText>
-                    <MudText Typo="Typo.caption">recorded today</MudText>
+                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Class="stat-icon" />
+                        <MudText Typo="Typo.h3">@stats.TotalObservations.ToString("N0")</MudText>
+                        <MudText Typo="Typo.body2">Observations</MudText>
+                    </MudStack>
                 </MudCardContent>
             </MudCard>
         </MudItem>
 
         <MudItem xs="12" sm="6" md="3">
-            <MudCard Elevation="2">
-                <MudCardHeader>
-                    <CardHeaderContent>
+            <MudCard Elevation="2" Class="stat-card @(stats.ActiveAlerts > 0 ? "stat-error" : "stat-info")">
+                <MudCardContent>
+                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@(stats.ActiveAlerts > 0 ? Icons.Material.Filled.Warning : Icons.Material.Filled.CheckCircle)" Size="Size.Large" Class="stat-icon" />
+                        <MudText Typo="Typo.h3">@stats.ActiveAlerts</MudText>
                         <MudText Typo="Typo.body2">Active Alerts</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText Typo="Typo.h4" Color="Color.Error">@activeAlerts</MudText>
-                    <MudText Typo="Typo.caption">requiring attention</MudText>
+                    </MudStack>
                 </MudCardContent>
             </MudCard>
         </MudItem>
 
         <MudItem xs="12" sm="6" md="3">
-            <MudCard Elevation="2">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body2">System Health</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
+            <MudCard Elevation="2" Class="stat-card stat-secondary">
                 <MudCardContent>
-                    <MudText Typo="Typo.h4" Color="Color.Success">
-                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" />
-                    </MudText>
-                    <MudText Typo="Typo.caption">all services operational</MudText>
+                    <MudStack Spacing="0" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Speed" Size="Size.Large" Class="stat-icon" />
+                        <MudText Typo="Typo.h3">@stats.TelemetryRate.ToString("F1")</MudText>
+                        <MudText Typo="Typo.body2">Msg/Second</MudText>
+                    </MudStack>
                 </MudCardContent>
             </MudCard>
         </MudItem>
     </MudGrid>
 
-    <MudGrid Class="mt-6">
-        <MudItem xs="12" md="6">
+    <!-- Alert Severity Breakdown -->
+    @if (stats.CriticalAlerts > 0 || stats.WarningAlerts > 0)
+    {
+        <MudCard Elevation="2" Class="mb-4 alert-summary">
+            <MudCardContent>
+                <MudGrid>
+                    @if (stats.CriticalAlerts > 0)
+                    {
+                        <MudItem xs="6" sm="3">
+                            <MudPaper Elevation="0" Class="pa-3 text-center critical-alert">
+                                <MudText Typo="Typo.h5">@stats.CriticalAlerts</MudText>
+                                <MudText Typo="Typo.caption">Critical</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                    @if (stats.WarningAlerts > 0)
+                    {
+                        <MudItem xs="6" sm="3">
+                            <MudPaper Elevation="0" Class="pa-3 text-center warning-alert">
+                                <MudText Typo="Typo.h5">@stats.WarningAlerts</MudText>
+                                <MudText Typo="Typo.caption">Warning</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    }
+                    <MudItem xs="12" sm="@(stats.CriticalAlerts > 0 && stats.WarningAlerts > 0 ? 6 : 12 - (stats.CriticalAlerts > 0 ? 3 : 0) - (stats.WarningAlerts > 0 ? 3 : 0))">
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("system-health"))">
+                            View All Alerts
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    }
+
+    <MudGrid>
+        <!-- Quick Actions -->
+        <MudItem xs="12" md="4">
             <MudCard Elevation="2">
                 <MudCardHeader>
                     <CardHeaderContent>
@@ -81,13 +125,21 @@
                     <MudStack Spacing="2">
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("fleet-view"))">
                             <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Class="mr-2" />
-                            View Fleet Status
+                            Fleet Status
                         </MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("vitals-monitor"))">
+                        <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("vitals-monitor"))">
                             <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Class="mr-2" />
-                            Monitor Live Vitals
+                            Live Vitals
                         </MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("fhir-inspector"))">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("system-health"))">
+                            <MudIcon Icon="@Icons.Material.Filled.HealthAndSafety" Class="mr-2" />
+                            System Health
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Tertiary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("system-flow"))">
+                            <MudIcon Icon="@Icons.Material.Filled.AccountTree" Class="mr-2" />
+                            System Flow
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("fhir-inspector"))">
                             <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" />
                             FHIR Inspector
                         </MudButton>
@@ -96,95 +148,272 @@
             </MudCard>
         </MudItem>
 
-        <MudItem xs="12" md="6">
+        <!-- Recent Alerts -->
+        <MudItem xs="12" md="4">
             <MudCard Elevation="2">
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h6">System Information</MudText>
+                        <MudText Typo="Typo.h6">Recent Alerts</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudChip Size="Size.Small" Color="@(recentAlerts.Any(a => a.Severity == "Critical") ? Color.Error : Color.Default)" Label="true">
+                            @recentAlerts.Count
+                        </MudChip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    @if (recentAlerts.Any())
+                    {
+                        <MudList Dense="true">
+                            @foreach (var alert in recentAlerts.Take(5))
+                            {
+                                <MudListItem Class="alert-item">
+                                    <ItemContent>
+                                        <MudIcon Icon="@(alert.Severity == "Critical" ? Icons.Material.Filled.Error : Icons.Material.Filled.Warning)"
+                                                  Color="@(alert.Severity == "Critical" ? Color.Error : Color.Warning)" Class="mr-2" />
+                                        <MudText Typo="Typo.body2">@alert.Title</MudText>
+                                        <MudText Typo="Typo.caption" Class="text--secondary">@alert.DeviceId</MudText>
+                                    </ItemContent>
+                                    <ItemActions>
+                                        <MudText Typo="Typo.caption" Class="text--secondary">@FormatAlertTime(alert.Timestamp)</MudText>
+                                    </ItemActions>
+                                </MudListItem>
+                            }
+                        </MudList>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => Navigation.NavigateTo("system-health"))">
+                            View All Alerts
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Class="text--secondary text-center py-4">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+                            No active alerts
+                        </MudText>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- System Information & Status -->
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">System Status</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudStack Spacing="2">
-                        <MudText Typo="Typo.body2">
-                            <strong>Platform:</strong> MedEdge Gateway - NEXADIA Evolution
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            <strong>Version:</strong> 1.0.0-beta
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            <strong>Status:</strong> <MudChip Size="Size.Small" Color="Color.Success">Operational</MudChip>
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            <strong>FHIR:</strong> R4 (HL7 FHIR Release 4)
-                        </MudText>
-                        <MudText Typo="Typo.body2">
-                            <strong>Last Updated:</strong> @lastUpdateTime.ToString("g")
-                        </MudText>
+                    <MudStack Spacing="3">
+                        <MudPaper Elevation="0" Class="pa-3 status-item">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body2">System Uptime</MudText>
+                                <MudText Typo="Typo.subtitle2">@FormatUptime(stats.SystemUptime)</MudText>
+                            </MudStack>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="pa-3 status-item">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body2">Platform</MudText>
+                                <MudText Typo="Typo.subtitle2">MedEdge Gateway</MudText>
+                            </MudStack>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="pa-3 status-item">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body2">Version</MudText>
+                                <MudChip Size="Size.Small" Color="Color.Tertiary">1.0.0-beta</MudChip>
+                            </MudStack>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="pa-3 status-item">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body2">FHIR Version</MudText>
+                                <MudText Typo="Typo.subtitle2">R4</MudText>
+                            </MudStack>
+                        </MudPaper>
+
+                        <MudPaper Elevation="0" Class="pa-3 status-item">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudText Typo="Typo.body2">Overall Status</MudText>
+                                <MudChip Size="Size.Small" Color="Color.Success">Operational</MudChip>
+                            </MudStack>
+                        </MudPaper>
                     </MudStack>
                 </MudCardContent>
             </MudCard>
         </MudItem>
     </MudGrid>
 
-    <MudGrid Class="mt-6">
-        <MudItem xs="12">
-            <MudCard Elevation="2">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Getting Started</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudTimeline TimelinePosition="TimelinePosition.Start" TimelineOrientation="TimelineOrientation.Vertical">
-                        <MudTimelineItem Dense="true">
-                            <MudText Typo="Typo.body2">
-                                <strong>View Fleet Status</strong> - See all connected dialysis devices and their current state
-                            </MudText>
-                        </MudTimelineItem>
-                        <MudTimelineItem Dense="true">
-                            <MudText Typo="Typo.body2">
-                                <strong>Monitor Live Vitals</strong> - Real-time display of blood flow, pressure, and temperature readings
-                            </MudText>
-                        </MudTimelineItem>
-                        <MudTimelineItem Dense="true">
-                            <MudText Typo="Typo.body2">
-                                <strong>Inspect FHIR Resources</strong> - Query and export clinical data in FHIR R4 format
-                            </MudText>
-                        </MudTimelineItem>
-                        <MudTimelineItem Dense="true">
-                            <MudText Typo="Typo.body2">
-                                <strong>Respond to Alerts</strong> - Receive AI-powered clinical alerts with recommendations
-                            </MudText>
-                        </MudTimelineItem>
-                    </MudTimeline>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
+    <!-- Recent Activity Log -->
+    <MudCard Elevation="2" Class="mt-4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Recent Activity</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTimeline TimelinePosition="TimelinePosition.Start" TimelineOrientation="TimelineOrientation.Vertical">
+                @foreach (var activity in recentActivity.Take(5))
+                {
+                    <MudTimelineItem Dense="true">
+                        <MudText Typo="Typo.body2">
+                            <MudIcon Icon="@GetActivityIcon(activity.Type)" Color="@GetActivityColor(activity.Type)" Class="mr-2" Size="Size.Small" />
+                            <strong>@activity.Title</strong>
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            @activity.Description • @activity.Timestamp.ToString("HH:mm:ss")
+                        </MudText>
+                    </MudTimelineItem>
+                }
+            </MudTimeline>
+        </MudCardContent>
+    </MudCard>
 </MudContainer>
 
+<style>
+    .stat-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .stat-primary { background: linear-gradient(135deg, #009639 0%, #004d1f 100%); color: white; }
+    .stat-success { background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; }
+    .stat-error { background: linear-gradient(135deg, #F44336 0%, #C62828 100%); color: white; }
+    .stat-info { background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%); color: white; }
+    .stat-secondary { background: linear-gradient(135deg, #9C27B0 0%, #6A1B9A 100%); color: white; }
+
+    .stat-icon { opacity: 0.9; margin-bottom: 8px; }
+
+    .critical-alert { background-color: #FFEBEE; border-left: 4px solid #F44336; }
+    .warning-alert { background-color: #FFF3E0; border-left: 4px solid #FF9800; }
+
+    .alert-summary { border-left: 4px solid #F44336; }
+
+    .status-item { background-color: #F5F5F5; }
+
+    .alert-item:hover { background-color: #F5F5F5; }
+</style>
+
 @code {
-    private int activeDeviceCount = 3;
-    private int totalObservations = 1250;
-    private int activeAlerts = 0;
+    private SystemStatistics stats = new();
+    private List<AlertInfo> recentAlerts = new();
+    private List<ActivityEvent> recentActivity = new();
     private DateTime lastUpdateTime = DateTime.UtcNow;
+    private Timer? refreshTimer;
+
+    private class ActivityEvent
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        // Load dashboard statistics
-        await LoadDashboardStats();
+        await LoadDashboardData();
+        refreshTimer = new Timer(async _ => await RefreshDashboard(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
     }
 
-    private async Task LoadDashboardStats()
+    private async Task LoadDashboardData()
     {
         try
         {
-            // These would be real API calls in production
-            await Task.Delay(500);
+            // Try to load from API
+            stats = await Http.GetFromJsonAsync<SystemStatistics>("/api/statistics") ?? new SystemStatistics();
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error loading stats: {ex.Message}");
+            // Use simulated data for demo
+            stats = new SystemStatistics
+            {
+                TotalDevices = 3,
+                OnlineDevices = 3,
+                TotalObservations = 15420,
+                ActiveAlerts = 2,
+                CriticalAlerts = 1,
+                WarningAlerts = 1,
+                TelemetryRate = 6.5,
+                SystemUptime = TimeSpan.FromHours(2),
+                LastUpdated = DateTime.UtcNow
+            };
+
+            recentAlerts = new List<AlertInfo>
+            {
+                new() { Id = "1", DeviceId = "Device-002", Severity = "Critical", Title = "Hypotension Detected", Message = "Arterial pressure below critical threshold", Timestamp = DateTime.UtcNow.AddMinutes(-2) },
+                new() { Id = "2", DeviceId = "Device-001", Severity = "Warning", Title = "High Venous Pressure", Message = "Venous pressure approaching upper limit", Timestamp = DateTime.UtcNow.AddMinutes(-15) }
+            };
+
+            recentActivity = new List<ActivityEvent>
+            {
+                new() { Type = "Alert", Title = "Critical Alert", Description = "Hypotension detected on Device-002", Timestamp = DateTime.UtcNow.AddMinutes(-2) },
+                new() { Type = "Device", Title = "Device Connected", Description = "Device-003 came online", Timestamp = DateTime.UtcNow.AddMinutes(-10) },
+                new() { Type = "Data", Title = "Observations Processed", Description = "150 observations processed by Transform Service", Timestamp = DateTime.UtcNow.AddMinutes(-15) },
+                new() { Type = "Alert", Title = "Warning Alert", Description = "High venous pressure on Device-001", Timestamp = DateTime.UtcNow.AddMinutes(-15) },
+                new() { Type = "System", Title = "Health Check", Description = "All systems operational", Timestamp = DateTime.UtcNow.AddMinutes(-30) }
+            };
         }
+
+        lastUpdateTime = DateTime.UtcNow;
+    }
+
+    private async Task RefreshDashboard()
+    {
+        await LoadDashboardData();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1)
+            return $"{(int)uptime.TotalDays}d {uptime.Hours}h";
+        if (uptime.TotalHours >= 1)
+            return $"{uptime.Hours}h {uptime.Minutes}m";
+        return $"{uptime.Minutes}m";
+    }
+
+    private string FormatAlertTime(DateTime time)
+    {
+        var diff = DateTime.UtcNow - time;
+        if (diff.TotalMinutes < 1)
+            return "Just now";
+        if (diff.TotalMinutes < 60)
+            return $"{(int)diff.TotalMinutes}m ago";
+        return time.ToString("HH:mm");
+    }
+
+    private string GetActivityIcon(string type)
+    {
+        return type switch
+        {
+            "Alert" => Icons.Material.Filled.Warning,
+            "Device" => Icons.Material.Filled.LocalHospital,
+            "Data" => Icons.Material.Filled.Assessment,
+            "System" => Icons.Material.Filled.Settings,
+            _ => Icons.Material.Filled.Info
+        };
+    }
+
+    private Color GetActivityColor(string type)
+    {
+        return type switch
+        {
+            "Alert" => Color.Error,
+            "Device" => Color.Primary,
+            "Data" => Color.Success,
+            "System" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        refreshTimer?.Dispose();
+        await Task.CompletedTask;
     }
 }

@@ -11,6 +11,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // Register configuration service
 builder.Services.AddSingleton<IAppConfigurationService, AppConfigurationService>();
 
+// Register authentication service
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 // Register HttpClient with base address from configuration
 builder.Services.AddScoped<HttpClient>(sp =>
 {

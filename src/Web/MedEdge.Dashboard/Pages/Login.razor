@@ -1,0 +1,187 @@
+@page "/login"
+@using Microsoft.AspNetCore.Components.Web
+@inject IAuthenticationService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<div class="login-container">
+    <MudPaper Elevation="4" Class="login-paper">
+        <div class="login-header">
+            <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Size="Size.Large" Class="login-icon" />
+            <MudText Typo="Typo.h4" Class="mt-4">MedEdge Gateway</MText>
+            <MudText Typo="Typo.subtitle1" Class="text--secondary">Medical Device Platform</MudText>
+        </div>
+
+        <MudDivider Class="my-4" />
+
+        <MudForm @ref="form" @bind-IsValid="@formIsValid" @bind-Errors="@formErrors">
+            <MudTextField T="string"
+                         @bind-Value="username"
+                         Label="Username"
+                         Variant="Variant.Outlined"
+                         AdornmentIcon="@Icons.Material.Filled.Person"
+                         AdornmentColor="Color.Primary"
+                         Immediate="true"
+                         Class="mb-4"
+                         @onkeypress="HandleKeyPress" />
+
+            <MudTextField T="string"
+                         @bind-Value="password"
+                         Label="Password"
+                         Variant="Variant.Outlined"
+                         AdornmentIcon="@Icons.Material.Filled.Lock"
+                         AdornmentColor="Color.Primary"
+                         InputType="InputType.Password"
+                         Immediate="true"
+                         Class="mb-4"
+                         @onkeypress="HandleKeyPress"
+                         Validation="@((password) => !string.IsNullOrWhiteSpace(password) ? null : "Password is required")" />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Dense="true" Class="mb-4">
+                    @errorMessage
+                </MudAlert>
+            }
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="@isLoggingIn || !formIsValid"
+                       OnClick="HandleLogin"
+                       Class="mb-2">
+                @if (isLoggingIn)
+                {
+                    <MudProgressCircular Class="ms-2" Size="Size.Small" Indeterminate="true" />
+                    <span class="ms-2">Signing in...</span>
+                }
+                else
+                {
+                    <span>Sign In</span>
+                }
+            </MudButton>
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Secondary"
+                       FullWidth="true"
+                       Disabled="@isLoggingIn"
+                       OnClick="@(() => Navigation.NavigateTo("/"))">
+                Back to Home
+            </MudButton>
+        </MudForm>
+
+        <MudDivider Class="my-4" />
+
+        <div class="login-footer">
+            <MudText Typo="Typo.caption" Class="text--secondary">
+                Authorized access only. All login attempts are logged.
+            </MudText>
+        </div>
+    </MudPaper>
+</div>
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #009639 0%, #004d1f 100%);
+        padding: 20px;
+    }
+
+    .login-paper {
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        border-radius: 12px;
+    }
+
+    .login-header {
+        text-align: center;
+    }
+
+    .login-icon {
+        font-size: 64px !important;
+        color: #009639;
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
+@code {
+    private MudForm? form;
+    private string username = string.Empty;
+    private string password = string.Empty;
+    private bool isLoggingIn = false;
+    private bool formIsValid = false;
+    private string[] formErrors = Array.Empty<string>();
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Redirect if already authenticated
+        if (AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        if (form != null)
+        {
+            await form.Validate();
+        }
+
+        if (!formIsValid)
+        {
+            errorMessage = "Please fill in all required fields";
+            return;
+        }
+
+        isLoggingIn = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await AuthService.LoginAsync(username, password);
+
+            if (result.Success)
+            {
+                Snackbar.Add("Login successful!", Severity.Success);
+                var returnUrl = Navigation.GetUriParameter("returnUrl") ?? "/";
+                Navigation.NavigateTo(returnUrl, forceLoad: true);
+            }
+            else
+            {
+                errorMessage = result.ErrorMessage ?? "Login failed";
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred during login";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoggingIn = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter" && formIsValid)
+        {
+            _ = HandleLogin();
+        }
+    }
+}

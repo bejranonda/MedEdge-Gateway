@@ -1,0 +1,478 @@
+@page "/system-flow"
+@using MedEdge.Dashboard.Models
+@using MedEdge.Dashboard.Services
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
+<PageTitle>System Flow - MedEdge</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid Class="mb-4" AlignItems="AlignItems.Center">
+        <MudItem xs="12" sm="6">
+            <MudText Typo="Typo.h4">System Data Flow</MudText>
+            <MudText Typo="Typo.body2" Class="text--secondary">
+                Real-time visualization of data flowing through the system
+            </MudText>
+        </MudItem>
+        <MudItem xs="12" sm="6" Class="d-flex justify-end align-center">
+            <MudChip Color="Color.Success" Class="mr-2">@activeDataFlows.Count active flows</MudChip>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="RefreshFlow" StartIcon="@Icons.Material.Filled.Refresh">
+                Refresh
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Legend -->
+    <MudCard Elevation="1" Class="mb-4">
+        <MudCardContent>
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Legend</MudText>
+            <MudStack Row="true" Spacing="4">
+                <MudChip Size="Size.Small" Color="Color.Primary"><MudIcon Icon="@Icons.Material.Filled.Memory" Class="mr-1" />Edge Device</MudChip>
+                <MudChip Size="Size.Small" Color="Color.Secondary"><MudIcon Icon="@Icons.Material.Filled.Router" Class="mr-1" />Gateway</MudChip>
+                <MudChip Size="Size.Small" Color="Color.Tertiary"><MudIcon Icon="@Icons.Material.Filled.Hub" Class="mr-1" />MQTT Broker</MudChip>
+                <MudChip Size="Size.Small" Color="Color.Info"><MudIcon Icon="@Icons.Material.Filled.Cloud" Class="mr-1" />Cloud Service</MudChip>
+                <MudChip Size="Size.Small" Color="Color.Success"><MudIcon Icon="@Icons.Material.Filled.Storage" Class="mr-1" />Database</MudChip>
+                <MudChip Size="Size.Small" Color="Color.Warning"><MudIcon Icon="@Icons.Material.Filled.Psychology" Class="mr-1" />AI Engine</MudChip>
+            </MudStack>
+        </MudCardContent>
+    </MudCard>
+
+    <!-- Flow Diagram -->
+    <MudPaper Elevation="2" Class="flow-container">
+        <svg width="100%" height="600" viewBox="0 0 1200 600" class="flow-diagram">
+            <!-- Definitions for markers and filters -->
+            <defs>
+                <marker id="arrowhead-telemetry" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#4CAF50" />
+                </marker>
+                <marker id="arrowhead-command" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#2196F3" />
+                </marker>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Connection Lines (Background) -->
+            @foreach (var conn in connections)
+            {
+                var fromNode = nodes.FirstOrDefault(n => n.Id == conn.FromNodeId);
+                var toNode = nodes.FirstOrDefault(n => n.Id == conn.ToNodeId);
+                if (fromNode != null && toNode != null)
+                {
+                    var lineColor = conn.Protocol switch
+                    {
+                        "Modbus" => "#9C27B0",
+                        "MQTT" => "#FF9800",
+                        "HTTP" => "#2196F3",
+                        "SignalR" => "#4CAF50",
+                        _ => "#666"
+                    };
+                    <line x1="@(fromNode.X + 60)" y1="@(fromNode.Y + 40)"
+                          x2="@toNode.X" y2="@(toNode.Y + 40)"
+                          stroke="@lineColor"
+                          stroke-width="2"
+                          stroke-dasharray="@(conn.IsActive ? "0" : "5,5")"
+                          opacity="@(conn.IsActive ? "1" : "0.3")">
+                    </line>
+                    <!-- Protocol label -->
+                    <text x="@((fromNode.X + toNode.X) / 2)" y="@((fromNode.Y + toNode.Y) / 2 - 10)"
+                          text-anchor="middle" font-size="12" fill="#666">@conn.Protocol</text>
+                }
+            }
+
+            <!-- Animated Data Flows -->
+            @foreach (var flow in activeDataFlows)
+            {
+                var conn = connections.FirstOrDefault(c => c.Id == flow.ConnectionId);
+                if (conn != null)
+                {
+                    var fromNode = nodes.FirstOrDefault(n => n.Id == conn.FromNodeId);
+                    var toNode = nodes.FirstOrDefault(n => n.Id == conn.ToNodeId);
+                    if (fromNode != null && toNode != null)
+                    {
+                        var x = fromNode.X + 60 + (toNode.X - (fromNode.X + 60)) * flow.Progress;
+                        var y = fromNode.Y + 40 + (toNode.Y + 40 - (fromNode.Y + 40)) * flow.Progress;
+                        var flowColor = flow.Type switch
+                        {
+                            "Telemetry" => "#4CAF50",
+                            "Command" => "#2196F3",
+                            "Alert" => "#F44336",
+                            _ => "#666"
+                        };
+                        <circle cx="@x" cy="@y" r="8" fill="@flowColor" filter="url(#glow)">
+                            <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite"/>
+                        </circle>
+                    }
+                }
+            }
+
+            <!-- Nodes -->
+            @foreach (var node in nodes)
+            {
+                var nodeColor = node.Type switch
+                {
+                    "Device" => "#9C27B0",
+                    "Gateway" => "#FF9800",
+                    "Broker" => "#FF5722",
+                    "Service" => "#2196F3",
+                    "Database" => "#4CAF50",
+                    "AI" => "#FFC107",
+                    _ => "#666"
+                };
+                var statusColor = node.Status switch
+                {
+                    "Running" => "#4CAF50",
+                    "Connected" => "#4CAF50",
+                    "Operational" => "#4CAF50",
+                    "Processing" => "#2196F3",
+                    _ => "#F44336"
+                };
+
+                <g class="flow-node" transform="translate(@node.X, @node.Y)">
+                    <!-- Node box -->
+                    <rect x="0" y="0" width="120" height="80" rx="8" fill="@nodeColor" opacity="0.9"/>
+                    <!-- Status indicator -->
+                    <circle cx="110" cy="10" r="6" fill="@statusColor">
+                        @if (node.IsActive)
+                        {
+                            <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+                        }
+                    </circle>
+                    <!-- Node icon -->
+                    <text x="60" y="30" text-anchor="middle" fill="white" font-size="20">
+                        @(node.Type switch
+                        {
+                            "Device" => "💉",
+                            "Gateway" => "🔄",
+                            "Broker" => "📡",
+                            "Service" => "⚙️",
+                            "Database" => "💾",
+                            "AI" => "🧠",
+                            _ => "📦"
+                        })
+                    </text>
+                    <!-- Node name -->
+                    <text x="60" y="50" text-anchor="middle" fill="white" font-size="11" font-weight="bold">@node.Name</text>
+                    <!-- Data throughput -->
+                    <text x="60" y="68" text-anchor="middle" fill="white" font-size="10" opacity="0.8">@node.DataThroughput msg/min</text>
+                </g>
+            }
+        </svg>
+    </MudPaper>
+
+    <!-- Flow Details -->
+    <MudGrid Class="mt-4">
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Active Connections</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudList>
+                        @foreach (var conn in connections.Where(c => c.IsActive))
+                        {
+                            var fromNode = nodes.FirstOrDefault(n => n.Id == conn.FromNodeId);
+                            var toNode = nodes.FirstOrDefault(n => n.Id == conn.ToNodeId);
+                            <MudListItem>
+                                <ItemContent>
+                                    <MudText Typo="Typo.body2">
+                                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Class="mr-2" Size="Size.Small" />
+                                        @(fromNode?.Name) → @(toNode?.Name)
+                                    </MudText>
+                                    <MudText Typo="Typo.caption" Class="text--secondary">
+                                        @conn.Protocol | @conn.DataRate msg/min
+                                    </MudText>
+                                </ItemContent>
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Data Flow Statistics</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.body2">Telemetry Messages</MudText>
+                            <MudText Typo="Typo.h5" Color="Color.Success">@totalTelemetryCount</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.body2">Commands Sent</MudText>
+                            <MudText Typo="Typo.h5" Color="Color.Primary">@totalCommandCount</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.body2">Alerts Generated</MudText>
+                            <MudText Typo="Typo.h5" Color="Color.Error">@totalAlertCount</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.body2">Avg Throughput</MudText>
+                            <MudText Typo="Typo.h5" Color="Color.Tertiary">@averageThroughput msg/s</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Flow Timeline -->
+    <MudCard Elevation="2" Class="mt-4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Recent Flow Events</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTimeline TimelinePosition="TimelinePosition.Start" TimelineOrientation="TimelineOrientation.Vertical">
+                @foreach (var evt in recentEvents.Take(5))
+                {
+                    <MudTimelineItem Dense="true">
+                        <MudText Typo="Typo.body2">
+                            <MudIcon Icon="@GetEventIcon(evt.Type)" Color="@GetEventColor(evt.Type)" Class="mr-2" Size="Size.Small" />
+                            <strong>@evt.Title</strong>
+                        </MudText>
+                        <MudText Typo="Typo.caption" Class="text--secondary">
+                            @evt.Description • @evt.Timestamp.ToString("HH:mm:ss")
+                        </MudText>
+                    </MudTimelineItem>
+                }
+            </MudTimeline>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+<style>
+    .flow-container {
+        position: relative;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .flow-diagram {
+        display: block;
+        max-width: 100%;
+    }
+
+    .flow-node {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .flow-node:hover {
+        transform: scale(1.05);
+    }
+
+    .flow-node rect {
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+</style>
+
+@code {
+    private List<FlowNode> nodes = new();
+    private List<FlowConnection> connections = new();
+    private List<FlowData> activeDataFlows = new();
+    private List<FlowEvent> recentEvents = new();
+    private Timer? animationTimer;
+    private int totalTelemetryCount = 15420;
+    private int totalCommandCount = 23;
+    private int totalAlertCount = 5;
+    private double averageThroughput = 6.5;
+
+    private class FlowEvent
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitializeFlowDiagram();
+        await LoadFlowData();
+
+        // Start animation loop
+        animationTimer = new Timer(async _ => await AnimateFlows(), null, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
+    }
+
+    private void InitializeFlowDiagram()
+    {
+        nodes = new List<FlowNode>
+        {
+            // Layer 1: Edge Devices
+            new() { Id = "device1", Name = "Device-001", Type = "Device", X = 50, Y = 50, IsActive = true, Status = "Running", DataThroughput = 60 },
+            new() { Id = "device2", Name = "Device-002", Type = "Device", X = 50, Y = 180, IsActive = true, Status = "Running", DataThroughput = 60 },
+            new() { Id = "device3", Name = "Device-003", Type = "Device", X = 50, Y = 310, IsActive = true, Status = "Running", DataThroughput = 60 },
+
+            // Layer 2: Gateway
+            new() { Id = "gateway", Name = "Edge Gateway", Type = "Gateway", X = 300, Y = 180, IsActive = true, Status = "Running", DataThroughput = 180 },
+
+            // Layer 3: MQTT Broker
+            new() { Id = "mqtt", Name = "MQTT Broker", Type = "Broker", X = 520, Y = 180, IsActive = true, Status = "Connected", DataThroughput = 180 },
+
+            // Layer 4: Cloud Services
+            new() { Id = "transform", Name = "Transform", Type = "Service", X = 740, Y = 100, IsActive = true, Status = "Processing", DataThroughput = 90 },
+            new() { Id = "fhirapi", Name = "FHIR API", Type = "Service", X = 740, Y = 260, IsActive = true, Status = "Operational", DataThroughput = 90 },
+
+            // Layer 5: AI & Storage
+            new() { Id = "aiengine", Name = "AI Engine", Type = "AI", X = 960, Y = 100, IsActive = true, Status = "Analyzing", DataThroughput = 90 },
+            new() { Id = "database", Name = "Database", Type = "Database", X = 960, Y = 260, IsActive = true, Status = "Connected", DataThroughput = 90 },
+
+            // Dashboard
+            new() { Id = "dashboard", Name = "Dashboard", Type = "Service", X = 960, Y = 420, IsActive = true, Status = "Running", DataThroughput = 30 }
+        };
+
+        connections = new List<FlowConnection>
+        {
+            // Device to Gateway
+            new() { Id = "conn1", FromNodeId = "device1", ToNodeId = "gateway", Protocol = "Modbus", IsActive = true, DataRate = 60 },
+            new() { Id = "conn2", FromNodeId = "device2", ToNodeId = "gateway", Protocol = "Modbus", IsActive = true, DataRate = 60 },
+            new() { Id = "conn3", FromNodeId = "device3", ToNodeId = "gateway", Protocol = "Modbus", IsActive = true, DataRate = 60 },
+
+            // Gateway to MQTT
+            new() { Id = "conn4", FromNodeId = "gateway", ToNodeId = "mqtt", Protocol = "MQTT", IsActive = true, DataRate = 180 },
+
+            // MQTT to Services
+            new() { Id = "conn5", FromNodeId = "mqtt", ToNodeId = "transform", Protocol = "MQTT", IsActive = true, DataRate = 90 },
+            new() { Id = "conn6", FromNodeId = "mqtt", ToNodeId = "fhirapi", Protocol = "HTTP", IsActive = true, DataRate = 90 },
+
+            // Service to Storage/AI
+            new() { Id = "conn7", FromNodeId = "transform", ToNodeId = "aiengine", Protocol = "HTTP", IsActive = true, DataRate = 90 },
+            new() { Id = "conn8", FromNodeId = "transform", ToNodeId = "database", Protocol = "HTTP", IsActive = true, DataRate = 90 },
+            new() { Id = "conn9", FromNodeId = "fhirapi", ToNodeId = "dashboard", Protocol = "SignalR", IsActive = true, DataRate = 30 }
+        };
+
+        recentEvents = new List<FlowEvent>
+        {
+            new() { Type = "Telemetry", Title = "Device-001", Description = "Telemetry received: Blood Flow 320 mL/min", Timestamp = DateTime.UtcNow.AddSeconds(-5) },
+            new() { Type = "Alert", Title = "AI Engine", Description = "Hypotension risk detected on Device-002", Timestamp = DateTime.UtcNow.AddSeconds(-15) },
+            new() { Type = "Command", Title = "Dashboard", Description = "Emergency stop command sent to Device-003", Timestamp = DateTime.UtcNow.AddSeconds(-30) },
+            new() { Type = "Telemetry", Title = "Device-002", Description = "Telemetry received: Arterial Pressure 115 mmHg", Timestamp = DateTime.UtcNow.AddSeconds(-45) },
+            new() { Type = "Info", Title = "Transform Service", Description = "Processed 150 observations in last minute", Timestamp = DateTime.UtcNow.AddSeconds(-60) }
+        };
+    }
+
+    private async Task LoadFlowData()
+    {
+        try
+        {
+            // Try to load from API
+            var flowData = await Http.GetFromJsonAsync<SystemFlowInfo>("/api/flow");
+            if (flowData != null)
+            {
+                nodes = flowData.Nodes;
+                connections = flowData.Connections;
+                activeDataFlows = flowData.ActiveDataFlows;
+            }
+        }
+        catch
+        {
+            // Use simulated data
+            GenerateRandomFlow();
+        }
+    }
+
+    private void GenerateRandomFlow()
+    {
+        var random = new Random();
+        activeDataFlows = new List<FlowData>();
+
+        // Generate random data flows
+        var flowCount = random.Next(3, 8);
+        for (int i = 0; i < flowCount; i++)
+        {
+            var conn = connections[random.Next(connections.Count)];
+            activeDataFlows.Add(new FlowData
+            {
+                Id = Guid.NewGuid().ToString(),
+                ConnectionId = conn.Id,
+                Type = random.Next(100) > 90 ? "Alert" : (random.Next(100) > 80 ? "Command" : "Telemetry"),
+                Progress = random.NextDouble(),
+                SourceDeviceId = conn.FromNodeId
+            });
+        }
+    }
+
+    private async Task AnimateFlows()
+    {
+        // Update flow progress
+        var random = new Random();
+        foreach (var flow in activeDataFlows.ToList())
+        {
+            flow.Progress += 0.02;
+            if (flow.Progress >= 1)
+            {
+                activeDataFlows.Remove(flow);
+                totalTelemetryCount++;
+            }
+        }
+
+        // Randomly add new flows
+        if (random.Next(100) < 20)
+        {
+            var conn = connections[random.Next(connections.Count)];
+            activeDataFlows.Add(new FlowData
+            {
+                Id = Guid.NewGuid().ToString(),
+                ConnectionId = conn.Id,
+                Type = random.Next(100) > 95 ? "Alert" : (random.Next(100) > 85 ? "Command" : "Telemetry"),
+                Progress = 0,
+                SourceDeviceId = conn.FromNodeId
+            });
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshFlow()
+    {
+        await LoadFlowData();
+        StateHasChanged();
+        Snackbar.Add("Flow diagram refreshed", Severity.Success);
+    }
+
+    private string GetEventIcon(string type)
+    {
+        return type switch
+        {
+            "Telemetry" => Icons.Material.Filled.ShowChart,
+            "Command" => Icons.Material.Filled.Send,
+            "Alert" => Icons.Material.Filled.Warning,
+            "Info" => Icons.Material.Filled.Info,
+            _ => Icons.Material.Filled.Circle
+        };
+    }
+
+    private Color GetEventColor(string type)
+    {
+        return type switch
+        {
+            "Telemetry" => Color.Success,
+            "Command" => Color.Primary,
+            "Alert" => Color.Error,
+            "Info" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        animationTimer?.Dispose();
+        await Task.CompletedTask;
+    }
+}

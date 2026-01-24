@@ -1,3 +1,4 @@
+// Base configuration
 window.MedEdgeConfig = {
     // For Cloudflare Pages with external backend, uncomment and modify:
     // apiBaseUrl: 'https://your-backend-api.com',
@@ -17,3 +18,7 @@ window.MedEdgeConfig = {
     requestTimeout: 30000,
     signalRTimeout: 60000
 };
+
+// Load environment-specific configuration (injected during Docker build)
+// This will be populated by config-env.js which is created during Docker build
+// The config-env.js file is created from environment variables in .env file
