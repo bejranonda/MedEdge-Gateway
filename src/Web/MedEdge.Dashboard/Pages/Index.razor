@@ -4,10 +4,20 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 
-<PageTitle>Dashboard - MedEdge</PageTitle>
+<PageTitle>Home - MedEdge</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h3" Class="mb-6">Welcome to MedEdge Gateway</MudText>
+    <MudPaper Elevation="3" Class="pa-6 mb-6 text-center" style="background: linear-gradient(135deg, var(--mud-palette-primary) 0%, var(--mud-palette-primary-darken-1) 100%); color: white;">
+        <MudText Typo="Typo.h3" Class="mb-2" Style="color: white;">Welcome to MedEdge Gateway</MudText>
+        <MudText Typo="Typo.body1" Style="color: rgba(255,255,255,0.9);">
+            Medical Device IoT Platform - Azure IoT Hub • FHIR R4 • Real-time Clinical Intelligence
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large" Class="mt-4"
+                  OnClick="@(() => Navigation.NavigateTo("system-dashboard"))">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="mr-2" />
+            Go to System Dashboard
+        </MudButton>
+    </MudPaper>
 
     <MudGrid>
         <MudItem xs="12" sm="6" md="3">
@@ -79,6 +89,10 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudStack Spacing="2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("system-dashboard"))">
+                            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="mr-2" />
+                            System Dashboard (Comprehensive)
+                        </MudButton>
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="@(() => Navigation.NavigateTo("fleet-view"))">
                             <MudIcon Icon="@Icons.Material.Filled.LocalHospital" Class="mr-2" />
                             View Fleet Status
@@ -136,6 +150,11 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <MudTimeline TimelinePosition="TimelinePosition.Start" TimelineOrientation="TimelineOrientation.Vertical">
+                        <MudTimelineItem Dense="true">
+                            <MudText Typo="Typo.body2">
+                                <strong>System Dashboard</strong> - Comprehensive view with gateway monitoring, device analysis, service health, and system workflow
+                            </MudText>
+                        </MudTimelineItem>
                         <MudTimelineItem Dense="true">
                             <MudText Typo="Typo.body2">
                                 <strong>View Fleet Status</strong> - See all connected dialysis devices and their current state
