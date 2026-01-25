@@ -1,13 +1,14 @@
 # MedEdge Gateway - Medical Device IoT Platform
 
 > Production-Grade Medical Device Connectivity with Azure IoT Hub Patterns
+> **Single-Page Interactive Dashboard for Real-Time System Monitoring**
 
 A production-grade implementation demonstrating:
 - **Azure IoT Hub Patterns** — Device Registry, Twins, Direct Methods, DPS, TPM Attestation
 - **Industrial IoT Architecture** — Edge gateway bridging medical devices to cloud infrastructure
 - **FHIR R4 Interoperability** — Standards-compliant healthcare data exchange
 - **AI-Powered Clinical Intelligence** — Real-time anomaly detection and decision support
-- **Professional Dashboard** — Blazor WebAssembly UI with real-time monitoring
+- **Single-Page Interactive Dashboard** — Blazor WebAssembly with real-time monitoring and interactive workflow visualization
 - **Hardware Security** — TPM 2.0 attestation, X.509 certificates, SAS tokens
 
 ## 🎯 Project Status
@@ -32,21 +33,20 @@ A production-grade implementation demonstrating:
 - ✅ LOINC code mapping (5 vital signs)
 - ✅ Docker Compose (6 services)
 
-**Phase 4: Blazor WebAssembly Dashboard** - ✅ COMPLETE
-- ✅ Professional UI with Material Design
-- ✅ Fleet Status monitoring (device cards)
-- ✅ Live Vitals (real-time charts)
-- ✅ FHIR Inspector (resource browser)
-- ✅ SignalR integration (WebSocket)
-- ✅ Healthcare-themed styling
-- ✅ Responsive layout (mobile-ready)
-- ✅ Nginx deployment
+**Phase 4: Single-Page Interactive Dashboard** - ✅ COMPLETE
+- ✅ Full-screen System Dashboard with interactive workflow diagram
+- ✅ Real-time status indicators with animated pulses
+- ✅ Clickable workflow nodes showing inline detail panels
+- ✅ 4-layer architecture visualization (Edge, Messaging, Cloud, Presentation)
+- ✅ Live vital signs preview with 6 key metrics
+- ✅ Auto-refresh every 3 seconds
+- ✅ Healthcare-themed gradient styling
+- ✅ Responsive design (mobile/tablet/desktop)
+- ✅ Nginx deployment with auto-redirect
 
 **Phase 5: Integration & Documentation** - ✅ COMPLETE
 - ✅ 8-service Docker Compose orchestration
-- ✅ 400+ page deployment guide
-- ✅ 10-minute demo walkthrough
-- ✅ 640+ pages of documentation
+- ✅ Deployment documentation (VPS, Docker, Cloud)
 - ✅ SignalR Hub for real-time updates
 - ✅ Device API endpoints
 - ✅ Health checks & monitoring
@@ -81,8 +81,32 @@ A production-grade implementation demonstrating:
 └─────────────────────┬───────────────────────────────────────────┘
                       │ SignalR WebSocket
 ┌─────────────────────▼───────────────────────────────────────────┐
-│ PRESENTATION LAYER                                              │
-│ Blazor WebAssembly Dashboard (Real-time Clinical Monitoring)   │
+│ PRESENTATION LAYER (Single-Page Dashboard)                     │
+│ ┌─────────────────────────────────────────────────────────┐    │
+│ │  🏥 MedEdge System Dashboard (Interactive)               │    │
+│ │  ┌─────────────────────────────────────────────────┐    │    │
+│ │  │ 📊 Statistics Cards (Real-time)                   │    │    │
+│ │  │    📱 Devices  🌐 Gateway  ⚡ Services  📊 Data │    │    │
+│ │  └─────────────────────────────────────────────────┘    │    │
+│ │  ┌─────────────────────────────────────────────────┐    │    │
+│ │  │ 🔄 Interactive System Workflow Diagram           │    │    │
+│ │  │  Click nodes to see details ▼                    │    │    │
+│ │  │  ┌──────┐    ┌──────┐    ┌──────┐              │    │    │
+│ │  │  │Devices│───▶│Gateway│───▶│  MQTT │              │    │    │
+│ │  │  └──────┘    └──────┘    └──────┘              │    │    │
+│ │  │       │             │           │              │    │    │
+│ │  │       ▼             ▼           ▼              │    │    │
+│ │  │  ┌─────────┐  ┌─────────┐  ┌──────────┐      │    │    │
+│ │  │  │IoT Hub  │  │FHIR API │  │AI Engine │      │    │    │
+│ │  │  └─────────┘  └─────────┘  └──────────┘      │    │    │
+│ │  │       │             │                          │    │    │
+│ │  │       ▼             ▼                          │    │    │
+│ │  │  ┌─────────────────────────────┐             │    │    │
+│ │  │  │     Blazor Dashboard       │             │    │    │
+│ │  │  └─────────────────────────────┘             │    │    │
+│ │  └─────────────────────────────────────────────────┘    │    │
+│ │  🔄 Auto-refresh every 3 seconds | 🟢 LIVE UPDATES      │    │
+│ └─────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -117,10 +141,11 @@ A production-grade implementation demonstrating:
    │   Arterial Pressure < 80 mmHg → HYPOTENSION WARNING
    │   Generates clinical recommendations
 
-   └─→ DASHBOARD (Real-Time Display)
-       SignalR WebSocket pushes updates
-       Dashboard updates vital signs in real-time
-       Clinical alerts appear immediately
+   └─→ SIGNALR HUB → DASHBOARD (Real-Time Display)
+       WebSocket pushes updates to single-page dashboard
+       Dashboard updates workflow status in real-time
+       Click workflow nodes to see detailed information
+       Clinical alerts appear immediately with recommendations
 
 4️⃣  FHIR API (Healthcare Data Hub)
    Stores observations in database
@@ -128,131 +153,90 @@ A production-grade implementation demonstrating:
    Provides query endpoints for historical data
    Broadcasts updates via SignalR Hub
 
-5️⃣  CLINICAL DASHBOARD (Clinician Interface)
-   Real-time vital signs with color-coded status
-   Fleet monitoring (device health indicators)
-   Clinical alerts with recommendations
-   FHIR resource browser for data export
-   Emergency stop control for urgent situations
+5️⃣  SINGLE-PAGE DASHBOARD (Clinician Interface)
+   ✅ Interactive System Workflow diagram (click nodes for details)
+   ✅ Real-time vital signs preview (6 key metrics)
+   ✅ Device status cards with risk levels
+   ✅ Service health monitoring
+   ✅ Auto-refresh every 3 seconds
+   ✅ Inline detail panels (no page navigation)
 ```
 
 **Total Time: Device → Clinician Dashboard = <1 second**
 
-### Real-World Scenario: Detecting Hypotension
+## 🎨 Dashboard Features
 
-```
-Timeline:
-─────────
-T+0ms    Machine: Blood flow drops to 145 mL/min (abnormal)
-T+10ms   Edge Gateway: Polls register, reads 145
-T+20ms   Gateway: Publishes to MQTT: {"bloodFlow": 145, ...}
-T+30ms   Transform Service: Creates FHIR Observation
-T+40ms   AI Engine: Checks threshold → 145 < 150 → CRITICAL
-T+50ms   API: Stores observation, broadcasts alert via SignalR
-T+60ms   Dashboard: Receives alert message
-T+80ms   Clinician: Sees RED ALERT on dashboard
-         - Finding: "Hypotension detected - Blood flow critically low"
-         - Recommendation: "Check arterial needle position, verify pressure limits"
-T+90ms   Clinician: Clicks "View Device" or "Emergency Stop" if needed
-```
+### Interactive System Workflow
+- **Clickable Nodes**: Click any component (Devices, Gateway, MQTT, IoT Hub, FHIR API, AI Engine, Dashboard) to see detailed status
+- **Real-time Status Indicators**: Animated pulsing dots show health status (green=healthy, orange=warning, red=error)
+- **Data Flow Animation**: Particles flow between layers showing active data transmission
+- **4-Layer Visualization**: Edge Layer → Messaging Layer → Cloud Layer → Presentation Layer
 
-**Clinical Outcome: Detected within 90ms, action taken within seconds**
+### Inline Detail Panels
+- **Medical Devices**: Shows connected devices with online status, type, last seen, and risk level
+- **Edge Gateway**: Shows status, messages/sec, MQTT connection, and SignalR status
+- **FHIR API**: Shows FHIR version, observation count, and API endpoint
+- **Live Vitals**: Real-time display of Blood Flow, Arterial/Venous Pressure, Temperature, Conductivity, and Treatment Time
 
----
+### Real-Time Statistics
+- Total Devices with online count
+- Gateway Status with messages/second
+- Services Health (operational/total)
+- Data Throughput (telemetry points/min)
 
-## 📚 Documentation Structure
-
-### For Beginners (New to .NET/C#)
-| Document | Purpose | Time |
-|----------|---------|------|
-| **[LEARNING-GUIDE.md](LEARNING-GUIDE.md)** | 8-week .NET/C# learning path | 4-8 weeks |
-| | C# fundamentals, OOP, ASP.NET Core | with practice |
-| | Code examples mapped to MedEdge | projects |
-
-### For Everyone
-| Document | Purpose | Pages |
-|----------|---------|-------|
-| **README.md** | Project overview & quick start | This file |
-| **QUICK-START.md** | Rapid deployment guide | 40+ |
-| **TECHNICAL-GUIDE.md** | How the system works (comprehensive) | 100+ |
-| **DEPLOYMENT.md** | Production deployment | 400+ |
-| **DEMO.md** | 10-minute demo walkthrough | 60+ |
-| **docs/ARCHITECTURE.md** | System design details | 100+ |
-| **docs/FHIR-MAPPING.md** | FHIR resource mapping | 80+ |
-| **IMPLEMENTATION.md** | Implementation summary | 100+ |
-
-### Azure IoT Hub Simulator
-| Document | Purpose | Location |
-|----------|---------|----------|
-| **Swagger UI** | Interactive API documentation | http://localhost:6000 |
-| **Demo Script** | 15-minute interview demo | `Research/azure-iot-hub/` |
-| **Azure Mapping** | Maps simulator to real Azure IoT Hub | `Research/azure-iot-hub/` |
-
-**Choose Your Path:**
-- **New to .NET?** Start with [LEARNING-GUIDE.md](LEARNING-GUIDE.md)
-- **Want to understand how it works?** Start with [TECHNICAL-GUIDE.md](TECHNICAL-GUIDE.md)
-- **Want to deploy it?** Start with [QUICK-START.md](QUICK-START.md) or [DEPLOYMENT.md](DEPLOYMENT.md)
-- **Want to see it in action?** Start with [DEMO.md](DEMO.md)
-
----
-
-## 🛠 Technology Stack
-
-| Layer | Technology | Version |
-|-------|-----------|---------|
-| **Runtime** | .NET | 8.0 |
-| **API** | ASP.NET Core | 8.0 |
-| **FHIR SDK** | Firely .NET SDK | 5.5.0 |
-| **Database** | SQLite / PostgreSQL | - |
-| **ORM** | Entity Framework Core | 8.0 |
-| **Testing** | xUnit, FluentAssertions | Latest |
-| **IoT Simulation** | Azure IoT Hub patterns | - |
-| **Security** | JWT, X.509, TPM 2.0 | - |
+### Quick Actions
+- Refresh All (manually refresh all data)
+- Show Live Vitals (display vital signs preview)
+- Dashboard Info (session statistics)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- .NET 8.0 SDK
-- Docker Desktop (for Phase 2+)
-- Visual Studio 2022 or VS Code
+- Docker Desktop (for containerized deployment)
+- .NET 8.0 SDK (for local development only)
 
-### Development Setup
+### Fastest Deployment (Docker Compose)
 
 ```bash
 # Clone repository
 git clone https://github.com/bejranonda/MedEdge-Gateway.git
 cd MedEdge
 
-# Build solution
-dotnet build
+# Configure dashboard credentials (optional)
+echo "DASHBOARD_USERNAME=admin" > .env
+echo "DASHBOARD_PASSWORD=YourSecurePassword123!" >> .env
 
-# Run tests
-dotnet test
+# Build and start all services
+docker-compose up -d --build
 
-# Start FHIR API (requires EF Core migrations)
-cd src/Cloud/MedEdge.FhirApi
-dotnet run
+# Access dashboard
+# Open browser to: http://localhost:5000
+# You will be automatically redirected to the System Dashboard
 ```
 
-The API will be available at `http://localhost:5000`
+**Access Points:**
+- 🟢 **Dashboard**: http://localhost:5000 (Auto-redirects to System Dashboard)
+- 🟢 **FHIR API**: http://localhost:5001/swagger (REST API documentation)
+- 🟢 **IoT Hub Simulator**: http://localhost:8080 (Azure IoT Hub patterns)
+- 🟢 **MQTT Broker**: localhost:1883 (Message broker)
 
-### Azure IoT Hub Simulator
+### VPS Deployment
 
 ```bash
-# Start the IoT Hub Simulator
-docker-compose up iot-hub-simulator
+# On your VPS server
+git clone https://github.com/bejranonda/MedEdge-Gateway.git
+cd MedEdge
 
-# Open Swagger UI
-# http://localhost:6000
+# Set credentials
+export DASHBOARD_USERNAME=admin
+export DASHBOARD_PASSWORD=YourSecurePassword!
+
+# Deploy
+docker-compose up -d --build
+
+# Access via public IP
+# http://YOUR_SERVER_IP:5000
 ```
-
-**Simulator demonstrates:**
-- Device Registry (pre-loaded with medical devices)
-- Device Twins (desired/reported properties)
-- Direct Methods (EmergencyStop, GetDiagnostics, Reboot)
-- TPM 2.0 Attestation (hardware-backed security)
-- SAS Token & X.509 Certificate authentication
-- Full audit trail for healthcare compliance
 
 ## 📊 FHIR API Endpoints
 
@@ -279,137 +263,52 @@ GET    /fhir/Observation?device={id}   # Filter by device
 GET    /fhir/Observation?code={code}   # Filter by LOINC code
 ```
 
-### Health
+### Dashboard API
 ```
+GET    /api/devices              # Device status for dashboard
+POST   /api/devices/{id}/emergency-stop  # Emergency stop command
 GET    /health                    # Health check
-GET    /swagger                   # Swagger UI
 ```
 
-## 🧪 Testing
+## 🛠 Technology Stack
 
-```bash
-# Run all tests
-dotnet test
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| **Runtime** | .NET | 8.0 |
+| **API** | ASP.NET Core | 8.0 |
+| **FHIR SDK** | Firely .NET SDK | 5.5.0 |
+| **Database** | SQLite / PostgreSQL | - |
+| **ORM** | Entity Framework Core | 8.0 |
+| **Dashboard** | Blazor WebAssembly | .NET 8 |
+| **UI Framework** | MudBlazor | Latest |
+| **Real-time** | SignalR | .NET 8 |
+| **Messaging** | Eclipse Mosquitto MQTT | 2.0 |
+| **Security** | JWT, X.509, TPM 2.0 | - |
 
-# Run with coverage
-dotnet test /p:CollectCoverage=true
+## 📚 Documentation Structure
 
-# Run specific project
-dotnet test tests/MedEdge.FhirApi.Tests
-dotnet test tests/MedEdge.Integration.Tests
-```
+### For Beginners (New to .NET/C#)
+| Document | Purpose | Time |
+|----------|---------|------|
+| **[LEARNING-GUIDE.md](LEARNING-GUIDE.md)** | 8-week .NET/C# learning path | 4-8 weeks |
 
-## 🔑 FHIR Compliance
+### For Everyone
+| Document | Purpose | Pages |
+|----------|---------|-------|
+| **README.md** | Project overview & quick start | This file |
+| **QUICK-START.md** | Rapid deployment guide | Updated |
+| **TECHNICAL-GUIDE.md** | How the system works | 100+ |
+| **DEPLOYMENT.md** | Production deployment (VPS, Docker) | Updated |
+| **DEMO.md** | 10-minute demo walkthrough | 60+ |
+| **docs/ARCHITECTURE.md** | System design details | 100+ |
+| **docs/FHIR-MAPPING.md** | FHIR resource mapping | 80+ |
+| **IMPLEMENTATION.md** | Implementation summary | 100+ |
 
-- **Standard:** FHIR R4
-- **Resources:** Patient, Device, Observation, DiagnosticReport, DeviceRequest
-- **Coding:** LOINC for vital signs, SNOMED CT for procedures
-- **Validation:** Firely SDK validation against R4 spec
-
-## 🏥 Seed Data
-
-The database includes seed data for immediate testing:
-
-**Patients:**
-- John Doe (MRN: P001) - Male, DOB: 1965-03-15
-- Jane Smith (MRN: P002) - Female, DOB: 1972-08-22
-- Robert Johnson (MRN: P003) - Male, DOB: 1958-11-30
-
-**Devices:**
-- Device-001 (Dialysis Pro+, Serial: DG001) - Assigned to P001
-- Device-002 (Dialysis iQ, Serial: DQ002) - Assigned to P002
-- Device-003 (Dialysis Pro+, Serial: DG003) - Assigned to P003
-
-## 📖 Code Quality Standards
-
-- **Language:** C# 12 with latest features
-- **Namespaces:** File-scoped
-- **Null safety:** Reference types enabled
-- **Patterns:** Clean Architecture, Repository, Dependency Injection
-- **Testing:** Unit & integration tests with >80% coverage target
-
-## 🚀 Deployment Options
-
-### Docker Compose (Recommended)
-```bash
-docker-compose up -d
-```
-- Full stack deployment with all 8 services
-- Dashboard: http://localhost:5000
-- API: http://localhost:5001/swagger
-- IoT Hub Simulator: http://localhost:6000
-
-### Cloudflare Pages (Static Frontend)
-Deploy the Blazor Dashboard to Cloudflare Pages with external backend hosting.
-
-#### Prerequisites
-- Cloudflare account (Free tier available)
-- GitHub repository connected to Cloudflare Pages
-
-#### Deployment Steps
-
-1. **Build Dashboard Locally**
-   ```bash
-   cd src/Web/MedEdge.Dashboard
-   dotnet publish -c Release -o ./publish
-   ```
-
-2. **Configure Runtime URLs**
-   Edit `wwwroot/config.js` to point to your backend API:
-   ```javascript
-   window.MedEdgeConfig = {
-       // For external backend hosting
-       apiBaseUrl: 'https://your-backend-api.com',
-       fhirBaseUrl: 'https://your-backend-api.com',
-       signalHubUrl: 'https://your-backend-api.com/hubs/telemetry',
-
-       // Enable features
-       enableSignalR: true,
-       enableFhirInspector: true
-   };
-   ```
-
-3. **Cloudflare Pages Setup**
-   - Go to Cloudflare Dashboard → Workers & Pages → Pages
-   - Connect to GitHub repository
-   - Build command: `dotnet publish src/Web/MedEdge.Dashboard/MedEdge.Dashboard.csproj -c Release -o ./publish`
-   - Output directory: `publish/wwwroot`
-
-4. **Backend Configuration**
-   Ensure your backend API supports CORS:
-   ```csharp
-   services.AddCors(options =>
-   {
-       options.AddPolicy("CloudflarePages", policy =>
-       {
-           policy.WithOrigins("https://your-dashboard.pages.dev")
-                 .AllowAnyHeader()
-                 .AllowAnyMethod();
-       });
-   });
-   ```
-
-#### Architecture
-```
-Cloudflare Pages (Dashboard)
-├── Blazor WASM (Static)
-└── config.js (Runtime config)
-
-External Backend (Required)
-├── FHIR API (REST/Swagger)
-├── SignalR Hub (WebSocket)
-├── Device API (Real-time)
-└── AI Service (Anomaly detection)
-```
-
-#### Features
-- ⚡ **Caching**: Static assets cached for 1 year
-- 🔒 **Security**: Automatic HTTPS, DDoS protection
-- 🌍 **CDN**: Global edge distribution
-- 💰 **Free Tier**: $0 for 500 builds/month
-
-### Azure/AWS/Google Cloud
-See [DEPLOYMENT.md](DEPLOYMENT.md) for cloud-specific guides.
+**Choose Your Path:**
+- **New to .NET?** Start with [LEARNING-GUIDE.md](LEARNING-GUIDE.md)
+- **Want to understand how it works?** Start with [TECHNICAL-GUIDE.md](TECHNICAL-GUIDE.md)
+- **Want to deploy it?** Start with [QUICK-START.md](QUICK-START.md) or [DEPLOYMENT.md](DEPLOYMENT.md)
+- **Want to see it in action?** Start with [DEMO.md](DEMO.md)
 
 ## 🔒 Security
 
@@ -419,7 +318,8 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for cloud-specific guides.
 - SAS token authentication
 - Audit logging for all operations
 - Input validation on all API endpoints
-- No secrets in code (environment-based config)
+- Environment-based configuration (no secrets in code)
+- Dashboard credential protection via build arguments
 
 ## 📝 License
 
@@ -434,13 +334,14 @@ Built as a portfolio project demonstrating expertise in:
 - Hardware security (TPM, certificates)
 - Real-time clinical decision support
 - Full-stack .NET development
+- Interactive single-page applications
 
 ## 🤝 Contributing
 
-This project is under active development. See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution guidelines.
+This project is under active development.
 
 ---
 
 **Current Phase:** 6/6 Complete ✅
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-25
 **Status:** Production Ready

@@ -1,271 +1,277 @@
 # MedEdge Gateway - Deployment Guide
 
-**Version:** 1.0.0-beta
-**Last Updated:** 2026-01-16
-**Status:** Production-Ready (Phases 1-4 Complete)
+**Version:** 1.1.0
+**Last Updated:** 2026-01-25
+**Status:** Production-Ready (Single-Page Dashboard)
 
 ## Table of Contents
 
 1. [Quick Start](#quick-start)
 2. [Prerequisites](#prerequisites)
 3. [Deployment Options](#deployment-options)
-4. [Local Development Setup](#local-development-setup)
+4. [VPS Deployment (Recommended for Production)](#vps-deployment)
 5. [Docker Compose Deployment](#docker-compose-deployment)
-6. [Kubernetes Deployment](#kubernetes-deployment)
-7. [Monitoring & Logging](#monitoring--logging)
-8. [Troubleshooting](#troubleshooting)
-9. [Performance Tuning](#performance-tuning)
-10. [Security Hardening](#security-hardening)
+6. [Monitoring & Logging](#monitoring--logging)
+7. [Troubleshooting](#troubleshooting)
+8. [Performance Tuning](#performance-tuning)
+9. [Security Hardening](#security-hardening)
 
 ## Quick Start
 
-### Fastest Deployment (Docker Compose)
+### Fastest VPS Deployment
 
 ```bash
 # Clone repository
 git clone https://github.com/bejranonda/MedEdge-Gateway.git
 cd MedEdge
 
-# Start all services
-docker-compose up -d
+# Set dashboard credentials (REQUIRED)
+export DASHBOARD_USERNAME=admin
+export DASHBOARD_PASSWORD=YourSecurePassword123!
 
-# Wait for services to initialize (30-60 seconds)
-sleep 60
+# Build and deploy
+docker-compose up -d --build
 
-# Verify deployment
-curl http://localhost:5001/health          # FHIR API
-curl http://localhost:5000                  # Dashboard
-curl -i telnet localhost 1883               # MQTT
-
-# Access dashboard
-open http://localhost:5000                  # macOS
-start http://localhost:5000                 # Windows
-xdg-open http://localhost:5000              # Linux
+# Access immediately at
+# http://YOUR_SERVER_IP:5000
 ```
 
-**Services Available:**
-- 🟢 **Dashboard:** http://localhost:5000 (Blazor WebAssembly)
-- 🟢 **FHIR API:** http://localhost:5001/swagger (REST API)
-- 🟢 **MQTT Broker:** localhost:1883 (Message broker)
-- 🟢 **All other services:** Running in Docker network
+**Result:** Single-Page Interactive Dashboard auto-redirects to System Workflow view.
 
 ## Prerequisites
 
 ### System Requirements
 
 **Minimum:**
-- 4GB RAM
-- 2 CPU cores
+- 2GB RAM
+- 1 CPU core
 - 10GB disk space
 - Docker & Docker Compose (latest)
-- .NET 8.0 SDK (for local development only)
+- Linux (Ubuntu 20.04+, Debian 11+, or similar)
 
 **Recommended:**
-- 8GB+ RAM
-- 4+ CPU cores
-- 50GB disk space
-- Docker Desktop with 4GB memory allocation
-- Git for version control
+- 4GB+ RAM
+- 2+ CPU cores
+- 20GB disk space
+- Docker with 2GB memory allocation
+- Public IP address with ports 8080, 5000, 5001 open
 
 ### Software Requirements
 
 | Component | Version | Purpose |
 |-----------|---------|---------|
 | Docker | 20.10+ | Container runtime |
-| Docker Compose | 3.8+ | Multi-container orchestration |
-| .NET SDK | 8.0 | Build applications (dev only) |
+| Docker Compose | 2.20+ | Multi-container orchestration |
 | Git | 2.30+ | Version control |
-| Nginx | Alpine | Dashboard web server |
-| Eclipse Mosquitto | 2.0 | MQTT broker |
-
-### Installation
-
-**macOS (Homebrew):**
-```bash
-# Install Docker Desktop
-brew install docker
-
-# Install Git
-brew install git
-```
-
-**Windows:**
-- Download [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop)
-- Download [Git for Windows](https://git-scm.com/download/win)
-- Install and start Docker Desktop
-
-**Linux (Ubuntu/Debian):**
-```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" \
-  -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Install Git
-sudo apt-get install git
-```
+| Nginx | Alpine | Dashboard web server (containerized) |
 
 ## Deployment Options
 
-### Option 1: Docker Compose (Recommended for Development/Demo)
+### Option 1: VPS Server (Recommended for Production)
 
-**Ideal for:** Quick demo, local testing, small deployments
+**Ideal for:** Production deployments, public access, demo environments
+
+**Advantages:**
+- ✅ Public IP access for dashboard
+- ✅ Auto-redirect to System Dashboard
+- ✅ All services in one deployment
+- ✅ Automatic restart on failure
+- ✅ Credential protection via environment variables
+
+**Steps:** See [VPS Deployment](#vps-deployment)
+
+### Option 2: Docker Compose (Local Development)
+
+**Ideal for:** Development, testing, private networks
 
 **Advantages:**
 - ✅ Single command deployment
 - ✅ All services in one network
-- ✅ Automatic service startup/restart
-- ✅ Health checks included
+- ✅ Easy to debug and modify
 
 **Steps:** See [Docker Compose Deployment](#docker-compose-deployment)
 
-### Option 2: Local Development (.NET)
+## VPS Deployment
 
-**Ideal for:** Development, debugging, custom modifications
+### Server Setup
 
-**Advantages:**
-- ✅ Full IDE support
-- ✅ Breakpoint debugging
-- ✅ Hot reload capabilities
-- ✅ Detailed error messages
+**1. Prepare Your VPS**
 
-**Prerequisites:** .NET 8.0 SDK + Visual Studio 2022 / VS Code
+Choose a VPS provider:
+- **DigitalOcean** (Basic: $6/month, 1GB RAM, 1 vCPU, 25GB SSD)
+- **Linode** (Nanode: $5/month, 1GB RAM, 1 vCPU, 25GB SSD)
+- **AWS Lightsail** (Basic: $3.50/month, 512MB RAM, 1 vCPU, 20GB SSD)
+- **Vultr** (Regular: $5/month, 1GB RAM, 1 vCPU, 25GB SSD)
 
-**Steps:** See [Local Development Setup](#local-development-setup)
+**2. Connect to Your VPS**
 
-### Option 3: Kubernetes (Production)
-
-**Ideal for:** Enterprise deployments, high availability, multi-region
-
-**Advantages:**
-- ✅ Auto-scaling
-- ✅ Self-healing
-- ✅ Rolling updates
-- ✅ Multi-replica deployment
-
-**Prerequisites:** Kubernetes 1.24+, Helm 3+
-
-**Steps:** See [Kubernetes Deployment](#kubernetes-deployment)
-
-### Option 4: Azure Container Instances
-
-**Ideal for:** Serverless containers, on-demand workloads
-
-**CLI:**
 ```bash
-# Create resource group
-az group create --name MedEdgeRG --location eastus
+# SSH into your VPS
+ssh root@YOUR_SERVER_IP
 
-# Deploy container group
-az container create --resource-group MedEdgeRG \
-  --name medEdge-deployment \
-  --image medEdge:latest \
-  --cpu 2 --memory 4
+# Update system
+apt update && apt upgrade -y
+
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# Install Docker Compose
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# Verify installation
+docker --version
+docker-compose --version
 ```
 
-## Local Development Setup
+**3. Clone Repository**
 
-### Prerequisites
-
-- .NET 8.0 SDK
-- Visual Studio 2022 (Community/Pro/Enterprise) or VS Code
-- Docker (for MQTT broker)
-- Git
-
-### Setup Steps
-
-**1. Clone Repository**
 ```bash
+# Install Git
+apt install git -y
+
+# Clone repository
+cd /opt
 git clone https://github.com/bejranonda/MedEdge-Gateway.git
 cd MedEdge
 ```
 
-**2. Start MQTT Broker**
+**4. Configure Credentials**
+
 ```bash
-docker run -d \
-  --name mosquitto \
-  -p 1883:1883 \
-  -v $(pwd)/mosquitto/config:/mosquitto/config \
-  eclipse-mosquitto:2.0
+# Create environment file
+cat > .env << EOF
+DASHBOARD_USERNAME=admin
+DASHBOARD_PASSWORD=YourSecurePassword123!
+EOF
+
+# Secure the file
+chmod 600 .env
 ```
 
-**3. Open in IDE**
+> **⚠️ Important**: Use strong passwords. The default credentials `guest`/`changeme` are NOT secure.
 
-**Visual Studio 2022:**
+**5. Deploy Application**
+
 ```bash
-# Open solution
-open MedEdge.sln
+# Build and start all services
+docker-compose up -d --build
+
+# Wait 60-90 seconds for all services to initialize
 ```
 
-**VS Code:**
+**6. Verify Deployment**
+
 ```bash
-code .
+# Check all services are running
+docker-compose ps
+
+# Check dashboard is accessible
+curl http://localhost:5000
+
+# Check FHIR API health
+curl http://localhost:5001/health
 ```
 
-**4. Restore Dependencies**
-```bash
-dotnet restore
+**7. Access Your Dashboard**
+
+Open your browser and navigate to:
+```
+http://YOUR_SERVER_IP:5000
 ```
 
-**5. Build Solution**
+You should see the **Single-Page Interactive Dashboard** with:
+- System Workflow diagram as the centerpiece
+- Real-time statistics cards
+- Animated status indicators
+- Auto-refresh every 3 seconds
+
+### Opening Firewall Ports
+
+If you have a firewall (UFW, firewalld, iptables), open these ports:
+
 ```bash
-dotnet build --configuration Release
+# UFW (Ubuntu)
+sudo ufw allow 5000/tcp
+sudo ufw allow 5001/tcp
+sudo ufw allow 8080/tcp
+sudo ufw allow 1883/tcp
+sudo ufw reload
 ```
 
-**6. Run Services (6 Terminal Windows)**
+### Configure Reverse Proxy (Optional)
 
-**Terminal 1: Device Simulator**
+For domain-based access with SSL:
+
 ```bash
-cd src/Edge/MedEdge.DeviceSimulator
-dotnet run
+# Install Nginx
+apt install nginx certbot python3-certbot-nginx -y
+
+# Obtain SSL certificate
+certbot --nginx -d yourdomain.com
+
+# Configure Nginx reverse proxy
+cat > /etc/nginx/sites-available/mededge << 'EOF'
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EOF
+
+# Enable site
+ln -s /etc/nginx/sites-available/medge /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
 ```
 
-**Terminal 2: Edge Gateway**
+Access: `https://yourdomain.com`
+
+### Configure Auto-Start on Boot
+
 ```bash
-cd src/Edge/MedEdge.EdgeGateway
-dotnet run
-```
+# Enable Docker service
+systemctl enable docker
 
-**Terminal 3: FHIR API**
-```bash
-cd src/Cloud/MedEdge.FhirApi
-dotnet run
-# Swagger: http://localhost:5000/swagger
-```
+# Create systemd service for MedEdge
+cat > /etc/systemd/system/mededge.service << 'EOF'
+[Unit]
+Description=MedEdge Medical Device Platform
+After=docker.service
+Requires=docker.service
 
-**Terminal 4: Transform Service**
-```bash
-cd src/Cloud/MedEdge.TransformService
-dotnet run
-```
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/MedEdge
+ExecStart=/usr/local/bin/docker-compose up -d
+ExecStop=/usr/local/bin/docker-compose down
+TimeoutStartSec=0
 
-**Terminal 5: AI Engine**
-```bash
-cd src/Cloud/MedEdge.AiEngine
-dotnet run
-```
+[Install]
+WantedBy=multi-user.target
+EOF
 
-**Terminal 6: Dashboard (Optional - Hot Reload)**
-```bash
-cd src/Web/MedEdge.Dashboard
-dotnet run
-# Dashboard: https://localhost:7000
-```
-
-**7. Verify Services**
-```bash
-# Check FHIR API
-curl http://localhost:5000/health
-
-# Check MQTT connectivity
-docker exec mosquitto mosquitto_sub -h localhost -t "#" -v
-
-# Run tests
-dotnet test
+# Enable service
+systemctl enable medge
+systemctl start mede
 ```
 
 ## Docker Compose Deployment
@@ -275,6 +281,7 @@ dotnet test
 ```bash
 MedEdge/
 ├── docker-compose.yml        # Main orchestration file
+├── .env                     # Environment variables (credentials)
 ├── src/
 │   ├── Edge/
 │   │   ├── MedEdge.DeviceSimulator/Dockerfile
@@ -292,6 +299,14 @@ MedEdge/
 ### Quick Deploy
 
 ```bash
+# Clone repository
+git clone https://github.com/bejranonda/MedEdge-Gateway.git
+cd MedEdge
+
+# Set credentials
+echo "DASHBOARD_USERNAME=admin" > .env
+echo "DASHBOARD_PASSWORD=YourSecurePassword123!" >> .env
+
 # Build all images
 docker-compose build
 
@@ -304,7 +319,7 @@ docker-compose logs -f
 # Stop services
 docker-compose down
 
-# Clean up volumes
+# Stop and remove volumes
 docker-compose down -v
 ```
 
@@ -315,301 +330,220 @@ docker-compose down -v
 docker-compose ps
 
 # Expected output:
-# NAME                IMAGE                      STATUS
-# medEdge-mqtt        eclipse-mosquitto:2.0      Up 2 minutes
-# medEdge-simulator   medEdge-simulator:latest   Up 2 minutes
-# medEdge-gateway     medEdge-gateway:latest     Up 2 minutes
-# medEdge-fhir-api    medEdge-fhir-api:latest    Up 2 minutes
-# medEdge-transform   medEdge-transform:latest   Up 2 minutes
-# medEdge-ai-engine   medEdge-ai-engine:latest   Up 2 minutes
-# medEdge-dashboard   medEdge-dashboard:latest   Up 2 minutes
+# NAME                    IMAGE                              STATUS
+# medEdge-dashboard       mededge-dashboard:latest             Up 2 minutes
+# medEdge-fhir-api        mededge-fhir-api:latest              Up 2 minutes
+# medEdge-mqtt            eclipse-mosquitto:2.0               Up 2 minutes
+# medEdge-simulator       mededge-simulator:latest              Up 2 minutes
+# medEdge-gateway         mededge-gateway:latest                Up 2 minutes
+# medEdge-transform       mededge-transform:latest               Up 2 minutes
+# medEdge-ai-engine        mededge-ai-engine:latest               Up 2 minutes
 
 # Test endpoints
+curl http://localhost:5000                  # Dashboard (auto-redirects)
 curl http://localhost:5001/health          # FHIR API health
-curl http://localhost:5000                  # Dashboard
-curl http://localhost:5001/fhir/Patient    # FHIR data
+curl http://localhost:8080/health          # IoT Hub health
 
 # View service logs
-docker-compose logs fhir-api
 docker-compose logs dashboard
+docker-compose logs fhir-api
 docker-compose logs mosquitto
 ```
 
 ### Configuration via Environment Variables
 
-Create `.env` file in project root:
+The `.env` file in the project root:
 
 ```bash
-# MQTT Configuration
-MQTT_BROKER=mosquitto
-MQTT_PORT=1883
-MQTT_TLS=false
+# Dashboard Credentials (REQUIRED)
+DASHBOARD_USERNAME=admin
+DASHBOARD_PASSWORD=YourSecurePassword123!
 
-# FHIR API Configuration
-FHIR_API_PORT=5001
-DB_CONNECTION=Data Source=/app/data/medEdge.db
+# Optional: MQTT Configuration
+# MQTT_BROKER=mosquitto
+# MQTT_PORT=1883
+# MQTT_TLS=false
 
-# Dashboard Configuration
-DASHBOARD_PORT=5000
-API_BASE_URL=http://localhost:5001
+# Optional: FHIR API Configuration
+# FHIR_API_PORT=5001
+# DB_CONNECTION=Data Source=/app/data/medEdge.db
 
-# Logging Level
-LOG_LEVEL=Information
+# Optional: Logging
+# LOG_LEVEL=Information
 
 # Environment
-ENVIRONMENT=Production
-```
-
-Load in docker-compose.yml:
-```yaml
-env_file:
-  - .env
+# ENVIRONMENT=Production
 ```
 
 ### Port Mapping
 
-| Service | Internal | External | Protocol |
-|---------|----------|----------|----------|
-| MQTT | 1883 | 1883 | TCP |
-| MQTT WebSocket | 9001 | 9001 | WebSocket |
-| FHIR API | 8080 | 5001 | HTTP |
-| Dashboard | 8080 | 5000 | HTTP |
-| Simulator | (internal) | - | Modbus |
-| Gateway | (internal) | - | Internal |
-| Transform | (internal) | - | Internal |
-| AI Engine | (internal) | - | Internal |
-
-## Kubernetes Deployment
-
-### Prerequisites
-
-```bash
-# Verify Kubernetes
-kubectl version --client
-
-# Verify Helm
-helm version
-
-# Create namespace
-kubectl create namespace medEdge
-```
-
-### Helm Chart Structure
-
-```bash
-helm/medEdge/
-├── Chart.yaml
-├── values.yaml
-├── templates/
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   ├── ingress.yaml
-│   ├── configmap.yaml
-│   └── pvc.yaml
-```
-
-### Deploy to Kubernetes
-
-```bash
-# Create namespace
-kubectl create namespace medEdge
-
-# Create config
-kubectl create configmap medEdge-config \
-  --from-literal=ENVIRONMENT=Production \
-  --from-literal=LOG_LEVEL=Information \
-  -n medEdge
-
-# Deploy Helm chart
-helm install medEdge ./helm/medEdge \
-  --namespace medEdge \
-  --values helm/values-prod.yaml
-
-# Verify deployment
-kubectl get pods -n medEdge
-kubectl get svc -n medEdge
-
-# Port forward for access
-kubectl port-forward -n medEdge svc/medEdge-dashboard 5000:80 &
-kubectl port-forward -n medEdge svc/medEdge-fhir-api 5001:80 &
-
-# View logs
-kubectl logs -n medEdge deployment/medEdge-fhir-api -f
-```
+| Service | Internal | External | Protocol | Access URL |
+|---------|----------|----------|----------|-------------|
+| Dashboard | 8080 | 5000 | HTTP | `http://IP:5000` |
+| FHIR API | 8080 | 5001 | HTTP | `http://IP:5001/swagger` |
+| IoT Hub Simulator | 8080 | 8080 | HTTP | `http://IP:8080/swagger` |
+| MQTT | 1883 | 1883 | TCP | `localhost:1883` |
+| MQTT WebSocket | 9001 | 9001 | WebSocket | `localhost:9001` |
 
 ## Monitoring & Logging
 
-### Serilog Configuration
+### Viewing Logs
 
-Edit `appsettings.json`:
-
-```json
-{
-  "Serilog": {
-    "MinimumLevel": {
-      "Default": "Information",
-      "Override": {
-        "Microsoft": "Warning",
-        "Microsoft.EntityFrameworkCore": "Warning"
-      }
-    },
-    "WriteTo": [
-      {
-        "Name": "Console"
-      },
-      {
-        "Name": "File",
-        "Args": {
-          "path": "logs/medEdge-.txt",
-          "rollingInterval": "Day",
-          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-        }
-      }
-    ]
-  }
-}
-```
-
-### View Logs
-
-**Docker Compose:**
+**All services:**
 ```bash
-# All services
 docker-compose logs
+```
 
-# Specific service
+**Specific service:**
+```bash
+docker-compose logs -f dashboard
 docker-compose logs -f fhir-api
-
-# Last 100 lines
-docker-compose logs --tail=100 transform-service
+docker-compose logs -f transform-service
 ```
 
-**Local Development:**
+**Last 100 lines:**
 ```bash
-# Logs directory
-ls -la logs/
-
-# Watch logs
-tail -f logs/medEdge-*.txt
-```
-
-**Kubernetes:**
-```bash
-# Pod logs
-kubectl logs -n medEdge deployment/medEdge-fhir-api
-
-# Stream logs
-kubectl logs -n medEdge deployment/medEdge-fhir-api -f
-
-# Previous logs (after crash)
-kubectl logs -n medEdge deployment/medEdge-fhir-api --previous
+docker-compose logs --tail=100 dashboard
 ```
 
 ### Health Checks
 
-**FHIR API Health:**
+**Dashboard:**
+```bash
+curl http://localhost:5000
+# Should auto-redirect to /system-dashboard
+```
+
+**FHIR API:**
 ```bash
 curl http://localhost:5001/health
-
-# Response:
-# {"status":"healthy"}
+# Returns: {"status":"healthy"}
 ```
 
-**Docker Health Status:**
+**IoT Hub Simulator:**
 ```bash
-docker-compose ps
-
-# Healthy containers show "Up"
-# Unhealthy containers show "Restarting"
+curl http://localhost:8080/health
+# Returns: {"status":"healthy"}
 ```
 
-**All Services Status:**
-```bash
-# MQTT
-mosquitto_pub -h localhost -t "health/check" -m "ping"
+### Service Status Dashboard
 
-# Devices
-curl http://localhost:5001/api/devices
-
-# FHIR Data
-curl http://localhost:5001/fhir/Patient
-```
+Access `http://localhost:5000` and click on workflow nodes to see:
+- **Medical Devices**: Device count, online status, risk levels
+- **Edge Gateway**: Operational status, message throughput
+- **MQTT Broker**: Connection status
+- **IoT Hub**: Device registry info
+- **FHIR API**: Observation count, version info
+- **AI Engine**: Monitoring status
+- **Dashboard**: Session info, update count
 
 ## Troubleshooting
 
 ### Common Issues & Solutions
 
-**Issue 1: Ports Already in Use**
+**Issue 1: Dashboard Shows Old Design/Menu**
 
 ```bash
-# Find process using port 5001
-lsof -i :5001  # macOS/Linux
-netstat -ano | findstr :5001  # Windows
+# Stop and remove old containers
+docker-compose down
+
+# Rebuild from scratch (no cache)
+docker-compose build --no-cache dashboard
+
+# Start services
+docker-compose up -d
+
+# Hard refresh browser
+# Chrome/Edge: Ctrl + Shift + R
+# Firefox: Ctrl + Shift + R
+```
+
+**Issue 2: Ports Already in Use**
+
+```bash
+# Find process using port 5000
+lsof -i :5000  # macOS/Linux
+netstat -ano | findstr :5000  # Windows
 
 # Kill process
-kill -9 <PID>  # macOS/Linux
-taskkill /PID <PID> /F  # Windows
+kill -9 <PID>
 ```
 
-**Issue 2: Docker Volume Permissions**
-
-```bash
-# Fix volume ownership
-sudo chown -R $(id -u):$(id -g) mosquitto/
-sudo chown -R $(id -u):$(id -g) data/
-```
-
-**Issue 3: MQTT Connection Refused**
-
-```bash
-# Check MQTT is running
-docker-compose ps | grep mosquitto
-
-# Restart MQTT
-docker-compose restart mosquitto
-
-# Check logs
-docker-compose logs mosquitto
-```
-
-**Issue 4: Database Locked**
-
-```bash
-# Delete corrupted database
-docker-compose down -v
-rm -f data/medEdge.db
-
-# Restart
-docker-compose up -d
-```
-
-**Issue 5: Dashboard Not Loading**
+**Issue 3: Dashboard Won't Load**
 
 ```bash
 # Check dashboard service
 docker-compose logs dashboard
 
-# Verify port is open
+# Verify port is accessible
 curl http://localhost:5000
 
 # Restart dashboard
 docker-compose restart dashboard
+
+# Check if other services are running
+docker-compose ps
 ```
 
-**Issue 6: High Memory Usage**
+**Issue 4: No Data Showing**
 
 ```bash
-# Check resource usage
-docker stats
+# Check all services
+docker-compose ps
 
-# Reduce memory in docker-compose.yml
-# Change deploy.resources.limits.memory to lower value
+# Check FHIR API
+curl http://localhost:5001/health
 
-# Restart with lower memory
+# Check logs
+docker-compose logs -f fhir-api
+docker-compose logs -f transform-service
+```
+
+**Issue 5: Build Errors**
+
+```bash
+# Clean up and rebuild
+docker-compose down -v
+docker system prune -f
+docker-compose up -d --build
+```
+
+### Getting Help
+
+**Check Logs:**
+```bash
+docker-compose logs > logs.txt
+```
+
+**Restart All Services:**
+```bash
 docker-compose restart
 ```
 
+**Full Reset:**
+```bash
+docker-compose down -v
+docker-compose up -d --build
+```
+
 ## Performance Tuning
+
+### Resource Limits
+
+In `docker-compose.yml`, add resource limits:
+
+```yaml
+services:
+  dashboard:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+```
 
 ### Database Optimization
 
@@ -621,136 +555,50 @@ options.UseNpgsql(connectionString, sqlOptions =>
     sqlOptions.MaxPoolSize = 50;
     sqlOptions.MinPoolSize = 10;
 });
-
-// Query optimization
-var observations = await context.Observations
-    .AsNoTracking()
-    .Where(o => o.PatientId == patientId)
-    .Select(o => new { o.Id, o.Value })
-    .ToListAsync();
-```
-
-### MQTT Optimization
-
-```yaml
-# mosquitto.conf
-max_connections -1
-max_queued_messages 100
-persistence_changeset_interval 20
-retain_memory_threshold 128000
-```
-
-### Network Optimization
-
-```yaml
-# docker-compose.yml
-networks:
-  medEdge-network:
-    driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: 1500
 ```
 
 ### Caching Strategy
 
-```csharp
-// Cache observations for 5 minutes
-services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = "localhost:6379";
-});
-
-// In service
-var cacheKey = $"observations_{patientId}";
-if (!cache.TryGetValue(cacheKey, out var observations))
-{
-    observations = await repo.GetObservations(patientId);
-    cache.Set(cacheKey, observations, TimeSpan.FromMinutes(5));
-}
-```
+Dashboard caches static assets for 1 year in nginx configuration.
 
 ## Security Hardening
 
-### Enable TLS/SSL
+### Dashboard Credentials
 
-**Nginx Configuration:**
-```nginx
-server {
-    listen 443 ssl http2;
-    ssl_certificate /etc/nginx/certs/server.crt;
-    ssl_certificate_key /etc/nginx/certs/server.key;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    ssl_prefer_server_ciphers on;
-}
-```
-
-### MQTT TLS
-
-```yaml
-# docker-compose.yml
-mosquitto:
-  ports:
-    - "8883:8883"  # TLS port
-  volumes:
-    - ./certs:/mosquitto/certs:ro
-```
-
-**mosquitto.conf:**
-```
-listener 8883
-certfile /mosquitto/certs/server.crt
-keyfile /mosquitto/certs/server.key
-protocol mqtt
-```
-
-### API Authentication
-
-```csharp
-// Add JWT authentication
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "https://your-auth-server";
-        options.Audience = "medEdge-api";
-    });
-
-// Require auth on endpoints
-app.MapGet("/fhir/Patient", async (IFhirRepository repo) => ...)
-    .RequireAuthorization();
-```
-
-### Database Encryption
+Always set strong credentials via `.env` file:
 
 ```bash
-# SQLite encryption
-PRAGMA key = 'your-encryption-key';
-PRAGMA cipher = 'sqlcipher';
+DASHBOARD_USERNAME=admin
+DASHBOARD_PASSWORD=UseStrongPassword123!#$%
 ```
 
-### Environment Secrets
+### TLS/SSL (Recommended for Production)
+
+1. **Use reverse proxy with SSL** (see above)
+2. **Enable MQTT TLS** in mosquitto configuration
+3. **Configure API authentication**
+
+### Firewall Configuration
 
 ```bash
-# Use .env.local (git ignored)
-cat > .env.local << EOF
-MYSQL_ROOT_PASSWORD=secure_password
-JWT_KEY=your-secret-key
-API_KEY=your-api-key
-EOF
-
-# Load in docker-compose.yml
-env_file:
-  - .env.local
+# Only expose necessary ports
+sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 5000/tcp
+sudo ufw allow 5001/tcp
+sudo ufw enable
 ```
 
-### Network Security
+### Update System
 
-```yaml
-# docker-compose.yml
-networks:
-  medEdge-network:
-    internal: true  # Isolated network
-    driver: bridge
+```bash
+# Regular security updates
+apt update && apt upgrade -y
+
+# Security patches
+apt unattended-upgrades -d
 ```
 
 ## Backup & Recovery
@@ -774,32 +622,20 @@ docker run --rm -v fhir-data:/data -v $(pwd)/backups:/backup \
   busybox tar czf /backup/fhir-data-$(date +%Y%m%d).tar.gz -C /data .
 ```
 
-### Restore from Backup
-
-```bash
-# Stop services
-docker-compose down
-
-# Restore database
-docker run --rm -v fhir-data:/data -v $(pwd)/backups:/backup \
-  busybox tar xzf /backup/fhir-data-latest.tar.gz -C /data
-
-# Start services
-docker-compose up -d
-```
-
 ## Production Checklist
 
-- [ ] Enable TLS/SSL for all endpoints
-- [ ] Configure proper logging levels
+Before deploying to production:
+
+- [ ] Set strong dashboard credentials (in `.env` file)
+- [ ] Configure firewall rules (only expose necessary ports)
+- [ ] Enable SSL/TLS (use reverse proxy)
 - [ ] Set up database backups (daily)
 - [ ] Configure monitoring and alerts
-- [ ] Enable authentication/authorization
 - [ ] Test disaster recovery procedures
 - [ ] Document deployment architecture
-- [ ] Set up auto-scaling policies
-- [ ] Configure rate limiting
-- [ ] Enable audit logging
+- [ ] Configure auto-start on system boot
+- [ ] Update system regularly
+- [ ] Review logs for security issues
 
 ## Support & Documentation
 
@@ -807,15 +643,10 @@ docker-compose up -d
 - [Architecture Documentation](docs/ARCHITECTURE.md)
 - [FHIR Mapping Guide](docs/FHIR-MAPPING.md)
 - [Implementation Summary](IMPLEMENTATION.md)
-- [Project Status](PROJECT-STATUS.md)
-
-**Getting Help:**
-- GitHub Issues: https://github.com/bejranonda/MedEdge-Gateway/issues
-- Documentation: See `docs/` directory
-- Contact: See repository README
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-**Version:** 1.0.0-beta
+**Version:** 1.1.0
 **Status:** Production-Ready
-**Last Updated:** 2026-01-16
+**Last Updated:** 2026-01-25
