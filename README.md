@@ -215,10 +215,15 @@ docker-compose up -d --build
 ```
 
 **Access Points:**
-- 🟢 **Dashboard**: http://localhost:5000 (Auto-redirects to System Dashboard)
+- 🟢 **Dashboard**: http://localhost:8888 (Internal port, accessible via Nginx reverse proxy)
 - 🟢 **FHIR API**: http://localhost:5001/swagger (REST API documentation)
 - 🟢 **IoT Hub Simulator**: http://localhost:8080 (Azure IoT Hub patterns)
 - 🟢 **MQTT Broker**: localhost:1883 (Message broker)
+
+**Production Access:**
+- 🟢 **Dashboard**: https://your-domain.com/ (via Nginx HTTPS reverse proxy)
+- 🟢 **FHIR API**: https://your-domain.com/api/ (via HTTPS proxy)
+- 🟢 **IoT Hub Simulator**: https://your-domain.com/iot-hub/ (via HTTPS proxy)
 
 ### VPS Deployment
 
@@ -234,8 +239,29 @@ export DASHBOARD_PASSWORD=YourSecurePassword!
 # Deploy
 docker-compose up -d --build
 
-# Access via public IP
-# http://YOUR_SERVER_IP:5000
+# Access via public IP with HTTPS
+# https://YOUR_DOMAIN_OR_IP (requires Nginx reverse proxy and SSL)
+```
+
+### Production HTTPS Setup
+
+For production deployment with HTTPS:
+
+```bash
+# Install Nginx and Certbot
+sudo apt install nginx certbot python3-certbot-nginx
+
+# Configure Nginx reverse proxy (see DEPLOYMENT.md)
+# Generate SSL certificate
+sudo certbot --nginx -d your-domain.com --email admin@your-domain.com --agree-tos
+
+# Start services
+docker-compose up -d --build
+
+# Access points:
+# - Dashboard: https://your-domain.com/
+# - FHIR API: https://your-domain.com/api/
+# - MQTT: https://your-domain.com/mqtt/
 ```
 
 ## 📊 FHIR API Endpoints
@@ -357,6 +383,8 @@ This project is under active development.
 - ✅ **Single-Page Design**: All system information accessible without page navigation
 - ✅ **Real-Time Updates**: Live device status, gateway metrics, and service health
 - ✅ **Interactive Workflow**: Click nodes to see detailed component information
+- ✅ **HTTPS Production Ready**: Nginx reverse proxy with Let's Encrypt SSL support
+- ✅ **Port Configuration Updated**: Dashboard runs on port 8888 to avoid conflicts
 
 ### Bug Fixes
 - Fixed SystemDashboard.razor brace mismatch (RZ1006)
@@ -364,3 +392,4 @@ This project is under active development.
 - Made FhirDeviceEntity properties nullable for SQLite compatibility
 - Added comprehensive error handling to api/devices endpoint
 - Removed excessive top padding from dashboard container
+- Resolved Nginx port conflicts with dashboard service
