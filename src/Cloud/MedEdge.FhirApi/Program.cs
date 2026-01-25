@@ -33,9 +33,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.SetIsOriginAllowed(origin => true) // More robust for localhost/docker
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials(); // Often needed for SignalR
     });
 });
 
@@ -198,24 +199,41 @@ app.MapGet("/fhir/Observation/{id}", async (string id, IFhirRepository repo, IFh
 // Dashboard API Endpoints
 
 // GET /api/devices - Get all devices with status for dashboard
-app.MapGet("/api/devices", async (IFhirRepository repo) =>
+app.MapGet("/api/devices", async (IFhirRepository repo, ILogger<Program> logger) =>
 {
-    var devices = await repo.GetAllDevicesAsync();
-    var deviceStatuses = devices.Select(d => new
+    try 
     {
-        d.DeviceId,
-        Type = d.Model ?? "Dialog+",
-        d.Manufacturer,
-        Model = d.Model,
-        SerialNumber = d.SerialNumber,
-        CurrentPatientId = "P001", // Would be fetched from relationship
-        IsOnline = true, // Would check last telemetry timestamp
-        LastTelemetryTime = DateTime.UtcNow.AddSeconds(-30),
-        ActiveAlarmCount = 0, // Would count active alarms
-        RiskLevel = "Low" // Would calculate from anomaly detection
-    }).ToList();
+        var devices = await repo.GetAllDevicesAsync();
+        if (devices == null)
+        {
+            logger.LogWarning("No devices found in database");
+            return Results.Ok(new List<object>());
+        }
 
-    return Results.Ok(deviceStatuses);
+        var deviceStatuses = devices.Select(d => new
+        {
+            DeviceId = d.DeviceId ?? "Unknown",
+            Type = d.Model ?? "Dialog+",
+            Manufacturer = d.Manufacturer ?? "B. Braun",
+            Model = d.Model ?? "Unknown",
+            SerialNumber = d.SerialNumber ?? "SN-000",
+            CurrentPatientId = d.AssignedPatientId ?? "N/A",
+            IsOnline = true, 
+            LastTelemetryTime = DateTime.UtcNow.AddSeconds(-30),
+            ActiveAlarmCount = 0,
+            RiskLevel = "Low"
+        }).ToList();
+
+        return Results.Ok(deviceStatuses);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error fetching device statuses for dashboard");
+        return Results.Problem(
+            detail: ex.Message,
+            title: "Internal Server Error",
+            statusCode: 500);
+    }
 })
 .WithName("GetDevicesStatus")
 ;

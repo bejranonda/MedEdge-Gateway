@@ -15,20 +15,25 @@
     .dashboard-container {
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        padding: 20px;
+        gap: 16px;
+        padding: 12px 20px 20px 20px;
         background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
         min-height: 100vh;
     }
 
     .header-section {
         background: linear-gradient(135deg, var(--mud-palette-primary) 0%, #007a2e 100%);
-        border-radius: 16px;
-        padding: 24px;
+        border-radius: 12px;
+        padding: 12px 24px;
         color: white;
         box-shadow: 0 8px 24px rgba(0, 150, 57, 0.25);
         position: relative;
         overflow: hidden;
+    }
+
+    /* Adjust MudBlazor padding more safely */
+    .mud-main-content {
+        padding-top: 8px !important;
     }
 
     .header-section::before {
@@ -531,27 +536,27 @@
 
 <div class="dashboard-container">
     <!-- Header Section -->
-    <div class="header-section" style="padding: 12px 24px;">
+    <div class="header-section">
         <MudGrid>
             <MudItem xs="12" md="6">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px; height: 32px;">
+                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
                         🏥
                     </div>
                     <div>
-                        <MudText Typo="Typo.h5" Style="color: white; margin: 0; font-weight: 700; font-size: 1.25rem;">MedEdge System Dashboard</MudText>
-                        <MudText Typo="Typo.caption" Style="color: rgba(255,255,255,0.8);">Real-time Monitoring Platform</MudText>
+                        <MudText Typo="Typo.h6" Style="color: white; margin: 0; font-weight: 700; line-height: 1.1;">MedEdge System Dashboard</MudText>
+                        <div style="color: rgba(255,255,255,0.8); font-size: 0.65rem; line-height: 1;">Real-time Monitoring Platform</div>
                     </div>
                 </div>
             </MudItem>
             <MudItem xs="12" md="6" Class="d-flex align-center justify-end">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 500; border: 1px solid rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 4px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.65rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); padding: 1px 6px; border-radius: 3px; background: rgba(0,0,0,0.1);">
                         RELEASE: v1.2.0-beta
                     </div>
-                    <div class="realtime-badge">
+                    <div class="realtime-badge" style="padding: 2px 8px;">
                         <span class="live-dot"></span>
-                        LIVE
+                        <span style="font-size: 10px;">LIVE</span>
                     </div>
                 </div>
             </MudItem>
@@ -1034,38 +1039,33 @@
     private async Task CheckServiceHealth()
     {
         healthyServices = services.Count(s => s.Status == "Online" || s.Status == "Running" || s.Status == "Connected");
+        await Task.CompletedTask;
     }
 
     private string GetNodeStatus(string nodeId)
     {
-        return nodeId switch
-        {
-            "medical-devices" => onlineDevices > 0 ? "status-healthy" : "status-warning",
-            "edge-gateway" => gatewayHealth == "healthy" ? "status-healthy" : "status-warning",
-            "mqtt-broker" => mqttStatus == "healthy" ? "status-healthy" : "status-warning",
-            "iot-hub" => "status-healthy",
-            "fhir-api" => "status-healthy",
-            "ai-engine" => "status-healthy",
-            "dashboard" => "status-healthy",
-            "mobile" => "status-warning",
-            _ => ""
-        };
+        if (nodeId == "medical-devices") return onlineDevices > 0 ? "status-healthy" : "status-warning";
+        if (nodeId == "edge-gateway") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
+        if (nodeId == "mqtt-broker") return mqttStatus == "healthy" ? "status-healthy" : "status-warning";
+        if (nodeId == "iot-hub") return "status-healthy";
+        if (nodeId == "fhir-api") return "status-healthy";
+        if (nodeId == "ai-engine") return "status-healthy";
+        if (nodeId == "dashboard") return "status-healthy";
+        if (nodeId == "mobile") return "status-warning";
+        return "";
     }
 
     private string GetNodeHealthClass(string nodeId)
     {
-        return nodeId switch
-        {
-            "medical-devices" => onlineDevices > 0 ? "healthy" : "warning",
-            "edge-gateway" => gatewayHealth,
-            "mqtt-broker" => mqttStatus,
-            "iot-hub" => "healthy",
-            "fhir-api" => "healthy",
-            "ai-engine" => "healthy",
-            "dashboard" => "healthy",
-            "mobile" => "warning",
-            _ => "healthy"
-        };
+        if (nodeId == "medical-devices") return onlineDevices > 0 ? "healthy" : "warning";
+        if (nodeId == "edge-gateway") return gatewayHealth;
+        if (nodeId == "mqtt-broker") return mqttStatus;
+        if (nodeId == "iot-hub") return "healthy";
+        if (nodeId == "fhir-api") return "healthy";
+        if (nodeId == "ai-engine") return "healthy";
+        if (nodeId == "dashboard") return "healthy";
+        if (nodeId == "mobile") return "warning";
+        return "healthy";
     }
 
     private void ShowNodeDetails(string nodeId)
@@ -1073,7 +1073,7 @@
         selectedNodeDetails = new NodeDetailInfo
         {
             NodeId = nodeId,
-            Title = nodeId.Replace("-", " ").Replace("  ", " ").ToUpperInvariant()
+            Title = nodeId.Replace("-", " ").ToUpperInvariant()
         };
         StateHasChanged();
     }
@@ -1087,10 +1087,8 @@
     private string FormatTime(DateTime dateTime)
     {
         var diff = DateTime.UtcNow - dateTime;
-        if (diff.TotalSeconds < 60)
-            return $"{(int)diff.TotalSeconds}s ago";
-        if (diff.TotalMinutes < 60)
-            return $"{(int)diff.TotalMinutes}m ago";
+        if (diff.TotalSeconds < 60) return $"{(int)diff.TotalSeconds}s ago";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
         return dateTime.ToString("g");
     }
 
