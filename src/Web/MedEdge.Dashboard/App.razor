@@ -4,6 +4,7 @@
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
@@ -15,3 +16,12 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+<script>
+    // Redirect root to System Dashboard
+    (function() {
+        if (window.location.pathname === '/' || window.location.pathname === '') {
+            window.location.href = '/system-dashboard';
+        }
+    })();
+</script>
