@@ -768,7 +768,7 @@
                 <span>🔒</span>
                 <span>TPM Enabled</span>
             </div>
-            <div class="version-badge">RELEASE: v1.2.1-beta</div>
+            <a href="https://github.com/bejranonda/MedEdge-Gateway" target="_blank" class="version-badge" style="text-decoration: none; cursor: pointer;">RELEASE: v1.2.1-beta</a>
             <div class="realtime-badge">
                 <span class="live-dot"></span>
                 <span>LIVE</span>
@@ -1239,8 +1239,9 @@
                     {
                         <MudText Typo="Typo.subtitle2" Class="mt-4 mb-2">Live Vitals Preview</MudText>
                         <div class="detail-card mb-3" style="border-left-color: #3b82f6;">
-                            <div class="detail-title">Device Serial</div>
+                            <div class="detail-title">Device</div>
                             <div class="detail-value" style="font-size: 16px;">@currentDeviceSerial</div>
+                            <div class="detail-subtitle">@currentDeviceType</div>
                         </div>
                         <MudGrid Spacing="1">
                             <MudItem xs="6">
@@ -1335,7 +1336,8 @@
     private int activeMonitors = 3;
 
     // Vitals data with device serial
-    private string currentDeviceSerial = "DM-001";
+    private string currentDeviceSerial = "infusion-pump-001";
+    private string currentDeviceType = "Infusion Pump";
     private double bloodFlow = 320;
     private double arterialPressure = 120;
     private double venousPressure = 80;
@@ -1540,6 +1542,17 @@
             totalDevices = edgeDevices.Count;
             onlineDevices = edgeDevices.Count(d => d.IsOnline);
             offlineDevices = edgeDevices.Count(d => !d.IsOnline);
+
+            // Set initial vitals device from online devices
+            if (string.IsNullOrEmpty(currentDeviceSerial) || !edgeDevices.Any(d => d.DeviceId == currentDeviceSerial))
+            {
+                var firstOnlineDevice = edgeDevices.FirstOrDefault(d => d.IsOnline);
+                if (firstOnlineDevice != null)
+                {
+                    currentDeviceSerial = firstOnlineDevice.DeviceId;
+                    currentDeviceType = firstOnlineDevice.Type;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -1566,6 +1579,21 @@
     private async Task UpdateVitals()
     {
         var random = new Random();
+
+        // Get online devices to cycle through
+        var onlineDevices = edgeDevices.Where(d => d.IsOnline).ToList();
+        if (onlineDevices.Any())
+        {
+            // Occasionally switch to a different device's vitals
+            if (random.Next(100) < 20) // 20% chance to switch device
+            {
+                var randomDevice = onlineDevices[random.Next(onlineDevices.Count)];
+                currentDeviceSerial = randomDevice.DeviceId;
+                currentDeviceType = randomDevice.Type;
+                treatmentTime = 0; // Reset treatment time for new device
+            }
+        }
+
         bloodFlow = 300 + random.Next(-30, 50);
         arterialPressure = 110 + random.Next(-20, 30);
         venousPressure = 75 + random.Next(-15, 25);
