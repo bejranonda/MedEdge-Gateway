@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: medEdge-mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  simulator:
+    build:
+      context: .
+      dockerfile: src/Edge/MedEdge.DeviceSimulator/Dockerfile
+    container_name: medEdge-simulator
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: src/Edge/MedEdge.EdgeGateway/Dockerfile
+    container_name: medEdge-gateway
+    environment:
+      - Mqtt__BrokerHost=mosquitto
+      - Modbus__Devices__0__Host=simulator
+      - DOTNET_ENVIRONMENT=Production
+    depends_on:
+      - mosquitto
+      - simulator
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  fhir-api:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.FhirApi/Dockerfile
+    container_name: medEdge-fhir-api
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/medEdge.db
+    volumes:
+      - fhir-data:/app/data
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  transform-service:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.TransformService/Dockerfile
+    container_name: medEdge-transform
+    environment:
+      - Mqtt__BrokerHost=mosquitto
+      - FhirApi__BaseUrl=http://fhir-api:8080
+    depends_on:
+      - mosquitto
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  ai-engine:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.AiEngine/Dockerfile
+    container_name: medEdge-ai-engine
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+    depends_on:
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  # Azure IoT Hub Simulator
+  # Demonstrates: Device Registry, Twins, Direct Methods, Telemetry, DPS, TPM Attestation
+  # For B. Braun: Shows how medical devices connect to Azure without requiring actual Azure
+  iot-hub-simulator:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.IotHubSimulator/Dockerfile
+    container_name: mededge-iot-hub
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: src/Web/MedEdge.Dashboard/Dockerfile
+      args:
+        - DASHBOARD_USERNAME=${DASHBOARD_USERNAME:-guest}
+        - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+    container_name: medEdge-dashboard
+    ports:
+      - "5000:8080"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=8080
+      - DASHBOARD_USERNAME=${DASHBOARD_USERNAME:-guest}
+      - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+    depends_on:
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  fhir-data:
+
+networks:
+  medEdge-network:
+    driver: bridge

@@ -1,0 +1,53 @@
+@namespace MedEdge.Dashboard.Components
+@inject IAuthenticationService AuthService
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isAuthenticated;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _isAuthenticated = AuthService.IsAuthenticated;
+
+        if (!_isAuthenticated)
+        {
+            var currentUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(currentUrl)}", forceLoad: true);
+        }
+
+        AuthService.AuthenticationChanged += OnAuthenticationChanged;
+    }
+
+    private void OnAuthenticationChanged(object? sender, AuthenticationStateChangedEventArgs e)
+    {
+        _isAuthenticated = e.IsAuthenticated;
+        if (!_isAuthenticated)
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        AuthService.AuthenticationChanged -= OnAuthenticationChanged;
+        await Task.CompletedTask;
+    }
+}
+
+@if (_isAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        <MudText Class="ml-4">Verifying authentication...</MudText>
+    </MudContainer>
+}

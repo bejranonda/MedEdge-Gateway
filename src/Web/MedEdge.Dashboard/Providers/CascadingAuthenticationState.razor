@@ -1,0 +1,14 @@
+@namespace MedEdge.Dashboard.Providers
+@using MedEdge.Dashboard.Services
+
+<CascadingValue Value="@AuthService">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Inject]
+    public IAuthenticationService AuthService { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

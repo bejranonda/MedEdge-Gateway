@@ -22,11 +22,4 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromProjectReference>true</ExcludeFromProjectReference>
-    </Content>
-  </ItemGroup>
-
 </Project>
