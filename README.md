@@ -343,5 +343,24 @@ This project is under active development.
 ---
 
 **Current Phase:** 6/6 Complete ✅  
-**Last Updated:** 2026-01-25 (v1.2.0-beta)  
-**Status:** Production Ready  
+**Current Version:** v1.2.0-beta  
+**Last Updated:** 2026-01-25  
+**Status:** Production Ready - All services operational with real-time monitoring  
+
+## 🎉 Latest Release (v1.2.0-beta)
+
+### What's New
+- ✅ **Fixed CORS Blocking**: Dashboard now properly communicates with backend API
+- ✅ **Resolved API Stability Issues**: Defensive data handling prevents 500 errors
+- ✅ **Dashboard Build Fixed**: Compilation errors resolved, builds successfully
+- ✅ **Optimized Layout**: Compact header design with version badge
+- ✅ **Single-Page Design**: All system information accessible without page navigation
+- ✅ **Real-Time Updates**: Live device status, gateway metrics, and service health
+- ✅ **Interactive Workflow**: Click nodes to see detailed component information
+
+### Bug Fixes
+- Fixed SystemDashboard.razor brace mismatch (RZ1006)
+- Updated FhirApi CORS policy for localhost cross-origin requests
+- Made FhirDeviceEntity properties nullable for SQLite compatibility
+- Added comprehensive error handling to api/devices endpoint
+- Removed excessive top padding from dashboard container
