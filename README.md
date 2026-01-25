@@ -368,14 +368,22 @@ This project is under active development.
 
 ---
 
-**Current Phase:** 6/6 Complete ✅  
-**Current Version:** v1.2.0-beta  
-**Last Updated:** 2026-01-25  
-**Status:** Production Ready - All services operational with real-time monitoring  
+**Current Phase:** 6/6 Complete ✅
+**Current Version:** v1.3.0-beta
+**Last Updated:** 2026-01-25
+**Status:** Production Ready - All services operational with real-time monitoring
 
-## 🎉 Latest Release (v1.2.0-beta)
+## 🎉 Latest Release (v1.3.0-beta)
 
 ### What's New
+- ✅ **Updated Gateway Naming**: Edge Gateway [Hospital] → Edge Gateway [Hospital], Edge Gateway [Store] → Edge Gateway [Store]
+- ✅ **Version Badge Linking**: Click version badge to view source code on GitHub
+- ✅ **Dynamic Device Source**: Live Vitals now shows actual device ID (e.g., infusion-pump-001, ventilator-001)
+- ✅ **Device Type Display**: Shows device type alongside device ID in vitals preview
+- ✅ **Multi-Site Architecture**: Improved naming reflects hospital and store deployment sites
+- ✅ **Auto Device Cycling**: Vitals preview cycles through different online devices every 3 seconds
+
+### v1.2.1-beta Changes
 - ✅ **Fixed CORS Blocking**: Dashboard now properly communicates with backend API
 - ✅ **Resolved API Stability Issues**: Defensive data handling prevents 500 errors
 - ✅ **Dashboard Build Fixed**: Compilation errors resolved, builds successfully

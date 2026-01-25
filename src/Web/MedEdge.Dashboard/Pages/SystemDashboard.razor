@@ -930,24 +930,24 @@
                                 <div style="position: absolute; right: -25px; top: 50%; transform: translateY(-50%); color: #ef4444; font-size: 32px; font-weight: bold; z-index: 10;">→</div>
                             </div>
 
-                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-medical"))" @onclick="@(() => ShowNodeDetails("edge-gateway-medical"))">
-                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-medical"))">
+                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
+                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))">
                                     <MudIcon Icon="@Icons.Material.Filled.Router" />
                                 </div>
-                                <div class="node-name">Edge Gateway [Medical]</div>
+                                <div class="node-name">Edge Gateway [Hospital]</div>
                                 <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-medical"))"></span>
+                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
                                     @gatewayStatusText
                                 </div>
                             </div>
 
-                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-monitoring"))" @onclick="@(() => ShowNodeDetails("edge-gateway-monitoring"))">
-                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-monitoring"))">
+                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
+                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))">
                                     <MudIcon Icon="@Icons.Material.Filled.Router" />
                                 </div>
-                                <div class="node-name">Edge Gateway [Monitoring]</div>
+                                <div class="node-name">Edge Gateway [Store]</div>
                                 <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-monitoring"))"></span>
+                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-store"))"></span>
                                     API Active
                                 </div>
                             </div>
@@ -1143,9 +1143,9 @@
                         </div>
                     }
 
-                    @if (selectedNodeDetails.NodeId == "edge-gateway-medical")
+                    @if (selectedNodeDetails.NodeId == "edge-gateway-hospital")
                     {
-                        <MudText Typo="Typo.body2" Class="mb-4">Edge gateway for medical devices site</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-4">Edge gateway for hospital site</MudText>
                         <div class="device-list">
                             <div class="detail-card mb-2">
                                 <div class="detail-title">Status</div>
@@ -1162,9 +1162,9 @@
                         </div>
                     }
 
-                    @if (selectedNodeDetails.NodeId == "edge-gateway-monitoring")
+                    @if (selectedNodeDetails.NodeId == "edge-gateway-store")
                     {
-                        <MudText Typo="Typo.body2" Class="mb-4">Edge gateway for monitoring center site</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-4">Edge gateway for store site</MudText>
                         <div class="device-list">
                             <div class="detail-card mb-2">
                                 <div class="detail-title">Status</div>
@@ -1671,8 +1671,8 @@
         if (nodeId == "supply-center") return lowSupplyCount == 0 ? "status-healthy" : "status-warning";
         if (nodeId == "services") return healthyServices == totalServices ? "status-healthy" : "status-warning";
         if (nodeId == "controller") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
-        if (nodeId == "edge-gateway-medical") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
-        if (nodeId == "edge-gateway-monitoring") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
+        if (nodeId == "edge-gateway-hospital") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
+        if (nodeId == "edge-gateway-store") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
         if (nodeId == "edge-gateway") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
         if (nodeId == "mqtt-broker") return mqttStatus == "healthy" ? "status-healthy" : "status-warning";
         if (nodeId == "iot-hub") return "status-healthy";
@@ -1689,8 +1689,8 @@
         if (nodeId == "supply-center") return lowSupplyCount == 0 ? "healthy" : "warning";
         if (nodeId == "services") return healthyServices == totalServices ? "healthy" : "warning";
         if (nodeId == "controller") return gatewayHealth;
-        if (nodeId == "edge-gateway-medical") return gatewayHealth;
-        if (nodeId == "edge-gateway-monitoring") return gatewayHealth;
+        if (nodeId == "edge-gateway-hospital") return gatewayHealth;
+        if (nodeId == "edge-gateway-store") return gatewayHealth;
         if (nodeId == "edge-gateway") return gatewayHealth;
         if (nodeId == "mqtt-broker") return mqttStatus;
         if (nodeId == "iot-hub") return "healthy";
@@ -1710,8 +1710,8 @@
             { "services", "Container Services" },
             { "controller", "Controller" },
             { "edge-gateway", "Edge Gateway" },
-            { "edge-gateway-medical", "Edge Gateway [Medical]" },
-            { "edge-gateway-monitoring", "Edge Gateway [Monitoring]" },
+            { "edge-gateway-hospital", "Edge Gateway [Hospital]" },
+            { "edge-gateway-store", "Edge Gateway [Store]" },
             { "mqtt-broker", "MQTT Broker" },
             { "iot-hub", "IoT Hub Simulator" },
             { "fhir-api", "FHIR API" },
