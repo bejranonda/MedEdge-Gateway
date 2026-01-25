@@ -9,31 +9,14 @@
 <MudSnackbarProvider />
 
 <div class="mud-layout-root">
-    <MudAppBar Elevation="4" Class="mud-primary">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" @onclick="DrawerToggle" />
-        <MudSpacer />
-        <MudText Typo="Typo.h6" Class="mr-4">MedEdge Gateway - Medical Device Platform</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
-    </MudAppBar>
-
-    <MudDrawer @bind-Open="drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h5">Navigation</MudText>
-        </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-
     <MudMainContent>
-        <div style="padding: 20px;">
-            @Body
-        </div>
+        @Body
     </MudMainContent>
 </div>
 
 <MudSnackbar Icon="@Icons.Material.Filled.Error" Color="Color.Error" />
 
 @code {
-    private bool drawerOpen = true;
     private MudTheme theme = new MudTheme
     {
         Palette = new PaletteLight
@@ -58,14 +41,8 @@
         }
     };
 
-    private void DrawerToggle()
-    {
-        drawerOpen = !drawerOpen;
-    }
-
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        // Cleanup if needed
         await Task.CompletedTask;
     }
 }

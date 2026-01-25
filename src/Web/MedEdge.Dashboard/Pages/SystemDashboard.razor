@@ -752,7 +752,7 @@
                 <div class="device-list">
                     @foreach (var device in edgeDevices.Take(5))
                     {
-                        <div class="device-item" @onclick="@(() => NavigateToDevice(device.DeviceId))">
+                        <div class="device-item">
                             <div class="device-status @(device.IsOnline ? "online" : "offline")"></div>
                             <div class="device-info">
                                 <div class="device-name">@device.DeviceId</div>
@@ -762,9 +762,9 @@
                         </div>
                     }
                 </div>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="mt-4" OnClick="@(() => Navigation.NavigateTo("fleet-view"))">
-                    View All Devices
-                </MudButton>
+                <MudText Typo="Typo.caption" Class="mt-4" Color="Color.Secondary">
+                    Showing @Math.Min(5, edgeDevices.Count) of @edgeDevices.Count devices
+                </MudText>
             }
 
             @if (selectedNodeDetails.NodeId == "edge-gateway")
@@ -812,9 +812,6 @@
                         <div class="detail-subtitle">REST API</div>
                     </div>
                 </div>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="mt-4" OnClick="@(() => Navigation.NavigateTo("fhir-inspector"))">
-                    Open FHIR Inspector
-                </MudButton>
             }
 
             @if (selectedNodeDetails.NodeId == "dashboard")
@@ -880,9 +877,6 @@
                         <div class="vital-range">Session duration</div>
                     </div>
                 </div>
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Class="mt-4" OnClick="@(() => Navigation.NavigateTo("vitals-monitor"))">
-                    Open Vitals Monitor
-                </MudButton>
             }
         </div>
     }
@@ -891,24 +885,19 @@
     <div class="detail-panel">
         <MudText Typo="Typo.h5" Class="mb-4">Quick Actions</MudText>
         <MudGrid>
-            <MudItem xs="12" sm="6" md="3">
+            <MudItem xs="12" sm="6" md="4">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" StartIcon="@Icons.Material.Filled.Refresh" OnClick="@RefreshAll">
                     Refresh All
                 </MudButton>
             </MudItem>
-            <MudItem xs="12" sm="6" md="3">
-                <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" StartIcon="@Icons.Material.Filled.LocalHospital" OnClick="@(() => Navigation.NavigateTo("fleet-view"))">
-                    Fleet View
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12" sm="6" md="3">
+            <MudItem xs="12" sm="6" md="4">
                 <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" StartIcon="@Icons.Material.Filled.TrendingUp" OnClick="@(() => ShowNodeDetails("vitals-preview"))">
-                    Live Vitals
+                    Show Live Vitals
                 </MudButton>
             </MudItem>
-            <MudItem xs="12" sm="6" md="3">
-                <MudButton Variant="Variant.Filled" Color="Color.Warning" FullWidth="true" StartIcon="@Icons.Material.Filled.Settings" OnClick="@(() => Navigation.NavigateTo("settings"))">
-                    Settings
+            <MudItem xs="12" md="4">
+                <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" StartIcon="@Icons.Material.Filled.Info" OnClick="@(() => ShowNodeDetails("dashboard"))">
+                    Dashboard Info
                 </MudButton>
             </MudItem>
         </MudGrid>
@@ -1151,11 +1140,6 @@
     {
         selectedNodeDetails = null;
         StateHasChanged();
-    }
-
-    private void NavigateToDevice(string deviceId)
-    {
-        Navigation.NavigateTo($"vitals-monitor?device={deviceId}");
     }
 
     private string FormatTime(DateTime dateTime)

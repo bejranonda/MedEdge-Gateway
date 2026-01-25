@@ -3,6 +3,7 @@ using MedEdge.Core.DTOs;
 using MedEdge.FhirApi.Data;
 using MedEdge.FhirApi.Hubs;
 using MedEdge.FhirApi.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -39,7 +40,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -53,7 +53,6 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -74,7 +73,7 @@ app.MapGet("/fhir/Patient", async (IFhirRepository repo, IFhirMappingService map
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)patients.Count,
+        Total = patients.Count,
         Entry = patients.Select(p => new Bundle.EntryComponent
         {
             Resource = mapper.MapPatientEntityToFhir(p),
@@ -84,7 +83,7 @@ app.MapGet("/fhir/Patient", async (IFhirRepository repo, IFhirMappingService map
     return Results.Ok(bundle);
 })
 .WithName("GetPatients")
-.WithOpenApi();
+;
 
 // GET /fhir/Patient/{id}
 app.MapGet("/fhir/Patient/{id}", async (string id, IFhirRepository repo, IFhirMappingService mapper) =>
@@ -107,7 +106,7 @@ app.MapGet("/fhir/Patient/{id}", async (string id, IFhirRepository repo, IFhirMa
     return Results.Ok(mapper.MapPatientEntityToFhir(patient));
 })
 .WithName("GetPatientById")
-.WithOpenApi();
+;
 
 // GET /fhir/Device
 app.MapGet("/fhir/Device", async (IFhirRepository repo, IFhirMappingService mapper) =>
@@ -116,7 +115,7 @@ app.MapGet("/fhir/Device", async (IFhirRepository repo, IFhirMappingService mapp
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)devices.Count,
+        Total = devices.Count,
         Entry = devices.Select(d => new Bundle.EntryComponent
         {
             Resource = mapper.MapDeviceEntityToFhir(d),
@@ -126,7 +125,7 @@ app.MapGet("/fhir/Device", async (IFhirRepository repo, IFhirMappingService mapp
     return Results.Ok(bundle);
 })
 .WithName("GetDevices")
-.WithOpenApi();
+;
 
 // GET /fhir/Device/{id}
 app.MapGet("/fhir/Device/{id}", async (string id, IFhirRepository repo, IFhirMappingService mapper) =>
@@ -138,7 +137,7 @@ app.MapGet("/fhir/Device/{id}", async (string id, IFhirRepository repo, IFhirMap
     return Results.Ok(mapper.MapDeviceEntityToFhir(device));
 })
 .WithName("GetDeviceById")
-.WithOpenApi();
+;
 
 // POST /fhir/Observation
 app.MapPost("/fhir/Observation", async (CreateObservationRequest request, IFhirRepository repo, IFhirMappingService mapper) =>
@@ -147,7 +146,7 @@ app.MapPost("/fhir/Observation", async (CreateObservationRequest request, IFhirR
     return Results.Created($"/fhir/Observation/{observation.Id}", mapper.MapObservationEntityToFhir(observation));
 })
 .WithName("CreateObservation")
-.WithOpenApi();
+;
 
 // GET /fhir/Observation
 app.MapGet("/fhir/Observation", async (
@@ -171,7 +170,7 @@ app.MapGet("/fhir/Observation", async (
     var bundle = new Bundle
     {
         Type = Bundle.BundleType.Searchset,
-        Total = (uint)observations.Count,
+        Total = observations.Count,
         Entry = observations.Select(o => new Bundle.EntryComponent
         {
             Resource = mapper.MapObservationEntityToFhir(o),
@@ -182,7 +181,7 @@ app.MapGet("/fhir/Observation", async (
     return Results.Ok(bundle);
 })
 .WithName("GetObservations")
-.WithOpenApi();
+;
 
 // GET /fhir/Observation/{id}
 app.MapGet("/fhir/Observation/{id}", async (string id, IFhirRepository repo, IFhirMappingService mapper) =>
@@ -194,7 +193,7 @@ app.MapGet("/fhir/Observation/{id}", async (string id, IFhirRepository repo, IFh
     return Results.Ok(mapper.MapObservationEntityToFhir(observation));
 })
 .WithName("GetObservationById")
-.WithOpenApi();
+;
 
 // Dashboard API Endpoints
 
@@ -205,9 +204,9 @@ app.MapGet("/api/devices", async (IFhirRepository repo) =>
     var deviceStatuses = devices.Select(d => new
     {
         d.DeviceId,
-        Type = d.ModelNumber ?? "Dialog+",
+        Type = d.Model ?? "Dialog+",
         d.Manufacturer,
-        Model = d.ModelNumber,
+        Model = d.Model,
         SerialNumber = d.SerialNumber,
         CurrentPatientId = "P001", // Would be fetched from relationship
         IsOnline = true, // Would check last telemetry timestamp
@@ -219,7 +218,7 @@ app.MapGet("/api/devices", async (IFhirRepository repo) =>
     return Results.Ok(deviceStatuses);
 })
 .WithName("GetDevicesStatus")
-.WithOpenApi();
+;
 
 // POST /api/devices/{deviceId}/emergency-stop - Send emergency stop command
 app.MapPost("/api/devices/{deviceId}/emergency-stop", async (
@@ -245,7 +244,7 @@ app.MapPost("/api/devices/{deviceId}/emergency-stop", async (
     });
 })
 .WithName("EmergencyStopDevice")
-.WithOpenApi();
+;
 
 // POST /api/devices/{deviceId}/anomaly/hypotension - Trigger hypotension for demo
 app.MapPost("/api/devices/{deviceId}/anomaly/hypotension", async (
@@ -271,11 +270,11 @@ app.MapPost("/api/devices/{deviceId}/anomaly/hypotension", async (
     });
 })
 .WithName("InjectHypotensionAnomaly")
-.WithOpenApi();
+;
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .WithName("HealthCheck")
-    .WithOpenApi();
+    ;
 
 app.Run();
