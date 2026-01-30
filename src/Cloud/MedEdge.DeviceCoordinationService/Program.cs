@@ -1,3 +1,4 @@
+using MedEdge.Core.DTOs;
 using MedEdge.DeviceCoordinationService.Services;
 using MedEdge.FhirApi.Data;
 using Microsoft.EntityFrameworkCore;
