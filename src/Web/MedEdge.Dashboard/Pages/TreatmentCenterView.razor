@@ -1,0 +1,456 @@
+@page "/treatment-center"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.SignalR.Client
+@using MedEdge.Dashboard.Models
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<PageTitle>Treatment Center - MedEdge</PageTitle>
+
+<style>
+    .treatment-center-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 12px 20px 20px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+        min-height: 100vh;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, var(--mud-palette-primary) 0%, #007a2e 100%);
+        border-radius: 12px;
+        padding: 16px 24px;
+        color: white;
+        box-shadow: 0 8px 24px rgba(0, 150, 57, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .live-dot {
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+        animation: blink 1s infinite;
+    }
+
+    @@keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+
+    .zones-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+
+    .zone-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .zone-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .zone-header {
+        background: linear-gradient(135deg, var(--mud-palette-primary) 0%, var(--mud-palette-primary-darken) 100%);
+        padding: 16px 20px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .zone-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .zone-type-badge {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .zone-stats {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-around;
+        background: #f8fafc;
+    }
+
+    .zone-stat {
+        text-align: center;
+    }
+
+    .zone-stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--mud-palette-primary);
+    }
+
+    .zone-stat-label {
+        font-size: 11px;
+        color: var(--mud-palette-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stations-grid {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
+    }
+
+    .station-dot {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .station-dot:hover {
+        transform: scale(1.1);
+        z-index: 10;
+    }
+
+    .station-available {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #166534;
+        border: 2px solid #22c55e;
+    }
+
+    .station-occupied {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1e40af;
+        border: 2px solid #3b82f6;
+    }
+
+    .station-maintenance {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #92400e;
+        border: 2px solid #f59e0b;
+    }
+
+    .station-cleaning {
+        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        color: #3730a3;
+        border: 2px solid #6366f1;
+    }
+
+    .station-offline {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+        border: 2px solid #ef4444;
+    }
+
+    .legend {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+    }
+</style>
+
+<div class="treatment-center-container">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="header-title">
+            <span>Treatment Center</span>
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>LIVE</span>
+            </div>
+        </div>
+        <MudButton Color="Color.Inherit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh" OnClick="RefreshData">
+            Refresh
+        </MudButton>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border: 2px solid #22c55e;"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #3b82f6;"></div>
+            <span>Occupied</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;"></div>
+            <span>Maintenance</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1;"></div>
+            <span>Cleaning</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 2px solid #ef4444;"></div>
+            <span>Offline</span>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" Class="ma-auto" />
+    }
+    <!-- Error State -->
+    else if (errorMessage != null)
+    {
+        <MudPaper Elevation="0" Class="pa-4">
+            <MudAlert Severity="Severity.Error" Icon="@Icons.Material.Filled.Error">
+                @errorMessage
+                <MudButton OnClick="RefreshData" Color="Color.Inherit" Style="margin-left: 8px;">Retry</MudButton>
+            </MudAlert>
+        </MudPaper>
+    }
+    <!-- Zones Grid -->
+    else if (areas != null && areas.Any())
+    {
+        <div class="zones-grid">
+            @foreach (var area in areas)
+            {
+                <div class="zone-card" @onclick="@(() => NavigateToZone(area.Id))">
+                    <div class="zone-header">
+                        <h3 class="zone-name">@area.Name</h3>
+                        <span class="zone-type-badge">@area.AreaType</span>
+                    </div>
+                    <div class="zone-stats">
+                        <div class="zone-stat">
+                            <div class="zone-stat-value">@area.Capacity</div>
+                            <div class="zone-stat-label">Total</div>
+                        </div>
+                        <div class="zone-stat">
+                            <div class="zone-stat-value" style="color: #3b82f6;">@area.OccupiedStations</div>
+                            <div class="zone-stat-label">Active</div>
+                        </div>
+                        <div class="zone-stat">
+                            <div class="zone-stat-value" style="color: #22c55e;">@area.AvailableStations</div>
+                            <div class="zone-stat-label">Available</div>
+                        </div>
+                    </div>
+                    @if (stationSummaries.ContainsKey(area.Id))
+                    {
+                        <div class="stations-grid">
+                            @foreach (var station in stationSummaries[area.Id].OrderBy(s => s.StationNumber))
+                            {
+                                var statusClass = $"station-{station.Status.ToLower()}";
+                                var stationNum = station.StationNumber.Split('-').Last();
+                                <div class="station-dot @statusClass" title="@station.StationNumber - @station.Status">
+                                    @stationNum
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    <!-- Empty State -->
+    else
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudText Typo="Typo.h6" Class="mb-2">No Treatment Areas Found</MudText>
+            <MudText Typo="Typo.body1">Create treatment areas to start managing your treatment center.</MudText>
+        </MudPaper>
+    }
+</div>
+
+@code {
+    private List<TreatmentAreaDto> areas = new();
+    private Dictionary<string, List<StationSummaryDto>> stationSummaries = new();
+    private bool loading = true;
+    private string? errorMessage;
+    private HubConnection? _hubConnection;
+    private CancellationTokenSource _refreshCts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await InitializeSignalR();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            loading = true;
+            errorMessage = null;
+
+            // Load areas
+            var areasResponse = await Http.GetFromJsonAsync<List<TreatmentAreaDto>>("api/areas");
+            if (areasResponse != null)
+            {
+                areas = areasResponse;
+            }
+
+            // Load all stations
+            var stationsResponse = await Http.GetFromJsonAsync<List<StationSummaryDto>>("api/stations/summary");
+            if (stationsResponse != null)
+            {
+                // Group stations by area
+                stationSummaries.Clear();
+                foreach (var station in stationsResponse)
+                {
+                    if (!stationSummaries.ContainsKey(station.AreaId))
+                    {
+                        stationSummaries[station.AreaId] = new List<StationSummaryDto>();
+                    }
+                    stationSummaries[station.AreaId].Add(station);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load data: {ex.Message}";
+            Snackbar.Add(errorMessage, Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            var apiBaseUrl = NavigationManager.BaseUri.Replace("dashboard/", "fhirapi/");
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(new Uri(NavigationManager.ToAbsoluteUri("/hubs/telemetry")))
+                .WithAutomaticReconnect()
+                .Build();
+
+            _hubConnection.On<string, object>("AreaUpdated", async (areaId, update) =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    await LoadDataAsync();
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<string, object>("StationStatusChanged", async (stationId, update) =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    await LoadDataAsync();
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<object>("AllStationsUpdated", async (update) =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    await LoadDataAsync();
+                    StateHasChanged();
+                });
+            });
+
+            await _hubConnection.StartAsync();
+
+            // Subscribe to general updates
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                await _hubConnection.InvokeAsync("SubscribeToArea", "all");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"SignalR connection failed: {ex.Message}", Severity.Warning);
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        _refreshCts.Cancel();
+        _refreshCts = new CancellationTokenSource();
+        await LoadDataAsync();
+    }
+
+    private void NavigateToZone(string areaId)
+    {
+        // For now, just show a snackbar. Later we'll navigate to a zone detail view.
+        Snackbar.Add($"Zone detail view coming soon for {areaId}", Severity.Info);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _refreshCts.Cancel();
+        _refreshCts.Dispose();
+
+        if (_hubConnection != null)
+        {
+            try
+            {
+                await _hubConnection.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+}

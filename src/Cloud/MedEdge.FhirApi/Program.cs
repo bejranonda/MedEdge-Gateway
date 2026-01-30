@@ -28,6 +28,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IFhirRepository, FhirRepository>();
 builder.Services.AddScoped<IFhirMappingService, FhirMappingService>();
+builder.Services.AddScoped<ITreatmentCenterRepository, TreatmentCenterRepository>();
 
 builder.Services.AddCors(options =>
 {
@@ -289,6 +290,252 @@ app.MapPost("/api/devices/{deviceId}/anomaly/hypotension", async (
 })
 .WithName("InjectHypotensionAnomaly")
 ;
+
+// Treatment Center API Endpoints
+
+// GET /api/areas - Get all treatment areas with statistics
+app.MapGet("/api/areas", async (ITreatmentCenterRepository repo) =>
+{
+    var areas = await repo.GetAreasWithStatsAsync();
+    return Results.Ok(areas);
+})
+.WithName("GetAreas")
+.WithOpenApi();
+
+// GET /api/areas/{id} - Get specific area with statistics
+app.MapGet("/api/areas/{id}", async (string id, ITreatmentCenterRepository repo) =>
+{
+    var area = await repo.GetAreaWithStatsAsync(id);
+    if (area == null)
+        return Results.NotFound();
+    return Results.Ok(area);
+})
+.WithName("GetAreaById")
+.WithOpenApi();
+
+// POST /api/areas - Create new treatment area
+app.MapPost("/api/areas", async (CreateTreatmentAreaRequest request, ITreatmentCenterRepository repo) =>
+{
+    var area = await repo.CreateAreaAsync(request);
+    return Results.Created($"/api/areas/{area.Id}", area);
+})
+.WithName("CreateArea")
+.WithOpenApi();
+
+// PUT /api/areas/{id} - Update treatment area
+app.MapPut("/api/areas/{id}", async (string id, UpdateTreatmentAreaRequest request, ITreatmentCenterRepository repo) =>
+{
+    var area = await repo.UpdateAreaAsync(id, request);
+    if (area == null)
+        return Results.NotFound();
+    return Results.Ok(area);
+})
+.WithName("UpdateArea")
+.WithOpenApi();
+
+// DELETE /api/areas/{id} - Delete treatment area
+app.MapDelete("/api/areas/{id}", async (string id, ITreatmentCenterRepository repo) =>
+{
+    var success = await repo.DeleteAreaAsync(id);
+    if (!success)
+        return Results.NotFound();
+    return Results.NoContent();
+})
+.WithName("DeleteArea")
+.WithOpenApi();
+
+// GET /api/stations - Get all stations
+app.MapGet("/api/stations", async (ITreatmentCenterRepository repo) =>
+{
+    var stations = await repo.GetAllStationsAsync();
+    var dtos = stations.Select(s => new StationDto(
+        s.Id,
+        s.StationNumber,
+        s.Status,
+        s.AreaId,
+        s.Area.Name,
+        s.CurrentTreatmentId,
+        s.CurrentPatientId,
+        s.PhysicalLocation,
+        s.Devices.Count,
+        new StationConfigurationDto(
+            s.Configuration.Id,
+            s.Configuration.StationId,
+            s.Configuration.HasWaterSupply,
+            s.Configuration.HasPowerBackup,
+            s.Configuration.HasOxygenSupply,
+            s.Configuration.HasVacuumSupply,
+            s.Configuration.MaxDeviceSlots,
+            s.Configuration.DeviceSlots,
+            s.Configuration.TreatmentTypes
+        )
+    ));
+    return Results.Ok(dtos);
+})
+.WithName("GetStations")
+.WithOpenApi();
+
+// GET /api/stations/summary - Get station summaries for dashboard
+app.MapGet("/api/stations/summary", async (ITreatmentCenterRepository repo) =>
+{
+    var summaries = await repo.GetStationSummariesAsync();
+    return Results.Ok(summaries);
+})
+.WithName("GetStationSummaries")
+.WithOpenApi();
+
+// GET /api/stations/{id} - Get specific station
+app.MapGet("/api/stations/{id}", async (string id, ITreatmentCenterRepository repo) =>
+{
+    var station = await repo.GetStationByIdAsync(id);
+    if (station == null)
+        return Results.NotFound();
+
+    var dto = new StationDto(
+        station.Id,
+        station.StationNumber,
+        station.Status,
+        station.AreaId,
+        station.Area.Name,
+        station.CurrentTreatmentId,
+        station.CurrentPatientId,
+        station.PhysicalLocation,
+        station.Devices.Count,
+        new StationConfigurationDto(
+            station.Configuration.Id,
+            station.Configuration.StationId,
+            station.Configuration.HasWaterSupply,
+            station.Configuration.HasPowerBackup,
+            station.Configuration.HasOxygenSupply,
+            station.Configuration.HasVacuumSupply,
+            station.Configuration.MaxDeviceSlots,
+            station.Configuration.DeviceSlots,
+            station.Configuration.TreatmentTypes
+        )
+    );
+    return Results.Ok(dto);
+})
+.WithName("GetStationById")
+.WithOpenApi();
+
+// GET /api/stations/area/{areaId} - Get stations by area
+app.MapGet("/api/stations/area/{areaId}", async (string areaId, ITreatmentCenterRepository repo) =>
+{
+    var stations = await repo.GetStationsByAreaAsync(areaId);
+    var dtos = stations.Select(s => new StationDto(
+        s.Id,
+        s.StationNumber,
+        s.Status,
+        s.AreaId,
+        s.Area.Name,
+        s.CurrentTreatmentId,
+        s.CurrentPatientId,
+        s.PhysicalLocation,
+        s.Devices.Count,
+        new StationConfigurationDto(
+            s.Configuration.Id,
+            s.Configuration.StationId,
+            s.Configuration.HasWaterSupply,
+            s.Configuration.HasPowerBackup,
+            s.Configuration.HasOxygenSupply,
+            s.Configuration.HasVacuumSupply,
+            s.Configuration.MaxDeviceSlots,
+            s.Configuration.DeviceSlots,
+            s.Configuration.TreatmentTypes
+        )
+    ));
+    return Results.Ok(dtos);
+})
+.WithName("GetStationsByArea")
+.WithOpenApi();
+
+// GET /api/stations/available - Get available stations
+app.MapGet("/api/stations/available", async (string? areaId, ITreatmentCenterRepository repo) =>
+{
+    var stations = await repo.GetAvailableStationsAsync(areaId);
+    var dtos = stations.Select(s => new StationDto(
+        s.Id,
+        s.StationNumber,
+        s.Status,
+        s.AreaId,
+        s.Area.Name,
+        s.CurrentTreatmentId,
+        s.CurrentPatientId,
+        s.PhysicalLocation,
+        s.Devices.Count,
+        new StationConfigurationDto(
+            s.Configuration.Id,
+            s.Configuration.StationId,
+            s.Configuration.HasWaterSupply,
+            s.Configuration.HasPowerBackup,
+            s.Configuration.HasOxygenSupply,
+            s.Configuration.HasVacuumSupply,
+            s.Configuration.MaxDeviceSlots,
+            s.Configuration.DeviceSlots,
+            s.Configuration.TreatmentTypes
+        )
+    ));
+    return Results.Ok(dtos);
+})
+.WithName("GetAvailableStations")
+.WithOpenApi();
+
+// POST /api/stations - Create new station
+app.MapPost("/api/stations", async (CreateStationRequest request, ITreatmentCenterRepository repo) =>
+{
+    var station = await repo.CreateStationAsync(request);
+    return Results.Created($"/api/stations/{station.Id}", station);
+})
+.WithName("CreateStation")
+.WithOpenApi();
+
+// PUT /api/stations/{id} - Update station
+app.MapPut("/api/stations/{id}", async (string id, UpdateStationRequest request, ITreatmentCenterRepository repo) =>
+{
+    var station = await repo.UpdateStationAsync(id, request);
+    if (station == null)
+        return Results.NotFound();
+    return Results.Ok(station);
+})
+.WithName("UpdateStation")
+.WithOpenApi();
+
+// PATCH /api/stations/{id}/status - Update station status
+app.MapPatch("/api/stations/{id}/status", async (
+    string id,
+    UpdateStationStatusRequest request,
+    ITreatmentCenterRepository repo,
+    IHubContext<TelemetryHub> hubContext,
+    ILogger<Program> logger) =>
+{
+    var station = await repo.UpdateStationStatusAsync(id, request);
+    if (station == null)
+        return Results.NotFound();
+
+    // Broadcast status change to all connected clients
+    await hubContext.Clients.Group("stations").SendAsync("StationStatusChanged", new
+    {
+        stationId = id,
+        status = request.Status,
+        timestamp = DateTime.UtcNow
+    });
+
+    logger.LogInformation($"Station {id} status changed to {request.Status}");
+    return Results.Ok(station);
+})
+.WithName("UpdateStationStatus")
+.WithOpenApi();
+
+// DELETE /api/stations/{id} - Delete station
+app.MapDelete("/api/stations/{id}", async (string id, ITreatmentCenterRepository repo) =>
+{
+    var success = await repo.DeleteStationAsync(id);
+    if (!success)
+        return Results.NotFound();
+    return Results.NoContent();
+})
+.WithName("DeleteStation")
+.WithOpenApi();
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))

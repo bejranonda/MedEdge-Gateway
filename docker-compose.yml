@@ -88,6 +88,63 @@ services:
     networks:
       - medEdge-network
 
+  # Treatment Service - Treatment session lifecycle management
+  treatment-service:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.TreatmentService/Dockerfile
+    container_name: medEdge-treatment-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/medEdge.db
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - fhir-data:/app/data
+    depends_on:
+      - mosquitto
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  # Device Coordination Service - Multi-device coordination
+  coordination-service:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.DeviceCoordinationService/Dockerfile
+    container_name: medEdge-coordination-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/medEdge.db
+      - Mqtt__BrokerHost=mosquitto
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - fhir-data:/app/data
+    depends_on:
+      - mosquitto
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
+  # Analytics Service - Treatment metrics and analytics
+  analytics-service:
+    build:
+      context: .
+      dockerfile: src/Cloud/MedEdge.AnalyticsService/Dockerfile
+    container_name: medEdge-analytics-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/medEdge.db
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - fhir-data:/app/data
+    depends_on:
+      - fhir-api
+    restart: unless-stopped
+    networks:
+      - medEdge-network
+
   # Azure IoT Hub Simulator
   # Demonstrates: Device Registry, Twins, Direct Methods, Telemetry, DPS, TPM Attestation
   # For B. Braun: Shows how medical devices connect to Azure without requiring actual Azure
