@@ -43,11 +43,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Apply migrations
+// Apply migrations (or create database if no migrations exist)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await context.Database.MigrateAsync();
+    // TODO: Replace with MigrateAsync() after creating proper migrations
+    await context.Database.EnsureCreatedAsync();
 }
 
 if (app.Environment.IsDevelopment())

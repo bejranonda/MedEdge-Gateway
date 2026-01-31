@@ -119,6 +119,12 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(d => d.StationId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        modelBuilder.Entity<StationEntity>()
+            .HasMany(s => s.Supplies)
+            .WithOne(ss => ss.Station)
+            .HasForeignKey(ss => ss.StationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Configure StationConfiguration entity
         modelBuilder.Entity<StationConfigurationEntity>()
             .HasKey(c => c.Id);
