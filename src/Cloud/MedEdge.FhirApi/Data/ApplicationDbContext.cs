@@ -1,5 +1,6 @@
 using MedEdge.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace MedEdge.FhirApi.Data;
 
@@ -315,8 +316,49 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(tm => tm.AreaId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Configure JSON columns for Dictionary properties
+        ConfigureJsonColumns(modelBuilder);
+
         // Seed initial data
         SeedInitialData(modelBuilder);
+    }
+
+    private static void ConfigureJsonColumns(ModelBuilder modelBuilder)
+    {
+        // DeviceGroupEntity.CoordinationRules -> Dictionary<string, string>
+        modelBuilder.Entity<DeviceGroupEntity>()
+            .Property(dg => dg.CoordinationRules)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null));
+
+        // DeviceCoordinationCommand.Parameters -> Dictionary<string, object>
+        modelBuilder.Entity<DeviceCoordinationCommand>()
+            .Property(dc => dc.Parameters)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null));
+
+        // DeviceCoordinationCommand.DeviceResults -> Dictionary<string, string>
+        modelBuilder.Entity<DeviceCoordinationCommand>()
+            .Property(dc => dc.DeviceResults)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null));
+
+        // StationConfigurationEntity.DeviceSlots -> Dictionary<string, string>
+        modelBuilder.Entity<StationConfigurationEntity>()
+            .Property(sc => sc.DeviceSlots)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null));
+
+        // TreatmentMetricsEntity.AverageVitals -> Dictionary<string, double>
+        modelBuilder.Entity<TreatmentMetricsEntity>()
+            .Property(tm => tm.AverageVitals)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, double>>(v, (JsonSerializerOptions)null));
     }
 
     private static void SeedInitialData(ModelBuilder modelBuilder)
