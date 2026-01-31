@@ -1,56 +1,54 @@
-# MedEdge Gateway - Medical Device IoT Platform
+# MedEdge - Medical Device IoT & Treatment Center Platform
 
-> Production-Grade Medical Device Connectivity with Azure IoT Hub Patterns
-> **Single-Page Interactive Dashboard for Real-Time System Monitoring**
+> Production-Grade Medical Device Connectivity with Treatment Center Management
+> **Hierarchical Treatment Center Architecture with Real-Time Monitoring**
 
 A production-grade implementation demonstrating:
+- **Treatment Center Management** — Hierarchical organization (Zones → Stations → Devices)
 - **Azure IoT Hub Patterns** — Device Registry, Twins, Direct Methods, DPS, TPM Attestation
 - **Industrial IoT Architecture** — Edge gateway bridging medical devices to cloud infrastructure
 - **FHIR R4 Interoperability** — Standards-compliant healthcare data exchange
+- **Treatment Session Management** — Full lifecycle tracking with phases and outcomes
+- **Device Coordination** — Multi-device synchronized operations via MQTT
+- **Analytics & Reporting** — Daily metrics, trends, and performance insights
 - **AI-Powered Clinical Intelligence** — Real-time anomaly detection and decision support
-- **Single-Page Interactive Dashboard** — Blazor WebAssembly with real-time monitoring and interactive workflow visualization
+- **Single-Page Interactive Dashboard** — Blazor WebAssembly with real-time monitoring
 - **Hardware Security** — TPM 2.0 attestation, X.509 certificates, SAS tokens
 
 ## 🎯 Project Status
 
-**✅ ALL PHASES COMPLETE (100% Implementation)**
+**✅ ALL PHASES COMPLETE (Treatment Center Architecture Implemented)**
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)
-- ✅ 13 FHIR REST API endpoints with Swagger
-- ✅ EF Core with SQLite (3 patients, 3 devices)
-- ✅ Unit & integration tests (100% coverage)
+- ✅ FHIR REST API endpoints with Swagger
+- ✅ EF Core with SQLite database
+- ✅ Treatment Center entities (Zones, Stations, Sessions, Devices)
 
-**Phase 2: Industrial Edge Pipeline** - ✅ COMPLETE
+**Phase 2: Treatment Center Architecture** - ✅ COMPLETE
+- ✅ 6 Treatment Zones (52 total stations)
+- ✅ Station configuration with device slots
+- ✅ Treatment session lifecycle management
+- ✅ Device coordination via MQTT
+- ✅ Analytics and metrics aggregation
+
+**Phase 3: Industrial Edge Pipeline** - ✅ COMPLETE
 - ✅ Device Simulator (Modbus TCP: ports 502-504)
 - ✅ Edge Gateway (Modbus → MQTT translation)
 - ✅ Polly resilience patterns (circuit breaker, retry)
 - ✅ Docker multi-stage builds
 
-**Phase 3: Clinical Intelligence** - ✅ COMPLETE
+**Phase 4: Clinical Intelligence** - ✅ COMPLETE
 - ✅ Transform Service (MQTT → FHIR Observations)
-- ✅ AI Clinical Engine (8 clinical thresholds)
-- ✅ LOINC code mapping (5 vital signs)
-- ✅ Docker Compose (6 services)
+- ✅ AI Clinical Engine (clinical thresholds)
+- ✅ LOINC code mapping (vital signs)
+- ✅ Docker Compose orchestration
 
-**Phase 4: Single-Page Interactive Dashboard** - ✅ COMPLETE
-- ✅ Full-screen System Dashboard with interactive workflow diagram
-- ✅ Real-time status indicators with animated pulses
-- ✅ Clickable workflow nodes showing inline detail panels
-- ✅ 4-layer architecture visualization (Edge, Messaging, Cloud, Presentation)
-- ✅ Live vital signs preview with 6 key metrics
-- ✅ Auto-refresh every 3 seconds
-- ✅ Healthcare-themed gradient styling
-- ✅ Responsive design (mobile/tablet/desktop)
-- ✅ Nginx deployment with auto-redirect
-
-**Phase 5: Integration & Documentation** - ✅ COMPLETE
-- ✅ 8-service Docker Compose orchestration
-- ✅ Deployment documentation (VPS, Docker, Cloud)
-- ✅ SignalR Hub for real-time updates
-- ✅ Device API endpoints
-- ✅ Health checks & monitoring
-- ✅ Production-ready setup
+**Phase 5: Interactive Dashboard** - ✅ COMPLETE
+- ✅ Treatment Center view with zone grid layout
+- ✅ Real-time station status indicators
+- ✅ SignalR hub for live updates
+- ✅ Healthcare-themed responsive design
 
 **Phase 6: Azure IoT Hub Simulator** - ✅ COMPLETE
 - ✅ Device Registry & Identity Management
@@ -58,8 +56,6 @@ A production-grade implementation demonstrating:
 - ✅ Direct Methods (Cloud-to-Device Commands)
 - ✅ Device Provisioning Service (DPS) Patterns
 - ✅ TPM 2.0 Hardware Security Attestation
-- ✅ SAS Token & X.509 Certificate Authentication
-- ✅ Complete audit trail for compliance
 
 ## 📐 System Architecture
 
@@ -76,118 +72,99 @@ A production-grade implementation demonstrating:
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
 │ CLOUD LAYER                                                     │
+│ ┌──────────────────────────────────────────────────────────┐   │
+│ │  TREATMENT CENTER SERVICES                              │   │
+│ │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │   │
+│ │  │  Treatment   │  │   Device     │  │   Analytics  │  │   │
+│ │  │   Service    │  │ Coordination │  │   Service    │  │   │
+│ │  └──────────────┘  └──────────────┘  └──────────────┘  │   │
+│ └──────────────────────────────────────────────────────────┘   │
 │ Transform Service → AI Engine → FHIR R4 API                    │
 │ Azure IoT Hub Simulator (Device Registry, Twins, Methods)     │
 └─────────────────────┬───────────────────────────────────────────┘
                       │ SignalR WebSocket
 ┌─────────────────────▼───────────────────────────────────────────┐
-│ PRESENTATION LAYER (Single-Page Dashboard)                     │
-│ ┌─────────────────────────────────────────────────────────┐    │
-│ │  🏥 MedEdge System Dashboard (Interactive)               │    │
-│ │  ┌─────────────────────────────────────────────────┐    │    │
-│ │  │ 📊 Statistics Cards (Real-time)                   │    │    │
-│ │  │    📱 Devices  🌐 Gateway  ⚡ Services  📊 Data │    │    │
-│ │  └─────────────────────────────────────────────────┘    │    │
-│ │  ┌─────────────────────────────────────────────────┐    │    │
-│ │  │ 🔄 Interactive System Workflow Diagram           │    │    │
-│ │  │  Click nodes to see details ▼                    │    │    │
-│ │  │  ┌──────┐    ┌──────┐    ┌──────┐              │    │    │
-│ │  │  │Devices│───▶│Gateway│───▶│  MQTT │              │    │    │
-│ │  │  └──────┘    └──────┘    └──────┘              │    │    │
-│ │  │       │             │           │              │    │    │
-│ │  │       ▼             ▼           ▼              │    │    │
-│ │  │  ┌─────────┐  ┌─────────┐  ┌──────────┐      │    │    │
-│ │  │  │IoT Hub  │  │FHIR API │  │AI Engine │      │    │    │
-│ │  │  └─────────┘  └─────────┘  └──────────┘      │    │    │
-│ │  │       │             │                          │    │    │
-│ │  │       ▼             ▼                          │    │    │
-│ │  │  ┌─────────────────────────────┐             │    │    │
-│ │  │  │     Blazor Dashboard       │             │    │    │
-│ │  │  └─────────────────────────────┘             │    │    │
-│ │  └─────────────────────────────────────────────────┘    │    │
-│ │  🔄 Auto-refresh every 3 seconds | 🟢 LIVE UPDATES      │    │
-│ └─────────────────────────────────────────────────────────┘    │
+│ PRESENTATION LAYER                                             │
+│ Blazor WebAssembly Dashboard (Treatment Center View)           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## 🔄 How It Works (End-to-End)
+## 🏥 Treatment Center Architecture
 
-### The Complete Data Flow (Every 500ms)
+### Hierarchical Organization
 
 ```
-1️⃣  DEVICE LAYER
-   Medical Device generates vital signs (Modbus TCP registers)
-   ↓ Blood Flow: 320 mL/min | Pressure: 120 mmHg | Temp: 36.5°C
-
-2️⃣  EDGE GATEWAY (Protocol Translation)
-   Polls Modbus registers every 500ms
-   Converts register values to engineering units
-   Creates JSON telemetry packet
-   ↓
-
-3️⃣  MQTT BROKER (Message Distribution)
-   Publishes to topic: medical-device/{deviceId}/telemetry
-   Ensures reliable message delivery with TLS encryption
-   ↓ Parallel paths:
-
-   ├─→ TRANSFORM SERVICE
-   │   Converts to FHIR Observation format
-   │   Maps measurements to LOINC codes (standards)
-   │   POSTs to FHIR API for storage
-
-   ├─→ AI ENGINE (Real-Time Analysis)
-   │   Checks measurements against clinical thresholds
-   │   Blood Flow < 150 mL/min → CRITICAL ALERT
-   │   Arterial Pressure < 80 mmHg → HYPOTENSION WARNING
-   │   Generates clinical recommendations
-
-   └─→ SIGNALR HUB → DASHBOARD (Real-Time Display)
-       WebSocket pushes updates to single-page dashboard
-       Dashboard updates workflow status in real-time
-       Click workflow nodes to see detailed information
-       Clinical alerts appear immediately with recommendations
-
-4️⃣  FHIR API (Healthcare Data Hub)
-   Stores observations in database
-   Maintains Patient ↔ Device ↔ Observation relationships
-   Provides query endpoints for historical data
-   Broadcasts updates via SignalR Hub
-
-5️⃣  SINGLE-PAGE DASHBOARD (Clinician Interface)
-   ✅ Interactive System Workflow diagram (click nodes for details)
-   ✅ Real-time vital signs preview (6 key metrics)
-   ✅ Device status cards with risk levels
-   ✅ Service health monitoring
-   ✅ Auto-refresh every 3 seconds
-   ✅ Inline detail panels (no page navigation)
+Treatment Center
+├── Zone A (10 stations) - Dialysis
+│   ├── Station A-01 (5 device slots)
+│   ├── Station A-02 (5 device slots)
+│   └── ...
+├── Zone B (10 stations) - Dialysis
+├── Zone C (10 stations) - Dialysis
+├── Zone D (8 stations) - Dialysis
+├── Zone E (6 stations) - ICU
+└── Zone F (8 stations) - General
 ```
 
-**Total Time: Device → Clinician Dashboard = <1 second**
+**Total: 6 Zones, 52 Stations, 260+ Device Slots**
+
+### Treatment Session Lifecycle
+
+```
+Scheduled → In-Progress → Phases (Initiation → Treatment → Completion)
+                    ↓
+               Interrupted/Completed → Outcomes Recorded
+```
+
+## 🔄 How It Works
+
+### Treatment Center Data Flow
+
+```
+1️⃣  TREATMENT SCHEDULING
+    POST /api/treatments/schedule
+    ↓ Assign patient to station
+    ↓ Create treatment session with prescription parameters
+
+2️⃣  DEVICE COORDINATION
+    POST /api/coordination/station/{id}/start-all
+    ↓ MQTT commands to all devices at station
+    ↓ Synchronized device startup
+
+3️⃣  TREATMENT MONITORING
+    Real-time vital signs via MQTT
+    ↓ Treatment phases tracked
+    ↓ Observations recorded to FHIR
+
+4️⃣  CLINICAL DECISION SUPPORT
+    AI Engine monitors measurements
+    ↓ Threshold alerts
+    ↓ Clinical recommendations
+
+5️⃣  SESSION COMPLETION
+    POST /api/treatments/{id}/complete
+    ↓ Record outcomes (vitals, complications, patient status)
+    ↓ Update station availability
+
+6️⃣  ANALYTICS & REPORTING
+    Daily metrics aggregation
+    ↓ Station performance trends
+    ↓ Area comparison reports
+```
 
 ## 🎨 Dashboard Features
 
-### Interactive System Workflow
-- **Clickable Nodes**: Click any component (Devices, Gateway, MQTT, IoT Hub, FHIR API, AI Engine, Dashboard) to see detailed status
-- **Real-time Status Indicators**: Animated pulsing dots show health status (green=healthy, orange=warning, red=error)
-- **Data Flow Animation**: Particles flow between layers showing active data transmission
-- **4-Layer Visualization**: Edge Layer → Messaging Layer → Cloud Layer → Presentation Layer
+### Treatment Center View
+- **Zone Grid Layout**: Visual representation of all 6 zones
+- **Station Status Indicators**: Color-coded dots (available, occupied, maintenance, cleaning, offline)
+- **Real-Time Updates**: SignalR pushes status changes instantly
+- **Station Detail View**: Patient info, treatment progress, device status
 
-### Inline Detail Panels
-- **Medical Devices**: Shows connected devices with online status, type, last seen, and risk level
-- **Edge Gateway**: Shows status, messages/sec, MQTT connection, and SignalR status
-- **FHIR API**: Shows FHIR version, observation count, and API endpoint
-- **Live Vitals**: Real-time display of Blood Flow, Arterial/Venous Pressure, Temperature, Conductivity, and Treatment Time
-
-### Real-Time Statistics
-- Total Devices with online count
-- Gateway Status with messages/second
-- Services Health (operational/total)
-- Data Throughput (telemetry points/min)
-
-### Quick Actions
-- Refresh All (manually refresh all data)
-- Show Live Vitals (display vital signs preview)
-- Dashboard Info (session statistics)
+### System Dashboard
+- **Interactive Workflow**: Click nodes for detailed status
+- **Real-Time Statistics**: Device counts, gateway metrics, service health
+- **Live Vitals Preview**: Blood flow, pressures, temperature
+- **Auto-Refresh**: 3-second update cycle
 
 ## 🚀 Quick Start
 
@@ -202,98 +179,68 @@ A production-grade implementation demonstrating:
 git clone https://github.com/bejranonda/MedEdge-Gateway.git
 cd MedEdge
 
-# Configure dashboard credentials (optional)
-echo "DASHBOARD_USERNAME=admin" > .env
-echo "DASHBOARD_PASSWORD=YourSecurePassword123!" >> .env
-
 # Build and start all services
 docker-compose up -d --build
 
 # Access dashboard
-# Open browser to: http://localhost:5000
-# You will be automatically redirected to the System Dashboard
+# Open browser to: http://localhost:8888
 ```
 
 **Access Points:**
-- 🟢 **Dashboard**: http://localhost:8888 (Internal port, accessible via Nginx reverse proxy)
-- 🟢 **FHIR API**: http://localhost:5001/swagger (REST API documentation)
-- 🟢 **IoT Hub Simulator**: http://localhost:8080 (Azure IoT Hub patterns)
-- 🟢 **MQTT Broker**: localhost:1883 (Message broker)
+| Service | URL | Description |
+|---------|-----|-------------|
+| Dashboard | http://localhost:8888 | Treatment Center UI |
+| FHIR API | http://localhost:5001/swagger | REST API docs |
+| IoT Hub Simulator | http://localhost:8080 | Azure IoT patterns |
+| MQTT Broker | localhost:1883 | Message broker |
 
-**Production Access:**
-- 🟢 **Dashboard**: https://your-domain.com/ (via Nginx HTTPS reverse proxy)
-- 🟢 **FHIR API**: https://your-domain.com/api/ (via HTTPS proxy)
-- 🟢 **IoT Hub Simulator**: https://your-domain.com/iot-hub/ (via HTTPS proxy)
+## 📊 API Endpoints
 
-### VPS Deployment
-
-```bash
-# On your VPS server
-git clone https://github.com/bejranonda/MedEdge-Gateway.git
-cd MedEdge
-
-# Set credentials
-export DASHBOARD_USERNAME=admin
-export DASHBOARD_PASSWORD=YourSecurePassword!
-
-# Deploy
-docker-compose up -d --build
-
-# Access via public IP with HTTPS
-# https://YOUR_DOMAIN_OR_IP (requires Nginx reverse proxy and SSL)
+### Treatment Management
+```
+POST   /api/treatments/schedule           # Schedule treatment
+GET    /api/treatments                    # List all sessions
+GET    /api/treatments/active             # Active sessions
+PUT    /api/treatments/{id}/start         # Start treatment
+PUT    /api/treatments/{id}/phase         # Update phase
+PUT    /api/treatments/{id}/interrupt     # Interrupt treatment
+POST   /api/treatments/{id}/complete      # Complete treatment
 ```
 
-### Production HTTPS Setup
-
-For production deployment with HTTPS:
-
-```bash
-# Install Nginx and Certbot
-sudo apt install nginx certbot python3-certbot-nginx
-
-# Configure Nginx reverse proxy (see DEPLOYMENT.md)
-# Generate SSL certificate
-sudo certbot --nginx -d your-domain.com --email admin@your-domain.com --agree-tos
-
-# Start services
-docker-compose up -d --build
-
-# Access points:
-# - Dashboard: https://your-domain.com/
-# - FHIR API: https://your-domain.com/api/
-# - MQTT: https://your-domain.com/mqtt/
+### Device Coordination
+```
+POST   /api/coordination/station/{id}/start-all       # Start all devices
+POST   /api/coordination/station/{id}/stop-all        # Stop all devices
+POST   /api/coordination/station/{id}/emergency-stop  # Emergency stop
+GET    /api/coordination/groups                       # Device groups
+POST   /api/coordination/groups                       # Create device group
 ```
 
-## 📊 FHIR API Endpoints
-
-### Patients
+### Analytics
 ```
-GET    /fhir/Patient              # List all patients
-GET    /fhir/Patient/{id}         # Get patient by ID
-POST   /fhir/Patient              # Create patient
-```
-
-### Devices
-```
-GET    /fhir/Device               # List all devices
-GET    /fhir/Device/{id}          # Get device by ID
+GET    /api/analytics/summary              # Latest metrics
+GET    /api/analytics/trends               # Treatment trends
+GET    /api/analytics/station-performance  # Station performance
+GET    /api/analytics/area-comparison      # Area comparison
 ```
 
-### Observations
+### Treatment Center
 ```
+GET    /api/areas                          # List all zones
+GET    /api/areas/{id}                     # Get zone details
+GET    /api/stations                       # List all stations
+GET    /api/stations/{id}                   # Get station details
+GET    /api/stations/available             # Available stations
+```
+
+### FHIR Resources
+```
+GET    /fhir/Patient              # List patients
+GET    /fhir/Patient/{id}         # Get patient
+GET    /fhir/Device               # List devices
+GET    /fhir/Device/{id}          # Get device
 GET    /fhir/Observation          # List observations
-GET    /fhir/Observation/{id}     # Get observation by ID
 POST   /fhir/Observation          # Create observation
-GET    /fhir/Observation?patient={id}  # Filter by patient
-GET    /fhir/Observation?device={id}   # Filter by device
-GET    /fhir/Observation?code={code}   # Filter by LOINC code
-```
-
-### Dashboard API
-```
-GET    /api/devices              # Device status for dashboard
-POST   /api/devices/{id}/emergency-stop  # Emergency stop command
-GET    /health                    # Health check
 ```
 
 ## 🛠 Technology Stack
@@ -303,38 +250,22 @@ GET    /health                    # Health check
 | **Runtime** | .NET | 8.0 |
 | **API** | ASP.NET Core | 8.0 |
 | **FHIR SDK** | Firely .NET SDK | 5.5.0 |
-| **Database** | SQLite / PostgreSQL | - |
+| **Database** | SQLite | - |
 | **ORM** | Entity Framework Core | 8.0 |
 | **Dashboard** | Blazor WebAssembly | .NET 8 |
 | **UI Framework** | MudBlazor | Latest |
 | **Real-time** | SignalR | .NET 8 |
 | **Messaging** | Eclipse Mosquitto MQTT | 2.0 |
-| **Security** | JWT, X.509, TPM 2.0 | - |
 
-## 📚 Documentation Structure
+## 📚 Documentation
 
-### For Beginners (New to .NET/C#)
-| Document | Purpose | Time |
-|----------|---------|------|
-| **[LEARNING-GUIDE.md](LEARNING-GUIDE.md)** | 8-week .NET/C# learning path | 4-8 weeks |
-
-### For Everyone
-| Document | Purpose | Pages |
-|----------|---------|-------|
-| **README.md** | Project overview & quick start | This file |
-| **QUICK-START.md** | Rapid deployment guide | Updated |
-| **TECHNICAL-GUIDE.md** | How the system works | 100+ |
-| **DEPLOYMENT.md** | Production deployment (VPS, Docker) | Updated |
-| **DEMO.md** | 10-minute demo walkthrough | 60+ |
-| **docs/ARCHITECTURE.md** | System design details | 100+ |
-| **docs/FHIR-MAPPING.md** | FHIR resource mapping | 80+ |
-| **IMPLEMENTATION.md** | Implementation summary | 100+ |
-
-**Choose Your Path:**
-- **New to .NET?** Start with [LEARNING-GUIDE.md](LEARNING-GUIDE.md)
-- **Want to understand how it works?** Start with [TECHNICAL-GUIDE.md](TECHNICAL-GUIDE.md)
-- **Want to deploy it?** Start with [QUICK-START.md](QUICK-START.md) or [DEPLOYMENT.md](DEPLOYMENT.md)
-- **Want to see it in action?** Start with [DEMO.md](DEMO.md)
+| Document | Purpose |
+|----------|---------|
+| **README.md** | Project overview & quick start |
+| **QUICK-START.md** | Rapid deployment guide |
+| **TECHNICAL-GUIDE.md** | How the system works |
+| **DEPLOYMENT.md** | Production deployment |
+| **DEMO.md** | Demo walkthrough |
 
 ## 🔒 Security
 
@@ -344,8 +275,7 @@ GET    /health                    # Health check
 - SAS token authentication
 - Audit logging for all operations
 - Input validation on all API endpoints
-- Environment-based configuration (no secrets in code)
-- Dashboard credential protection via build arguments
+- Environment-based configuration
 
 ## 📝 License
 
@@ -354,50 +284,15 @@ MIT License - See LICENSE file for details
 ## 👨‍💻 Author
 
 Built as a portfolio project demonstrating expertise in:
+- Treatment center management architecture
 - Azure IoT Hub architecture and patterns
 - FHIR R4 healthcare interoperability
 - Industrial IoT architecture
-- Hardware security (TPM, certificates)
 - Real-time clinical decision support
 - Full-stack .NET development
-- Interactive single-page applications
-
-## 🤝 Contributing
-
-This project is under active development.
 
 ---
 
-**Current Phase:** 6/6 Complete ✅
-**Current Version:** v1.3.0-beta
-**Last Updated:** 2026-01-25
-**Status:** Production Ready - All services operational with real-time monitoring
-
-## 🎉 Latest Release (v1.3.0-beta)
-
-### What's New
-- ✅ **Updated Gateway Naming**: Edge Gateway [Hospital] → Edge Gateway [Hospital], Edge Gateway [Store] → Edge Gateway [Store]
-- ✅ **Version Badge Linking**: Click version badge to view source code on GitHub
-- ✅ **Dynamic Device Source**: Live Vitals now shows actual device ID (e.g., infusion-pump-001, ventilator-001)
-- ✅ **Device Type Display**: Shows device type alongside device ID in vitals preview
-- ✅ **Multi-Site Architecture**: Improved naming reflects hospital and store deployment sites
-- ✅ **Auto Device Cycling**: Vitals preview cycles through different online devices every 3 seconds
-
-### v1.2.1-beta Changes
-- ✅ **Fixed CORS Blocking**: Dashboard now properly communicates with backend API
-- ✅ **Resolved API Stability Issues**: Defensive data handling prevents 500 errors
-- ✅ **Dashboard Build Fixed**: Compilation errors resolved, builds successfully
-- ✅ **Optimized Layout**: Compact header design with version badge
-- ✅ **Single-Page Design**: All system information accessible without page navigation
-- ✅ **Real-Time Updates**: Live device status, gateway metrics, and service health
-- ✅ **Interactive Workflow**: Click nodes to see detailed component information
-- ✅ **HTTPS Production Ready**: Nginx reverse proxy with Let's Encrypt SSL support
-- ✅ **Port Configuration Updated**: Dashboard runs on port 8888 to avoid conflicts
-
-### Bug Fixes
-- Fixed SystemDashboard.razor brace mismatch (RZ1006)
-- Updated FhirApi CORS policy for localhost cross-origin requests
-- Made FhirDeviceEntity properties nullable for SQLite compatibility
-- Added comprehensive error handling to api/devices endpoint
-- Removed excessive top padding from dashboard container
-- Resolved Nginx port conflicts with dashboard service
+**Current Version:** v1.4.0
+**Last Updated:** 2026-01-31
+**Status:** Production Ready - Treatment Center Architecture Implemented
