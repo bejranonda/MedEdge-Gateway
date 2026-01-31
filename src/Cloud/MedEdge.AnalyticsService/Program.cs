@@ -80,8 +80,8 @@ app.MapGet("/api/analytics/summary", async (
 
 // GET /api/analytics/trends - Get treatment trends
 app.MapGet("/api/analytics/trends", async (
-    int days = 30,
-    IAnalyticsService service) =>
+    IAnalyticsService service,
+    int days = 30) =>
 {
     if (days < 1 || days > 365)
         return Results.BadRequest(new { error = "Days must be between 1 and 365" });
@@ -94,9 +94,9 @@ app.MapGet("/api/analytics/trends", async (
 
 // GET /api/analytics/station-performance - Get station performance
 app.MapGet("/api/analytics/station-performance", async (
+    IAnalyticsService service,
     string stationId,
-    int days = 30,
-    IAnalyticsService service) =>
+    int days = 30) =>
 {
     if (string.IsNullOrEmpty(stationId))
         return Results.BadRequest(new { error = "Station ID is required" });

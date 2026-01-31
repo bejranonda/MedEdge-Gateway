@@ -3,6 +3,7 @@ WORKDIR /src
 
 COPY ["Directory.Build.props", "./"]
 COPY ["src/Shared/MedEdge.Core/MedEdge.Core.csproj", "src/Shared/MedEdge.Core/"]
+COPY ["src/Cloud/MedEdge.FhirApi/MedEdge.FhirApi.csproj", "src/Cloud/MedEdge.FhirApi/"]
 COPY ["src/Cloud/MedEdge.AnalyticsService/MedEdge.AnalyticsService.csproj", "src/Cloud/MedEdge.AnalyticsService/"]
 
 RUN dotnet restore "src/Cloud/MedEdge.AnalyticsService/MedEdge.AnalyticsService.csproj"

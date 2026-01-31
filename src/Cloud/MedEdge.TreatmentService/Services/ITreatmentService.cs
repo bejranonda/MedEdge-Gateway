@@ -1,5 +1,7 @@
 using MedEdge.Core.Domain.Entities;
 using MedEdge.Core.DTOs;
+using MedEdge.FhirApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedEdge.TreatmentService.Services;
 
