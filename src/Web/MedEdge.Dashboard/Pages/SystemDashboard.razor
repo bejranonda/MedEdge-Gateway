@@ -778,7 +778,7 @@
             </div>
             <div class="header-text-container">
                 <h1 class="header-title">MedEdge System Dashboard</h1>
-                <p class="header-subtitle">Real-time Medical IoT Monitoring & Supply Chain Management</p>
+                <p class="header-subtitle">Global-Regional-Local Architecture | HIPAA/GDPR Compliant | Federated AI</p>
             </div>
         </div>
         <div class="header-right">
@@ -786,7 +786,7 @@
                 <span>🔒</span>
                 <span>TPM Enabled</span>
             </div>
-            <a href="https://github.com/bejranonda/MedEdge-Gateway" target="_blank" class="version-badge" style="text-decoration: none; cursor: pointer;">RELEASE: v1.2.1-beta</a>
+            <a href="https://github.com/bejranonda/MedEdge-Gateway" target="_blank" class="version-badge" style="text-decoration: none; cursor: pointer;">v2.0 Global Scale</a>
             <div class="realtime-badge">
                 <span class="live-dot"></span>
                 <span>LIVE</span>
@@ -846,183 +846,296 @@
                 </MudText>
             </div>
 
-            <div class="workflow-canvas" style="min-height: 450px; padding: 20px;">
+            <div class="workflow-canvas" style="min-height: 550px; padding: 20px;">
                 <div class="layer-container">
-                    <!-- Facility Layer -->
+                    <!-- GLOBAL Tier -->
                     <div class="workflow-layer" style="position: relative;">
                         <div class="layer-header">
-                            <div class="layer-indicator" style="background: #6366f1;"></div>
-                            <span class="layer-name">Facility Layer</span>
+                            <div class="layer-indicator" style="background: #22c55e;"></div>
+                            <span class="layer-name">GLOBAL - Management & Analytics</span>
+                            <span style="font-size: 10px; color: #22c55e; margin-left: 8px; font-weight: 600;">🌍 Multi-Region</span>
                         </div>
                         <div class="layer-content">
-                            <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
-                                <div class="node-icon @(GetNodeHealthClass("medical-devices"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
+                            <div class="workflow-node @(GetNodeStatus("global-management"))" @onclick="@(() => ShowNodeDetails("global-management"))">
+                                <div class="node-icon @(GetNodeHealthClass("global-management"))" style="background: #22c55e;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Public" />
                                 </div>
-                                <div class="node-name">Medical Devices</div>
+                                <div class="node-name">Global Device Mgmt</div>
                                 <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
-                                    @onlineDevices/@totalDevices Connected
+                                    <span class="status-dot healthy"></span>
+                                    Fleet • OTA
                                 </div>
                             </div>
 
-                            <div class="workflow-node @(GetNodeStatus("monitoring-center"))" @onclick="@(() => ShowNodeDetails("monitoring-center"))">
-                                <div class="node-icon @(GetNodeHealthClass("monitoring-center"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" />
+                            <div class="workflow-node @(GetNodeStatus("global-analytics"))" @onclick="@(() => ShowNodeDetails("global-analytics"))">
+                                <div class="node-icon @(GetNodeHealthClass("global-analytics"))" style="background: #22c55e;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Analytics" />
                                 </div>
-                                <div class="node-name">Monitoring Center</div>
+                                <div class="node-name">Global Analytics</div>
                                 <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("monitoring-center"))"></span>
-                                    @activeMonitors Active
+                                    <span class="status-dot healthy"></span>
+                                    ML Training
                                 </div>
                             </div>
 
-                            <div class="workflow-node @(GetNodeStatus("supply-center"))" @onclick="@(() => ShowNodeDetails("supply-center"))">
-                                <div class="node-icon @(GetNodeHealthClass("supply-center"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Inventory2" />
+                            <div class="workflow-node @(GetNodeStatus("global-compliance"))" @onclick="@(() => ShowNodeDetails("global-compliance"))">
+                                <div class="node-icon @(GetNodeHealthClass("global-compliance"))" style="background: #22c55e;">
+                                    <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" />
                                 </div>
-                                <div class="node-name">Supply Center</div>
+                                <div class="node-name">Compliance</div>
                                 <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("supply-center"))"></span>
-                                    @supplyItemsCount Items
+                                    <span class="status-dot healthy"></span>
+                                    Audit
+                                </div>
+                            </div>
+
+                            <div class="workflow-node @(GetNodeStatus("global-database"))" @onclick="@(() => ShowNodeDetails("global-database"))">
+                                <div class="node-icon @(GetNodeHealthClass("global-database"))" style="background: #22c55e;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Storage" />
+                                </div>
+                                <div class="node-name">Global DB</div>
+                                <div class="node-status">
+                                    <span class="status-dot healthy"></span>
+                                    No PHI
                                 </div>
                             </div>
                         </div>
-
-                        <div class="connection-row">
-                            <div class="arrow-wrapper">
-                                <div class="flow-arrow-down" style="position: relative; bottom: 0; left: 0; transform: none;">
-                                    <div class="flow-arrow-line" style="background: #ef4444;"></div>
-                                    <div class="flow-arrow-head" style="border-top-color: #ef4444;"></div>
-                                </div>
-                            </div>
-                            <div class="arrow-wrapper">
-                                <div class="flow-arrow-down" style="position: relative; bottom: 0; left: 0; transform: none;">
-                                    <div class="flow-arrow-line"></div>
-                                    <div class="flow-arrow-head"></div>
-                                </div>
-                            </div>
-                            <div class="arrow-wrapper">
-                                <div class="flow-arrow-down" style="position: relative; bottom: 0; left: 0; transform: none;">
-                                    <div class="flow-arrow-line" style="background: #ef4444;"></div>
-                                    <div class="flow-arrow-head" style="border-top-color: #ef4444;"></div>
-                                </div>
-                            </div>
+                        <div class="flow-arrow-down">
+                            <div class="flow-arrow-line" style="background: linear-gradient(to bottom, #22c55e, #3b82f6);"></div>
+                            <div class="flow-arrow-head" style="border-top-color: #3b82f6;"></div>
                         </div>
                     </div>
 
-                    <!-- Edge Layer -->
+                    <!-- REGIONAL Tier -->
                     <div class="workflow-layer" style="position: relative;">
                         <div class="layer-header">
                             <div class="layer-indicator" style="background: #3b82f6;"></div>
-                            <span class="layer-name">Edge Layer</span>
+                            <span class="layer-name">REGIONAL - Cloud & Services</span>
+                            <span style="font-size: 10px; color: #3b82f6; margin-left: 8px; font-weight: 600;">📍 Data Residency</span>
                         </div>
                         <div class="layer-content">
-                            <div class="workflow-node @(GetNodeStatus("controller"))" @onclick="@(() => ShowNodeDetails("controller"))">
-                                <div class="node-icon @(GetNodeHealthClass("controller"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.SettingsInputComponent" />
+                            <!-- Cloud Services Group -->
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                <div class="workflow-node active @(GetNodeStatus("treatment-service"))" @onclick="@(() => ShowNodeDetails("treatment-service"))">
+                                    <div class="node-icon @(GetNodeHealthClass("treatment-service"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.EventNote" />
+                                    </div>
+                                    <div class="node-name">Treatment</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("treatment-service"))"></span>
+                                        Sessions
+                                    </div>
                                 </div>
-                                <div class="node-name">Controller</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("controller"))"></span>
-                                    Modbus Active
+
+                                <div class="workflow-node active @(GetNodeStatus("coordination-service"))" @onclick="@(() => ShowNodeDetails("coordination-service"))">
+                                    <div class="node-icon @(GetNodeHealthClass("coordination-service"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.DeviceHub" />
+                                    </div>
+                                    <div class="node-name">Coordination</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("coordination-service"))"></span>
+                                        Stations
+                                    </div>
                                 </div>
-                                <div style="position: absolute; right: -25px; top: 50%; transform: translateY(-50%); color: #ef4444; font-size: 32px; font-weight: bold; z-index: 10;">→</div>
+
+                                <div class="workflow-node active @(GetNodeStatus("analytics-service"))" @onclick="@(() => ShowNodeDetails("analytics-service"))">
+                                    <div class="node-icon @(GetNodeHealthClass("analytics-service"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Analytics" />
+                                    </div>
+                                    <div class="node-name">Analytics</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("analytics-service"))"></span>
+                                        Regional
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node active @(GetNodeStatus("transform-service"))" @onclick="@(() => ShowNodeDetails("transform-service"))">
+                                    <div class="node-icon @(GetNodeHealthClass("transform-service"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Transform" />
+                                    </div>
+                                    <div class="node-name">Transform</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("transform-service"))"></span>
+                                        FHIR
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node active @(GetNodeStatus("fhir-api"))" @onclick="@(() => ShowNodeDetails("fhir-api"))">
+                                    <div class="node-icon @(GetNodeHealthClass("fhir-api"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
+                                    </div>
+                                    <div class="node-name">FHIR API</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("fhir-api"))"></span>
+                                        USCDI v3
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node @(GetNodeStatus("ai-engine"))" @onclick="@(() => ShowNodeDetails("ai-engine"))">
+                                    <div class="node-icon @(GetNodeHealthClass("ai-engine"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Psychology" />
+                                    </div>
+                                    <div class="node-name">AI Engine</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("ai-engine"))"></span>
+                                        Federated
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
-                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Router" />
+                            <!-- Treatment Center & Supply Group -->
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px;">
+                                <div class="workflow-node @(GetNodeStatus("treatment-center-layer"))" @onclick="@(() => ShowNodeDetails("treatment-center-layer"))">
+                                    <div class="node-icon @(GetNodeHealthClass("treatment-center-layer"))" style="background: #f59e0b;">
+                                        <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
+                                    </div>
+                                    <div class="node-name">Treatment Center Layer</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("treatment-center-layer"))"></span>
+                                        6 Zones • 52 Stations
+                                    </div>
                                 </div>
-                                <div class="node-name">Edge Gateway [Hospital]</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
-                                    @gatewayStatusText
-                                </div>
-                            </div>
 
-                            <div class="workflow-node active @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
-                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                <div class="workflow-node @(GetNodeStatus("supply-center"))" @onclick="@(() => ShowNodeDetails("supply-center"))">
+                                    <div class="node-icon @(GetNodeHealthClass("supply-center"))" style="background: #f59e0b;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Inventory2" />
+                                    </div>
+                                    <div class="node-name">Supply Center</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("supply-center"))"></span>
+                                        Regional
+                                    </div>
                                 </div>
-                                <div class="node-name">Edge Gateway [Store]</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-store"))"></span>
-                                    API Active
+
+                                <div class="workflow-node active @(GetNodeStatus("regional-database"))" @onclick="@(() => ShowNodeDetails("regional-database"))">
+                                    <div class="node-icon @(GetNodeHealthClass("regional-database"))" style="background: #3b82f6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Storage" />
+                                    </div>
+                                    <div class="node-name">Regional DB</div>
+                                    <div class="node-status">
+                                        <span class="status-dot healthy"></span>
+                                        Cluster
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="flow-arrow-down">
-                            <div class="flow-arrow-line"></div>
-                            <div class="flow-arrow-head"></div>
+                            <div class="flow-arrow-line" style="background: linear-gradient(to bottom, #3b82f6, #8b5cf6);"></div>
+                            <div class="flow-arrow-head" style="border-top-color: #8b5cf6;"></div>
                         </div>
                     </div>
 
-                    <!-- Messaging Layer -->
+                    <!-- LOCAL Tier -->
                     <div class="workflow-layer" style="position: relative;">
                         <div class="layer-header">
                             <div class="layer-indicator" style="background: #8b5cf6;"></div>
-                            <span class="layer-name">Messaging Layer</span>
+                            <span class="layer-name">LOCAL - Facility Edge</span>
+                            <span style="font-size: 10px; color: #8b5cf6; margin-left: 8px; font-weight: 600;">🏥 HIPAA/GDPR</span>
                         </div>
                         <div class="layer-content">
-                            <div class="workflow-node active @(GetNodeStatus("mqtt-broker"))" @onclick="@(() => ShowNodeDetails("mqtt-broker"))">
-                                <div class="node-icon @(GetNodeHealthClass("mqtt-broker"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Sensors" />
+                            <!-- Client Group -->
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
+                                    <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
+                                    </div>
+                                    <div class="node-name">Medical Devices</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
+                                        @onlineDevices/@totalDevices
+                                    </div>
                                 </div>
-                                <div class="node-name">MQTT Broker</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("mqtt-broker"))"></span>
-                                    @mqttStatusText
+
+                                <div class="workflow-node @(GetNodeStatus("monitoring-center"))" @onclick="@(() => ShowNodeDetails("monitoring-center"))">
+                                    <div class="node-icon @(GetNodeHealthClass("monitoring-center"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" />
+                                    </div>
+                                    <div class="node-name">Monitoring Ctr</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("monitoring-center"))"></span>
+                                        @activeMonitors
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node @(GetNodeStatus("controller"))" @onclick="@(() => ShowNodeDetails("controller"))">
+                                    <div class="node-icon @(GetNodeHealthClass("controller"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.SettingsInputComponent" />
+                                    </div>
+                                    <div class="node-name">Controller</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("controller"))"></span>
+                                        Modbus
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
+                                    <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                    </div>
+                                    <div class="node-name">Edge Gateway</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
+                                        [Hospital]
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node active @(GetNodeStatus("mqtt-broker"))" @onclick="@(() => ShowNodeDetails("mqtt-broker"))">
+                                    <div class="node-icon @(GetNodeHealthClass("mqtt-broker"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Sensors" />
+                                    </div>
+                                    <div class="node-name">MQTT Broker</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("mqtt-broker"))"></span>
+                                        Facility
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flow-arrow-down">
-                            <div class="flow-arrow-line"></div>
-                            <div class="flow-arrow-head"></div>
+
+                            <!-- Facility Group -->
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px;">
+                                <div class="workflow-node active @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
+                                    <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                    </div>
+                                    <div class="node-name">Edge Gateway</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("edge-gateway-store"))"></span>
+                                        [Store]
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node @(GetNodeStatus("treatment-center"))" @onclick="@(() => ShowNodeDetails("treatment-center"))">
+                                    <div class="node-icon @(GetNodeHealthClass("treatment-center"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
+                                    </div>
+                                    <div class="node-name">Treatment Center</div>
+                                    <div class="node-status">
+                                        <span class="status-dot @(GetNodeHealthClass("treatment-center"))"></span>
+                                        Local DB
+                                    </div>
+                                </div>
+
+                                <div class="workflow-node @(GetNodeStatus("local-database"))" @onclick="@(() => ShowNodeDetails("local-database"))">
+                                    <div class="node-icon @(GetNodeHealthClass("local-database"))" style="background: #8b5cf6;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Storage" />
+                                    </div>
+                                    <div class="node-name">Local DB</div>
+                                    <div class="node-status">
+                                        <span class="status-dot healthy"></span>
+                                        PHI Data
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Cloud & Services Layer -->
-                    <div class="workflow-layer">
-                        <div class="layer-header">
-                            <div class="layer-indicator" style="background: #22c55e;"></div>
-                            <span class="layer-name">Cloud & Services Layer</span>
-                        </div>
-                        <div class="layer-content">
-                            <div class="workflow-node active @(GetNodeStatus("iot-hub"))" @onclick="@(() => ShowNodeDetails("iot-hub"))">
-                                <div class="node-icon @(GetNodeHealthClass("iot-hub"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Cloud" />
-                                </div>
-                                <div class="node-name">IoT Hub</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("iot-hub"))"></span>
-                                    @totalDevices Devices
-                                </div>
-                            </div>
-
-                            <div class="workflow-node active @(GetNodeStatus("fhir-api"))" @onclick="@(() => ShowNodeDetails("fhir-api"))">
-                                <div class="node-icon @(GetNodeHealthClass("fhir-api"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
-                                </div>
-                                <div class="node-name">FHIR API</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("fhir-api"))"></span>
-                                    @GetObservationsCount()
-                                </div>
-                            </div>
-
-                            <div class="workflow-node @(GetNodeStatus("ai-engine"))" @onclick="@(() => ShowNodeDetails("ai-engine"))">
-                                <div class="node-icon @(GetNodeHealthClass("ai-engine"))">
-                                    <MudIcon Icon="@Icons.Material.Filled.Psychology" />
-                                </div>
-                                <div class="node-name">AI Engine</div>
-                                <div class="node-status">
-                                    <span class="status-dot @(GetNodeHealthClass("ai-engine"))"></span>
-                                    Active
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Legend -->
+                <div style="position: absolute; bottom: 16px; right: 16px; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 11px;">
+                    <div style="font-weight: 700; margin-bottom: 6px;">Architecture Tiers</div>
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;"><div style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></div><span>Global: Management & Analytics (No PHI)</span></div>
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;"><div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></div><span>Regional: Cloud Services (Data Residency)</span></div>
+                    <div style="display: flex; gap: 4px;"><div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px;"></div><span>Local: Facility Edge (HIPAA/GDPR)</span></div>
                 </div>
             </div>
         </div>
@@ -1257,6 +1370,286 @@
                         </div>
                     }
 
+                    @if (selectedNodeDetails.NodeId == "treatment-service")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Treatment session lifecycle management</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">Active Sessions</div>
+                                <div class="detail-value" style="font-size: 18px;">@activeSessions</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Stations Available</div>
+                                <div class="detail-value" style="font-size: 18px;">@availableStations/@totalStations</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Zones Configured</div>
+                                <div class="detail-value" style="font-size: 18px;">6 Zones</div>
+                                <div class="detail-subtitle">52 Stations Total</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "coordination-service")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Multi-device coordination at treatment stations</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Stations Coordinated</div>
+                                <div class="detail-value" style="font-size: 18px;">@coordinatedStations</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Emergency Stop</div>
+                                <div class="detail-value" style="font-size: 18px;">Ready</div>
+                                <div class="detail-subtitle">All stations support E-stop</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Device Groups</div>
+                                <div class="detail-value" style="font-size: 18px;">Active</div>
+                                <div class="detail-subtitle">Synchronized commands</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "analytics-service")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Treatment metrics and performance analytics</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Daily Metrics</div>
+                                <div class="detail-value" style="font-size: 18px;">@dailyTreatments</div>
+                                <div class="detail-subtitle">Treatments today</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Trend Analysis</div>
+                                <div class="detail-value" style="font-size: 18px;">7-day</div>
+                                <div class="detail-subtitle">Performance trends</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Area Comparison</div>
+                                <div class="detail-value" style="font-size: 18px;">Available</div>
+                                <div class="detail-subtitle">Zone-by-zone metrics</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "transform-service")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">MQTT to FHIR transformation service</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Input Protocol</div>
+                                <div class="detail-value" style="font-size: 18px;">MQTT</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Output Format</div>
+                                <div class="detail-value" style="font-size: 18px;">FHIR R4</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">LOINC Mapping</div>
+                                <div class="detail-value" style="font-size: 18px;">Enabled</div>
+                                <div class="detail-subtitle">Standard codes</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Batch Processing</div>
+                                <div class="detail-value" style="font-size: 18px;">Active</div>
+                            </div>
+                        </div>
+                    }
+
+                    // v2.0 Global Architecture Nodes
+                    @if (selectedNodeDetails.NodeId == "global-management")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Global device fleet management and OTA updates</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Total Devices</div>
+                                <div class="detail-value" style="font-size: 18px;">@(totalDevices * 12)</div>
+                                <div class="detail-subtitle">Across all regions</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">OTA Updates</div>
+                                <div class="detail-value" style="font-size: 18px;">Active</div>
+                                <div class="detail-subtitle">Firmware & software distribution</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Regions</div>
+                                <div class="detail-value" style="font-size: 18px;">3</div>
+                                <div class="detail-subtitle">US, EU, APAC</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Data Sovereignty</div>
+                                <div class="detail-value" style="font-size: 16px;">No PHI</div>
+                                <div class="detail-subtitle">Device metadata only</div>
+                            </div>
+                        </div>
+                        <MudText Typo="Typo.caption" Class="mt-4" Style="color: var(--mud-palette-primary);">
+                            🌍 Global layer manages device fleet without accessing patient data
+                        </MudText>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "global-analytics")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Global analytics and federated learning coordination</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">ML Training</div>
+                                <div class="detail-value" style="font-size: 18px;">Federated</div>
+                                <div class="detail-subtitle">Model updates, not raw data</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">Population Health</div>
+                                <div class="detail-value" style="font-size: 18px;">Aggregated</div>
+                                <div class="detail-subtitle">Anonymized insights only</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Model Versions</div>
+                                <div class="detail-value" style="font-size: 18px;">24</div>
+                                <div class="detail-subtitle">Active model artifacts</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "global-compliance")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Global compliance monitoring and audit logging</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Compliance Status</div>
+                                <div class="detail-value" style="font-size: 18px;">100%</div>
+                                <div class="detail-subtitle">HIPAA, GDPR, ISO 27001</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Audit Logs</div>
+                                <div class="detail-value" style="font-size: 18px;">Immutable</div>
+                                <div class="detail-subtitle">Blockchain-backed</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Last Audit</div>
+                                <div class="detail-value" style="font-size: 18px;">Pass</div>
+                                <div class="detail-subtitle">@DateTime.Now.AddDays(-7).ToString("MMM dd")</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "global-database")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Global distributed database (Cassandra)</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Database</div>
+                                <div class="detail-value" style="font-size: 18px;">Cassandra</div>
+                                <div class="detail-subtitle">Multi-region replication</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Replication</div>
+                                <div class="detail-value" style="font-size: 18px;">3 regions</div>
+                                <div class="detail-subtitle">Active-active</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Data Type</div>
+                                <div class="detail-value" style="font-size: 16px;">No PHI</div>
+                                <div class="detail-subtitle">Device catalog, analytics only</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "regional-database")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Regional PostgreSQL cluster with read replicas</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">Database</div>
+                                <div class="detail-value" style="font-size: 18px;">PostgreSQL</div>
+                                <div class="detail-subtitle">Clustered with read replicas</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Data Residency</div>
+                                <div class="detail-value" style="font-size: 18px;">Enforced</div>
+                                <div class="detail-subtitle">GDPR compliant by region</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">HA Mode</div>
+                                <div class="detail-value" style="font-size: 18px;">Active-Active</div>
+                                <div class="detail-subtitle">Multi-AZ deployment</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "treatment-center-layer")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Regional treatment center orchestration layer</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #f59e0b;">
+                                <div class="detail-title">Zones</div>
+                                <div class="detail-value" style="font-size: 18px;">6</div>
+                                <div class="detail-subtitle">A-D: Dialysis, E: ICU, F: General</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Total Stations</div>
+                                <div class="detail-value" style="font-size: 18px;">52</div>
+                                <div class="detail-subtitle">Per treatment center</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Service Coordination</div>
+                                <div class="detail-value" style="font-size: 18px;">Active</div>
+                                <div class="detail-subtitle">Multi-device synchronization</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "treatment-center")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Local treatment center with edge database</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Local Database</div>
+                                <div class="detail-value" style="font-size: 18px;">SQLite/PG</div>
+                                <div class="detail-subtitle">Patient data on-site</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Offline Mode</div>
+                                <div class="detail-value" style="font-size: 18px;">Supported</div>
+                                <div class="detail-subtitle">Disaster resilience</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Data Sovereignty</div>
+                                <div class="detail-value" style="font-size: 16px;">HIPAA</div>
+                                <div class="detail-subtitle">PHI never leaves facility</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "local-database")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Local facility database with PHI</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Database</div>
+                                <div class="detail-value" style="font-size: 18px;">SQLite (Edge)</div>
+                                <div class="detail-subtitle">PostgreSQL (Facility)</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Retention</div>
+                                <div class="detail-value" style="font-size: 18px;">7 years</div>
+                                <div class="detail-subtitle">Regulatory requirement</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Encryption</div>
+                                <div class="detail-value" style="font-size: 18px;">AES-256</div>
+                                <div class="detail-subtitle">At-rest and in-transit</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Backup</div>
+                                <div class="detail-value" style="font-size: 18px;">Daily</div>
+                                <div class="detail-subtitle">Local + regional</div>
+                            </div>
+                        </div>
+                        <MudText Typo="Typo.caption" Class="mt-4" Style="color: var(--mud-palette-primary);">
+                            🔒 Patient data stays within facility per HIPAA/GDPR
+                        </MudText>
+                    }
+
                     @if (selectedNodeDetails.NodeId == "dashboard")
                     {
                         <div class="device-list">
@@ -1370,6 +1763,13 @@
     private int predictedRestock = 3;
     private List<SupplyItem> supplyItems = new();
     private int activeMonitors = 3;
+
+    // Treatment Center data
+    private int activeSessions = 8;
+    private int availableStations = 44;
+    private int totalStations = 52;
+    private int coordinatedStations = 8;
+    private int dailyTreatments = 24;
 
     // Vitals data with device serial
     private string currentDeviceSerial = "infusion-pump-001";
@@ -1486,6 +1886,27 @@
                 Url = ":5000",
                 Status = "Running",
                 ContainerName = "medEdge-dashboard"
+            },
+            new ServiceInfo {
+                Name = "Treatment Service",
+                Description = "Treatment session lifecycle management",
+                Url = "Container",
+                Status = "Running",
+                ContainerName = "medEdge-treatment-service"
+            },
+            new ServiceInfo {
+                Name = "Device Coordination Service",
+                Description = "Multi-device coordination at stations",
+                Url = "Container",
+                Status = "Running",
+                ContainerName = "medEdge-coordination-service"
+            },
+            new ServiceInfo {
+                Name = "Analytics Service",
+                Description = "Treatment metrics & performance analytics",
+                Url = "Container",
+                Status = "Running",
+                ContainerName = "medEdge-analytics-service"
             }
         };
 
@@ -1679,6 +2100,19 @@
         if (nodeId == "fhir-api") return "status-healthy";
         if (nodeId == "ai-engine") return "status-healthy";
         if (nodeId == "dashboard") return "status-healthy";
+        if (nodeId == "treatment-service") return "status-healthy";
+        if (nodeId == "coordination-service") return "status-healthy";
+        if (nodeId == "analytics-service") return "status-healthy";
+        if (nodeId == "transform-service") return "status-healthy";
+        // New v2.0 nodes
+        if (nodeId == "global-management") return "status-healthy";
+        if (nodeId == "global-analytics") return "status-healthy";
+        if (nodeId == "global-compliance") return "status-healthy";
+        if (nodeId == "global-database") return "status-healthy";
+        if (nodeId == "regional-database") return "status-healthy";
+        if (nodeId == "treatment-center-layer") return "status-healthy";
+        if (nodeId == "treatment-center") return "status-healthy";
+        if (nodeId == "local-database") return "status-healthy";
         return "";
     }
 
@@ -1697,6 +2131,19 @@
         if (nodeId == "fhir-api") return "healthy";
         if (nodeId == "ai-engine") return "healthy";
         if (nodeId == "dashboard") return "healthy";
+        if (nodeId == "treatment-service") return "healthy";
+        if (nodeId == "coordination-service") return "healthy";
+        if (nodeId == "analytics-service") return "healthy";
+        if (nodeId == "transform-service") return "healthy";
+        // New v2.0 nodes - always healthy for demo
+        if (nodeId == "global-management") return "healthy";
+        if (nodeId == "global-analytics") return "healthy";
+        if (nodeId == "global-compliance") return "healthy";
+        if (nodeId == "global-database") return "healthy";
+        if (nodeId == "regional-database") return "healthy";
+        if (nodeId == "treatment-center-layer") return "healthy";
+        if (nodeId == "treatment-center") return "healthy";
+        if (nodeId == "local-database") return "healthy";
         return "healthy";
     }
 
@@ -1715,9 +2162,22 @@
             { "mqtt-broker", "MQTT Broker" },
             { "iot-hub", "IoT Hub Simulator" },
             { "fhir-api", "FHIR API" },
-            { "ai-engine", "AI Engine" },
+            { "ai-engine", "AI Clinical Engine" },
             { "dashboard", "Dashboard Info" },
-            { "vitals-preview", "Live Vitals" }
+            { "vitals-preview", "Live Vitals" },
+            { "treatment-service", "Treatment Service" },
+            { "coordination-service", "Device Coordination Service" },
+            { "analytics-service", "Analytics Service" },
+            { "transform-service", "Transform Service" },
+            // v2.0 Global-Regional-Local Architecture
+            { "global-management", "Global Device Management" },
+            { "global-analytics", "Global Analytics & ML" },
+            { "global-compliance", "Global Compliance & Audit" },
+            { "global-database", "Global Database (Cassandra)" },
+            { "regional-database", "Regional Database (PostgreSQL)" },
+            { "treatment-center-layer", "Treatment Center Layer" },
+            { "treatment-center", "Treatment Center" },
+            { "local-database", "Local Database" }
         };
 
         selectedNodeDetails = new NodeDetailInfo
