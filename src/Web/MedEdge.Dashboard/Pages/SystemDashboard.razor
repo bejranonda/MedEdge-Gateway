@@ -986,6 +986,17 @@
                                     No PHI
                                 </div>
                             </div>
+
+                            <div class="workflow-node @(GetNodeStatus("global-ai-anomaly"))" @onclick="@(() => ShowNodeDetails("global-ai-anomaly"))">
+                                <div class="node-icon @(GetNodeHealthClass("global-ai-anomaly"))" style="background: #22c55e;">
+                                    <MudIcon Icon="@Icons.Material.Filled.AutoGraph" />
+                                </div>
+                                <div class="node-name">AI Anomaly Detection</div>
+                                <div class="node-status">
+                                    <span class="status-dot @(GetNodeHealthClass("global-ai-anomaly"))"></span>
+                                    System • DB • Equipment
+                                </div>
+                            </div>
                         </div>
                         <div class="flow-arrow-down">
                             <div class="flow-arrow-line" style="background: linear-gradient(to bottom, #22c55e, #3b82f6);"></div>
@@ -1067,7 +1078,7 @@
                                         <div class="node-name">AI Engine</div>
                                         <div class="node-status">
                                             <span class="status-dot @(GetNodeHealthClass("ai-engine"))"></span>
-                                            Federated
+                                            Predictive • Anomaly • Flow
                                         </div>
                                     </div>
 
@@ -1086,7 +1097,7 @@
 
                             <!-- Regional Layer Group -->
                             <div class="subgroup-container regional-layer">
-                                <div class="subgroup-label regional-layer">🏢 Regional Layer</div>
+                                <div class="subgroup-label regional-layer">🌐 Regional Interfaces</div>
                                 <div class="subgroup-nodes">
                                     <div class="workflow-node @(GetNodeStatus("treatment-center-layer"))" @onclick="@(() => ShowNodeDetails("treatment-center-layer"))">
                                         <div class="node-icon @(GetNodeHealthClass("treatment-center-layer"))" style="background: #f59e0b;">
@@ -1131,6 +1142,17 @@
                                 <div class="subgroup-container client-group" style="flex: 1; min-width: 300px;">
                                     <div class="subgroup-label client-group">📱 Client group (e.g. Treatment center)</div>
                                     <div class="subgroup-nodes">
+                                        <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
+                                            <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))" style="background: #a855f7;">
+                                                <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                            </div>
+                                            <div class="node-name">Edge Gateway</div>
+                                            <div class="node-status">
+                                                <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
+                                                [Hospital] → Regional
+                                            </div>
+                                        </div>
+
                                         <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
                                             <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #a855f7;">
                                                 <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
@@ -1163,17 +1185,6 @@
                                                 Connect to [Hospital] Gateway
                                             </div>
                                         </div>
-
-                                        <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
-                                            <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))" style="background: #a855f7;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Router" />
-                                            </div>
-                                            <div class="node-name">Edge Gateway</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
-                                                [Hospital] → Regional
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -1181,8 +1192,6 @@
                                 <div class="subgroup-container facility-group" style="flex: 1; min-width: 300px;">
                                     <div class="subgroup-label facility-group">🏥 Facility Group</div>
                                     <div class="subgroup-nodes">
-
-
                                         <div class="workflow-node active @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
                                             <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))" style="background: #8b5cf6;">
                                                 <MudIcon Icon="@Icons.Material.Filled.Router" />
@@ -1202,6 +1211,17 @@
                                             <div class="node-status">
                                                 <span class="status-dot healthy"></span>
                                                 PHI Data
+                                            </div>
+                                        </div>
+
+                                        <div class="workflow-node @(GetNodeStatus("equipment-management"))" @onclick="@(() => ShowNodeDetails("equipment-management"))">
+                                            <div class="node-icon @(GetNodeHealthClass("equipment-management"))" style="background: #8b5cf6;">
+                                                <MudIcon Icon="@Icons.Material.Filled.Build" />
+                                            </div>
+                                            <div class="node-name">Equipment Mgmt</div>
+                                            <div class="node-status">
+                                                <span class="status-dot @(GetNodeHealthClass("equipment-management"))"></span>
+                                                Spare Parts • Maintenance
                                             </div>
                                         </div>
                                     </div>
@@ -1694,6 +1714,66 @@
                         </MudText>
                     }
 
+                    @if (selectedNodeDetails.NodeId == "equipment-management")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Local equipment inventory and maintenance management</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Spare Parts</div>
+                                <div class="detail-value" style="font-size: 18px;">142 items</div>
+                                <div class="detail-subtitle">Across 6 zones</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Pending Maintenance</div>
+                                <div class="detail-value" style="font-size: 18px; color: #f59e0b;">3 devices</div>
+                                <div class="detail-subtitle">Scheduled this week</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Last Service</div>
+                                <div class="detail-value" style="font-size: 18px;">Today</div>
+                                <div class="detail-subtitle">Zone A - Dialysis Unit</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Work Orders</div>
+                                <div class="detail-value" style="font-size: 18px;">8 open</div>
+                                <div class="detail-subtitle">2 urgent</div>
+                            </div>
+                        </div>
+                        <MudText Typo="Typo.caption" Class="mt-4" Style="color: var(--mud-palette-primary);">
+                            🔧 Track spare parts, schedule maintenance, manage equipment lifecycle
+                        </MudText>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "global-ai-anomaly")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">AI-powered anomaly detection and continuous learning</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Anomalies Detected</div>
+                                <div class="detail-value" style="font-size: 18px; color: #22c55e;">0 active</div>
+                                <div class="detail-subtitle">Last 24 hours</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">ML Models Trained</div>
+                                <div class="detail-value" style="font-size: 18px;">12 models</div>
+                                <div class="detail-subtitle">Federated learning</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">Improvement Insights</div>
+                                <div class="detail-value" style="font-size: 18px; color: #f59e0b;">8 pending</div>
+                                <div class="detail-subtitle">Awaiting review</div>
+                            </div>
+                            <div class="detail-card mb-2">
+                                <div class="detail-title">System Health</div>
+                                <div class="detail-value" style="font-size: 18px; color: #22c55e;">99.9%</div>
+                                <div class="detail-subtitle">All regions operational</div>
+                            </div>
+                        </div>
+                        <MudText Typo="Typo.caption" Class="mt-4" Style="color: var(--mud-palette-primary);">
+                            🤖 Monitor system health, detect anomalies, optimize operations globally
+                        </MudText>
+                    }
+
                     @if (selectedNodeDetails.NodeId == "dashboard")
                     {
                         <div class="device-list">
@@ -2153,10 +2233,12 @@
         if (nodeId == "global-analytics") return "status-healthy";
         if (nodeId == "global-compliance") return "status-healthy";
         if (nodeId == "global-database") return "status-healthy";
+        if (nodeId == "global-ai-anomaly") return "status-healthy";
         if (nodeId == "regional-database") return "status-healthy";
         if (nodeId == "treatment-center-layer") return "status-healthy";
         if (nodeId == "treatment-center") return "status-healthy";
         if (nodeId == "local-database") return "status-healthy";
+        if (nodeId == "equipment-management") return "status-healthy";
         return "";
     }
 
@@ -2184,10 +2266,12 @@
         if (nodeId == "global-analytics") return "healthy";
         if (nodeId == "global-compliance") return "healthy";
         if (nodeId == "global-database") return "healthy";
+        if (nodeId == "global-ai-anomaly") return "healthy";
         if (nodeId == "regional-database") return "healthy";
         if (nodeId == "treatment-center-layer") return "healthy";
         if (nodeId == "treatment-center") return "healthy";
         if (nodeId == "local-database") return "healthy";
+        if (nodeId == "equipment-management") return "healthy";
         return "healthy";
     }
 
@@ -2218,9 +2302,11 @@
             { "global-analytics", "Global Analytics & ML" },
             { "global-compliance", "Global Compliance & Audit" },
             { "global-database", "Global Database (Cassandra)" },
+            { "global-ai-anomaly", "AI Anomaly Detection & Learning" },
             { "regional-database", "Regional Database (PostgreSQL)" },
             { "treatment-center-layer", "Treatment Center Interface" },
-            { "local-database", "Local Database" }
+            { "local-database", "Local Database" },
+            { "equipment-management", "Equipment Inquiry & Management" }
         };
 
         selectedNodeDetails = new NodeDetailInfo
