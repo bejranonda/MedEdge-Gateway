@@ -854,6 +854,78 @@
         font-size: 16px;
         padding: 0 4px;
     }
+
+    /* Hierarchical Group Layout */
+    .hierarchical-group {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .hierarchy-first-row {
+        display: flex;
+        justify-content: center;
+        padding: 12px 0;
+        border-bottom: 1px dashed rgba(139, 92, 246, 0.3);
+        position: relative;
+    }
+
+    .hierarchy-first-row::after {
+        content: '↓';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #8b5cf6;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .hierarchy-second-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding-top: 16px;
+    }
+
+    .gateway-connector {
+        position: relative;
+    }
+
+    .gateway-connector::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #8b5cf6;
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+        animation: pulse-gateway 2s infinite;
+    }
+
+    @@keyframes pulse-gateway {
+        0%, 100% {
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(139, 92, 246, 0.4);
+        }
+    }
+
+    .connecting-line {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #8b5cf6;
+        font-size: 18px;
+        padding: 0 8px;
+        opacity: 0.6;
+    }
 </style>
 
 <div class="dashboard-container">
@@ -1141,48 +1213,58 @@
                                 <!-- Client Group -->
                                 <div class="subgroup-container client-group" style="flex: 1; min-width: 300px;">
                                     <div class="subgroup-label client-group">📱 Client group (e.g. Treatment center)</div>
-                                    <div class="subgroup-nodes">
-                                        <div class="workflow-node active @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
-                                            <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))" style="background: #a855f7;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Router" />
-                                            </div>
-                                            <div class="node-name">Edge Gateway</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
-                                                [Hospital] → Regional
-                                            </div>
-                                        </div>
-
-                                        <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
-                                            <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #a855f7;">
-                                                <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
-                                            </div>
-                                            <div class="node-name">Medical Devices + Controller</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
-                                                @onlineDevices/@totalDevices • Modbus
+                                    <div class="hierarchical-group">
+                                        <!-- First Row: Edge Gateway (Connecting Point) -->
+                                        <div class="hierarchy-first-row">
+                                            <div class="workflow-node active gateway-connector @(GetNodeStatus("edge-gateway-hospital"))" @onclick="@(() => ShowNodeDetails("edge-gateway-hospital"))">
+                                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-hospital"))" style="background: #a855f7;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                                </div>
+                                                <div class="node-name">Edge Gateway</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
+                                                    [Hospital] → Regional
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="workflow-node @(GetNodeStatus("monitoring-center"))" @onclick="@(() => ShowNodeDetails("monitoring-center"))">
-                                            <div class="node-icon @(GetNodeHealthClass("monitoring-center"))" style="background: #a855f7;">
-                                                <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" />
+                                        <!-- Second Row: Connected Elements -->
+                                        <div class="hierarchy-second-row">
+                                            <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
+                                                <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #a855f7;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
+                                                </div>
+                                                <div class="node-name">Medical Devices + Controller</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
+                                                    @onlineDevices/@totalDevices • Modbus
+                                                </div>
                                             </div>
-                                            <div class="node-name">Monitoring Ctr</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("monitoring-center"))"></span>
-                                                @activeMonitors
-                                            </div>
-                                        </div>
 
-                                        <div class="workflow-node active @(GetNodeStatus("mqtt-broker"))" @onclick="@(() => ShowNodeDetails("mqtt-broker"))">
-                                            <div class="node-icon @(GetNodeHealthClass("mqtt-broker"))" style="background: #a855f7;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Sensors" />
+                                            <div class="connecting-line">├</div>
+
+                                            <div class="workflow-node @(GetNodeStatus("monitoring-center"))" @onclick="@(() => ShowNodeDetails("monitoring-center"))">
+                                                <div class="node-icon @(GetNodeHealthClass("monitoring-center"))" style="background: #a855f7;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" />
+                                                </div>
+                                                <div class="node-name">Monitoring Ctr</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("monitoring-center"))"></span>
+                                                    @activeMonitors
+                                                </div>
                                             </div>
-                                            <div class="node-name">MQTT Broker</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("mqtt-broker"))"></span>
-                                                Connect to [Hospital] Gateway
+
+                                            <div class="connecting-line">├</div>
+
+                                            <div class="workflow-node active @(GetNodeStatus("mqtt-broker"))" @onclick="@(() => ShowNodeDetails("mqtt-broker"))">
+                                                <div class="node-icon @(GetNodeHealthClass("mqtt-broker"))" style="background: #a855f7;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Sensors" />
+                                                </div>
+                                                <div class="node-name">MQTT Broker</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("mqtt-broker"))"></span>
+                                                    Connect to [Hospital] Gateway
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1191,37 +1273,45 @@
                                 <!-- Facility Group -->
                                 <div class="subgroup-container facility-group" style="flex: 1; min-width: 300px;">
                                     <div class="subgroup-label facility-group">🏥 Facility Group</div>
-                                    <div class="subgroup-nodes">
-                                        <div class="workflow-node active @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
-                                            <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))" style="background: #8b5cf6;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Router" />
-                                            </div>
-                                            <div class="node-name">Edge Gateway</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("edge-gateway-store"))"></span>
-                                                [Store] → Regional
-                                            </div>
-                                        </div>
-
-                                        <div class="workflow-node @(GetNodeStatus("local-database"))" @onclick="@(() => ShowNodeDetails("local-database"))">
-                                            <div class="node-icon @(GetNodeHealthClass("local-database"))" style="background: #8b5cf6;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Storage" />
-                                            </div>
-                                            <div class="node-name">Local DB</div>
-                                            <div class="node-status">
-                                                <span class="status-dot healthy"></span>
-                                                PHI Data
+                                    <div class="hierarchical-group">
+                                        <!-- First Row: Edge Gateway (Connecting Point) -->
+                                        <div class="hierarchy-first-row">
+                                            <div class="workflow-node active gateway-connector @(GetNodeStatus("edge-gateway-store"))" @onclick="@(() => ShowNodeDetails("edge-gateway-store"))">
+                                                <div class="node-icon @(GetNodeHealthClass("edge-gateway-store"))" style="background: #8b5cf6;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Router" />
+                                                </div>
+                                                <div class="node-name">Edge Gateway</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("edge-gateway-store"))"></span>
+                                                    [Store] → Regional
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="workflow-node @(GetNodeStatus("equipment-management"))" @onclick="@(() => ShowNodeDetails("equipment-management"))">
-                                            <div class="node-icon @(GetNodeHealthClass("equipment-management"))" style="background: #8b5cf6;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Build" />
+                                        <!-- Second Row: Connected Elements -->
+                                        <div class="hierarchy-second-row">
+                                            <div class="workflow-node @(GetNodeStatus("local-database"))" @onclick="@(() => ShowNodeDetails("local-database"))">
+                                                <div class="node-icon @(GetNodeHealthClass("local-database"))" style="background: #8b5cf6;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Storage" />
+                                                </div>
+                                                <div class="node-name">Local DB</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot healthy"></span>
+                                                    PHI Data
+                                                </div>
                                             </div>
-                                            <div class="node-name">Equipment Mgmt</div>
-                                            <div class="node-status">
-                                                <span class="status-dot @(GetNodeHealthClass("equipment-management"))"></span>
-                                                Spare Parts • Maintenance
+
+                                            <div class="connecting-line">├</div>
+
+                                            <div class="workflow-node @(GetNodeStatus("equipment-management"))" @onclick="@(() => ShowNodeDetails("equipment-management"))">
+                                                <div class="node-icon @(GetNodeHealthClass("equipment-management"))" style="background: #8b5cf6;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Build" />
+                                                </div>
+                                                <div class="node-name">Equipment Mgmt</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("equipment-management"))"></span>
+                                                    Spare Parts • Maintenance
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
