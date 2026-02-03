@@ -16,14 +16,13 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.1.0 RELEASED - Enhanced Dashboard Visualization**
+**✅ v2.1.1 RELEASED - Dashboard Architecture Correction**
 
-**Latest Update: Dashboard Architecture Improvements**
-- ✅ Visual subgroup containers with labeled borders
-- ✅ Clear separation of Client and Facility groups (Local tier)
-- ✅ Organized Cloud Services and Regional Layer (Regional tier)
-- ✅ Color-coded labels with emoji icons for better UX
-- ✅ Improved architecture understanding and navigation
+**Latest Update: Dashboard Connection Point Correction**
+- ✅ Corrected Edge Gateway connection labels (Local tier)
+- ✅ Improved architectural accuracy in data flow visualization
+- ✅ Edge Gateway [Hospital] now shows "→ Local"
+- ✅ Edge Gateway [Store] now shows "→ Local"
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)
@@ -350,6 +349,6 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.1.0
-**Last Updated:** 2026-02-02
-**Status:** Production Ready - Enhanced Dashboard Visualization
+**Current Version:** v2.1.1
+**Last Updated:** 2026-02-03
+**Status:** Production Ready - Dashboard Architecture Correction

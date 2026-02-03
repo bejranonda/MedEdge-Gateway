@@ -5,6 +5,24 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-02-03
+
+### Fixed
+
+#### Dashboard Architecture Correction
+- **Edge Gateway Connection Labels**: Corrected connection flow indicators
+  - Edge Gateway [Hospital]: "→ Regional" → "→ Local"
+  - Edge Gateway [Store]: "→ Regional" → "→ Local"
+- **Rationale**: Edge Gateways are part of the Local tier and communicate within facility boundaries before data flows upstream to Regional tier
+- **Impact**: Improved architectural accuracy and clarity in data flow visualization
+
+### Technical Details
+- Labels now correctly show Local tier communication pattern
+- Maintains consistency with three-tier architecture documentation
+- No functional changes to communication flow
+
+---
+
 ## [2.1.0] - 2026-02-02
 
 ### Enhanced - Dashboard Architecture Visualization
@@ -416,7 +434,8 @@ Users upgrading from v1.x should:
 
 ---
 
-[Unreleased]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/bejranonda/MedEdge-Gateway/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/bejranonda/MedEdge-Gateway/compare/v1.2.1-beta...v1.4.0
