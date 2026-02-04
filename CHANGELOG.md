@@ -39,6 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Supply Center Interface**: Logical interface for inventory/supply data routing
 - **Multi-Facility Support**: Architecture supports multiple Edge Gateways connecting to central IoT Hub
 
+#### Dashboard Visualization
+- **Azure IoT Hub Component**: Prominent blue gradient visualization in Regional tier
+  - Shows hub name (mededge-regional-hub) and connection status
+  - Displays Treatment Center and Supply Center interfaces
+  - Clickable detail panel with hub info, features, and interfaces
+- **Real-time Status**: Connection status indicator (Connected/Disconnected)
+
 ### Changed
 
 #### Edge Gateway Architecture

@@ -1167,29 +1167,41 @@
                                 </div>
                             </div>
 
-                            <!-- Regional Layer Group -->
-                            <div class="subgroup-container regional-layer">
-                                <div class="subgroup-label regional-layer">🌐 Regional Interfaces</div>
-                                <div class="subgroup-nodes">
-                                    <div class="workflow-node @(GetNodeStatus("treatment-center-layer"))" @onclick="@(() => ShowNodeDetails("treatment-center-layer"))">
-                                        <div class="node-icon @(GetNodeHealthClass("treatment-center-layer"))" style="background: #f59e0b;">
+                            <!-- Azure IoT Hub (Central Regional Hub) -->
+                            <div class="subgroup-container" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); border: 2px solid #60a5fa; margin: 16px 0;">
+                                <div class="subgroup-label" style="color: white; font-weight: 700;">🔷 AZURE IOT HUB (Central Regional Hub)</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 12px;">
+                                    <div class="workflow-node @(GetNodeStatus("azure-iot-hub"))" @onclick="@(() => ShowNodeDetails("azure-iot-hub"))" style="background: rgba(255,255,255,0.95); min-width: 200px;">
+                                        <div class="node-icon" style="background: #0078d4;">
+                                            <MudIcon Icon="@Icons.Material.Filled.Cloud" />
+                                        </div>
+                                        <div class="node-name" style="font-weight: 700;">Azure IoT Hub</div>
+                                        <div class="node-status">
+                                            <span class="status-dot @(azureIotHubStatus == "Connected" ? "healthy" : "warning")"></span>
+                                            @azureIotHubStatus • @azureIotHubName
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 0 12px 12px;">
+                                    <div class="workflow-node @(GetNodeStatus("treatment-center-layer"))" @onclick="@(() => ShowNodeDetails("treatment-center-layer"))" style="background: rgba(255,255,255,0.9);">
+                                        <div class="node-icon" style="background: #f59e0b;">
                                             <MudIcon Icon="@Icons.Material.Filled.LocalHospital" />
                                         </div>
                                         <div class="node-name">Treatment Center Interface</div>
                                         <div class="node-status">
                                             <span class="status-dot @(GetNodeHealthClass("treatment-center-layer"))"></span>
-                                            6 Zones • Connect to [Store] Gateway
+                                            6 Zones • Clinical Data
                                         </div>
                                     </div>
 
-                                    <div class="workflow-node @(GetNodeStatus("supply-center"))" @onclick="@(() => ShowNodeDetails("supply-center"))">
-                                        <div class="node-icon @(GetNodeHealthClass("supply-center"))" style="background: #f59e0b;">
+                                    <div class="workflow-node @(GetNodeStatus("supply-center"))" @onclick="@(() => ShowNodeDetails("supply-center"))" style="background: rgba(255,255,255,0.9);">
+                                        <div class="node-icon" style="background: #f59e0b;">
                                             <MudIcon Icon="@Icons.Material.Filled.Inventory2" />
                                         </div>
                                         <div class="node-name">Supply Center Interface</div>
                                         <div class="node-status">
                                             <span class="status-dot @(GetNodeHealthClass("supply-center"))"></span>
-                                            Regional • Connect to [Hospital] Gateway
+                                            Inventory Data
                                         </div>
                                     </div>
                                 </div>
@@ -1502,6 +1514,33 @@
                             <div class="detail-card mb-2">
                                 <div class="detail-title">Connections</div>
                                 <div class="detail-value" style="font-size: 14px;">MQTT Broker, Edge Gateways</div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (selectedNodeDetails.NodeId == "azure-iot-hub")
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-4">Azure IoT Hub - Central Regional Hub (F1 Free Tier)</MudText>
+                        <div class="device-list">
+                            <div class="detail-card mb-2" style="border-left-color: #0078d4;">
+                                <div class="detail-title">Hub Name</div>
+                                <div class="detail-value" style="font-size: 18px;">@azureIotHubName</div>
+                                <div class="detail-subtitle">.azure-devices.net</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: @(azureIotHubStatus == "Connected" ? "#22c55e" : "#f59e0b");">
+                                <div class="detail-title">Connection Status</div>
+                                <div class="detail-value" style="font-size: 18px;">@azureIotHubStatus</div>
+                                <div class="detail-subtitle">Device: @azureIotHubDeviceId</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">Features</div>
+                                <div class="detail-value" style="font-size: 14px;">Device Twin • Direct Methods</div>
+                                <div class="detail-subtitle">EmergencyStop, Reboot, GetDiagnostics</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Interfaces</div>
+                                <div class="detail-value" style="font-size: 14px;">Treatment Center • Supply Center</div>
+                                <div class="detail-subtitle">Logical data routing for clinical & inventory</div>
                             </div>
                         </div>
                     }
@@ -2003,6 +2042,11 @@
     private int coordinatedStations = 8;
     private int dailyTreatments = 24;
 
+    // Azure IoT Hub status
+    private string azureIotHubStatus = "Connected";
+    private string azureIotHubDeviceId = "edge-gateway-facility-001";
+    private string azureIotHubName = "mededge-regional-hub";
+
     // Vitals data with device serial
     private string currentDeviceSerial = "infusion-pump-001";
     private string currentDeviceType = "Infusion Pump";
@@ -2341,6 +2385,7 @@
         if (nodeId == "edge-gateway") return gatewayHealth == "healthy" ? "status-healthy" : "status-warning";
         if (nodeId == "mqtt-broker") return mqttStatus == "healthy" ? "status-healthy" : "status-warning";
         if (nodeId == "iot-hub") return "status-healthy";
+        if (nodeId == "azure-iot-hub") return azureIotHubStatus == "Connected" ? "status-healthy" : "status-warning";
         if (nodeId == "fhir-api") return "status-healthy";
         if (nodeId == "ai-engine") return "status-healthy";
         if (nodeId == "dashboard") return "status-healthy";
@@ -2374,6 +2419,7 @@
         if (nodeId == "edge-gateway") return gatewayHealth;
         if (nodeId == "mqtt-broker") return mqttStatus;
         if (nodeId == "iot-hub") return "healthy";
+        if (nodeId == "azure-iot-hub") return azureIotHubStatus == "Connected" ? "healthy" : "warning";
         if (nodeId == "fhir-api") return "healthy";
         if (nodeId == "ai-engine") return "healthy";
         if (nodeId == "dashboard") return "healthy";
@@ -2409,6 +2455,7 @@
             { "edge-gateway-store", "Edge Gateway [Store]" },
             { "mqtt-broker", "MQTT Broker" },
             { "iot-hub", "IoT Hub Simulator" },
+            { "azure-iot-hub", "Azure IoT Hub" },
             { "fhir-api", "FHIR API" },
             { "ai-engine", "AI Clinical Engine" },
             { "dashboard", "Dashboard Info" },

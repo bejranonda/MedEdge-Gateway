@@ -194,7 +194,11 @@ Local Edge Models → Regional Aggregation → Global Training
 
 ## 🎨 Dashboard Features
 
-### System Dashboard (v2.1.2)
+### System Dashboard (v2.2.0)
+- **Azure IoT Hub Visualization**: Prominent blue gradient component in Regional tier
+  - Shows hub name and real-time connection status
+  - Treatment Center & Supply Center interfaces displayed as logical groupings
+  - Clickable detail panel with hub info, features, and direct methods
 - **Interactive Donut Charts**: Visual status indicators for Devices, Supply, and Services
   - Total Devices: Online/Offline/Defective breakdown with color-coded segments
   - Supply Center: Good/Low/Critical inventory levels with status visualization
