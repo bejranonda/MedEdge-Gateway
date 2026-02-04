@@ -47,7 +47,7 @@ public class ModbusServerService : BackgroundService
             // Create a simple TCP slave (NModbus doesn't have built-in TCP server, so we simulate)
             // For this implementation, we'll use a simpler approach with a listener
 
-            var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, port);
+            var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Any, port);
             listener.Start();
             _logger.LogInformation("Modbus TCP listener started on port {Port}", port);
 

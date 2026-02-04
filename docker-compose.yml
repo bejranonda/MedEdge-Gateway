@@ -34,7 +34,11 @@ services:
     environment:
       - Mqtt__BrokerHost=mosquitto
       - Modbus__Devices__0__Host=simulator
+      - Modbus__Devices__1__Host=simulator
+      - Modbus__Devices__2__Host=simulator
       - DOTNET_ENVIRONMENT=Production
+      # Azure IoT Hub connection (from .env file)
+      - AzureIotHub__DeviceConnectionString=${AZURE_IOT_HUB_CONNECTION_STRING}
     depends_on:
       - mosquitto
       - simulator
