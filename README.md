@@ -16,14 +16,15 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.1 RELEASED - Realistic Device Simulation**
+**✅ v2.2.2 RELEASED - Enhanced Dashboard Visualization**
 
-**Latest Update: Realistic Medical Device Simulation**
-- ✅ Medically accurate parameters for Infusion Pumps, Dialysis & Filtration
-- ✅ Dynamic simulation logic based on AAMI/ISO/IEC standards
-- ✅ Improved UI contrast for Azure IoT Hub regional components
-- ✅ Real Azure IoT Hub connectivity and Device Twin support
-- ✅ Direct Methods: EmergencyStop, Reboot, GetDiagnostics
+**Latest Update: Enhanced Client Group Visualization**
+- ✅ New Devices subgroup with mini bar charts (Infusion Pumps, Dialysis, Filtration)
+- ✅ Throughput bar chart showing 6-minute historical data
+- ✅ Azure IoT Hub label visibility improved with text shadow
+- ✅ Edge Gateway renamed to [Treatment] → Local
+- ✅ Medical Devices + Controller moved to bottom row
+- ✅ Realistic device simulation with medically accurate parameters
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)
@@ -110,7 +111,7 @@ A production-grade global-scale platform demonstrating:
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │  CLIENT GROUP                    FACILITY GROUP                 │  │
 │  │  Medical Devices • Monitoring Ctr   Treatment Center • Supply   │  │
-│  │  Controller • Edge Gateway[Hosp]    Edge Gateway[Store]         │  │
+│  │  Controller • Edge Gateway[Treat]  Edge Gateway[Store]         │  │
 │  │  MQTT Broker (Facility)            Local Database (PHI)        │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -194,12 +195,17 @@ Local Edge Models → Regional Aggregation → Global Training
 
 ## 🎨 Dashboard Features
 
-- **System Dashboard (v2.2.1)**
-  - **Realistic Medical Device Simulation**: 💉 Infusion Pumps (mL/h, mmHg), 🩺 Dialysis (mL/min, UF rate), 💧 Filtration (L/h, TDS)
-  - **Dynamic Simulation**: Values update every 3 seconds with medically accurate variation ranges
-  - **Azure IoT Hub Visualization**: High-contrast blue gradient component in Regional tier
+- **System Dashboard (v2.2.2)**
+  - **Enhanced Client Group Visualization**: Reorganized hierarchical layout with dedicated Devices subgroup
+    - Infusion Pumps (8 units, 125 ml/min) with mini bar chart
+    - Dialysis Machines (5 units, 350 ml/min) with mini bar chart
+    - Water Filtration Systems (3 units, 2.5 L/min) with mini bar chart
+  - **Throughput Bar Chart**: 6-minute historical data visualization showing data magnitude
+  - **Azure IoT Hub Visualization**: Improved visibility with text shadow on blue gradient
     - Shows hub name and real-time connection status
     - Treatment Center & Supply Center interfaces displayed as logical groupings
+  - **Realistic Medical Device Simulation**: 💉 Infusion Pumps (mL/h, mmHg), 🩺 Dialysis (mL/min, UF rate), 💧 Filtration (L/h, TDS)
+  - **Dynamic Simulation**: Values update every 3 seconds with medically accurate variation ranges
 - **Interactive Donut Charts**: Visual status indicators for Devices, Supply, and Services
   - Total Devices: Online/Offline/Defective breakdown with color-coded segments
   - Supply Center: Good/Low/Critical inventory levels with status visualization
@@ -371,6 +377,6 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.2.1
+**Current Version:** v2.2.2
 **Last Updated:** 2026-02-04
-**Status:** Production Ready - Realistic Device Simulation
+**Status:** Production Ready - Enhanced Dashboard Visualization

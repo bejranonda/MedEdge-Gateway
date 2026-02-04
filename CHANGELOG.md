@@ -5,6 +5,34 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.2] - 2026-02-04
+
+### Added
+
+#### Dashboard Enhancements
+- **New Devices Subgroup**: Added dedicated Devices section under Client Group with three device types
+  - Infusion Pumps (8 units) with flow rate visualization (125 ml/min)
+  - Dialysis Machines (5 units) with flow rate visualization (350 ml/min)
+  - Water Filtration Systems (3 units) with flow rate visualization (2.5 L/min)
+- **Mini Bar Charts**: Each device type displays a compact bar chart showing flow rate trends
+- **Throughput Bar Chart**: Replaced numeric display with 6-minute historical bar chart showing data magnitude
+- **Third Row Layout**: Added `.hierarchy-third-row` CSS class for enhanced hierarchical display
+
+### Changed
+
+#### UI/UX Improvements
+- **Azure IoT Hub Label**: Fixed visibility issue with `!important` CSS overrides and text shadow for better readability on blue gradient
+- **Edge Gateway Rename**: Changed `[Hospital] → Local` to `[Treatment] → Local` for clearer semantics
+- **Medical Devices Position**: Moved "Medical Devices + Controller" to bottom of Client Group (third row)
+- **Layout Reorganization**: Monitoring Center and MQTT Broker now occupy second row in Client Group
+
+### Removed
+
+#### Dashboard Cleanup
+- **Device Metrics Stat Card**: Removed redundant aggregate metrics display (replaced by detailed Devices subgroup)
+
+---
+
 ## [2.2.1] - 2026-02-04
 
 ### Added
