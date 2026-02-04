@@ -5,6 +5,34 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-02-04
+
+### Added
+
+#### Dashboard Visual Enhancements
+- **Donut Charts for Stat Cards**: Added interactive MudBlazor donut chart visualizations
+  - Total Devices: Online/Offline/Defective status breakdown
+  - Supply Center: Good/Low/Critical inventory levels
+  - Services: Healthy/Unhealthy container status
+- **Device Health Tracking**: Added defective device status with `IsDefective` property
+- **Supply Status Breakdown**: Split supply status into good/low/critical categories
+- **Enhanced Mock Data**: Expanded device data from 4 to 10 devices for better chart visualization
+
+### Fixed
+
+#### MudBlazor Integration
+- **Interop Script Loading**: Fixed MudBlazor interop to load from NuGet package (`_content/MudBlazor/`)
+- **Chart Data Format**: Corrected MudBlazor Donut chart API usage (InputData/InputLabels instead of ChartSeries)
+- **Docker Build**: Ensured MudBlazor assets (CSS + interop.js) are copied during Docker build
+
+### Technical Details
+- MudBlazor 6.8.0 donut charts with custom color palettes
+- SVG-based rendering (no Chart.js dependency for donut charts)
+- Real-time data updates via SignalR integration
+- Responsive 100px charts in stat card layout
+
+---
+
 ## [2.1.1] - 2026-02-03
 
 ### Fixed
@@ -434,7 +462,8 @@ Users upgrading from v1.x should:
 
 ---
 
-[Unreleased]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.2...HEAD
+[2.1.2]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/bejranonda/MedEdge-Gateway/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/bejranonda/MedEdge-Gateway/compare/v1.4.0...v2.0.0

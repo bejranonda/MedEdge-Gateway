@@ -16,13 +16,13 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.1.1 RELEASED - Dashboard Architecture Correction**
+**✅ v2.1.2 RELEASED - Dashboard Visual Enhancements**
 
-**Latest Update: Dashboard Connection Point Correction**
-- ✅ Corrected Edge Gateway connection labels (Local tier)
-- ✅ Improved architectural accuracy in data flow visualization
-- ✅ Edge Gateway [Hospital] now shows "→ Local"
-- ✅ Edge Gateway [Store] now shows "→ Local"
+**Latest Update: Donut Charts & Device Health Tracking**
+- ✅ Added interactive MudBlazor donut charts for stat cards (Devices, Supply, Services)
+- ✅ Device health tracking with defective status detection
+- ✅ Supply status breakdown (good/low/critical inventory levels)
+- ✅ Fixed MudBlazor interop script loading from NuGet package
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)
@@ -181,7 +181,11 @@ Local Edge Models → Regional Aggregation → Global Training
 
 ## 🎨 Dashboard Features
 
-### System Dashboard (v2.0)
+### System Dashboard (v2.1.2)
+- **Interactive Donut Charts**: Visual status indicators for Devices, Supply, and Services
+  - Total Devices: Online/Offline/Defective breakdown with color-coded segments
+  - Supply Center: Good/Low/Critical inventory levels with status visualization
+  - Services: Healthy/Unhealthy container status at a glance
 - **Three-Tier Visualization**: Global → Regional → Local architecture
 - **Color-Coded Tiers**: Green (Global), Blue (Regional), Purple (Local)
 - **Interactive Detail Panels**: Click any component for detailed status
@@ -349,6 +353,6 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.1.1
-**Last Updated:** 2026-02-03
-**Status:** Production Ready - Dashboard Architecture Correction
+**Current Version:** v2.1.2
+**Last Updated:** 2026-02-04
+**Status:** Production Ready - Dashboard Visual Enhancements
