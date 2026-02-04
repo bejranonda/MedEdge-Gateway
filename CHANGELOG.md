@@ -5,6 +5,68 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-02-04
+
+### Added
+
+#### Azure IoT Hub Integration (Regional Tier)
+- **Real Azure IoT Hub Connectivity**: Edge Gateway now connects to actual Azure IoT Hub (F1 Free tier)
+- **Dual Publishing Architecture**: Telemetry sent to both local MQTT and Azure IoT Hub simultaneously
+- **TelemetryBroadcaster Service**: New pub/sub pattern enabling multiple subscribers to receive device telemetry
+- **Azure IoT Hub Publisher Service**: New `AzureIotHubPublisherService` for cloud connectivity
+  - Connects using device connection string
+  - Sends telemetry via `DeviceClient.SendEventAsync()`
+  - Supports message properties for routing (interface, dataType, deviceId, facilityId)
+
+#### Device Twin Support
+- **Desired Property Callbacks**: Receive configuration updates from Azure IoT Hub
+- **Twin Sync**: Edge Gateway retrieves and logs device twin on startup
+
+#### Direct Methods
+- **EmergencyStop**: Immediate device stop command from cloud
+- **Reboot**: Device restart command
+- **GetDiagnostics**: Returns device health, uptime, memory usage
+
+#### Configuration
+- **AzureIotHubOptions**: New configuration class for Azure IoT Hub settings
+  - `Enabled`: Toggle Azure IoT Hub publishing
+  - `DeviceConnectionString`: Secure connection string (from .env)
+  - `DeviceId`: Device identity in IoT Hub
+  - `SendIntervalMs`: Telemetry send interval
+
+#### Architecture
+- **Treatment Center Interface**: Logical interface for clinical/vitals data routing
+- **Supply Center Interface**: Logical interface for inventory/supply data routing
+- **Multi-Facility Support**: Architecture supports multiple Edge Gateways connecting to central IoT Hub
+
+### Changed
+
+#### Edge Gateway Architecture
+- **ModbusPollingService**: Now uses `TelemetryBroadcaster` instead of single channel
+- **MqttPublisherService**: Subscribes to broadcaster for telemetry
+- **Program.cs**: Registers `TelemetryBroadcaster` and `AzureIotHubPublisherService`
+
+#### Docker Configuration
+- **docker-compose.yml**: Added `AzureIotHub__DeviceConnectionString` environment variable for gateway service
+
+### Security
+- **Connection String Security**: Azure IoT Hub connection string stored in `.env` file (never committed to git)
+- **TLS 1.2+**: Azure IoT Hub uses secure MQTT transport
+
+### Technical Details
+- Microsoft.Azure.Devices.Client 1.42.3 NuGet package
+- MQTT transport protocol to Azure IoT Hub
+- Message properties enable IoT Hub message routing rules
+- Graceful handling when Azure IoT Hub is disabled or connection string missing
+
+### Azure IoT Hub Setup (F1 Free Tier)
+```bash
+az iot hub create --name mededge-regional-hub --resource-group mededge-rg --sku F1
+az iot hub device-identity create --hub-name mededge-regional-hub --device-id edge-gateway-facility-001
+```
+
+---
+
 ## [2.1.2] - 2026-02-04
 
 ### Added

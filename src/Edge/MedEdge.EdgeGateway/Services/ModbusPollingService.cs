@@ -26,17 +26,17 @@ public class ModbusPollingService : BackgroundService
 {
     private readonly ILogger<ModbusPollingService> _logger;
     private readonly ModbusPollingOptions _options;
-    private readonly Channel<TelemetryMessage> _telemetryChannel;
+    private readonly TelemetryBroadcaster _telemetryBroadcaster;
     private readonly IModbusFactory _modbusFactory;
 
     public ModbusPollingService(
         ILogger<ModbusPollingService> logger,
         IOptions<ModbusPollingOptions> options,
-        Channel<TelemetryMessage> telemetryChannel)
+        TelemetryBroadcaster telemetryBroadcaster)
     {
         _logger = logger;
         _options = options.Value;
-        _telemetryChannel = telemetryChannel;
+        _telemetryBroadcaster = telemetryBroadcaster;
         _modbusFactory = new ModbusFactory();
     }
 
@@ -122,7 +122,7 @@ public class ModbusPollingService : BackgroundService
                         }
                     );
 
-                    await _telemetryChannel.Writer.WriteAsync(message, stoppingToken);
+                    await _telemetryBroadcaster.BroadcastAsync(message, stoppingToken);
 
                     _logger.LogDebug(
                         "Polled {DeviceId}: BF={BF}, AP={AP}, VP={VP}, Temp={Temp}, Cond={Cond}",

@@ -16,13 +16,14 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.1.2 RELEASED - Dashboard Visual Enhancements**
+**✅ v2.2.0 RELEASED - Azure IoT Hub Integration**
 
-**Latest Update: Donut Charts & Device Health Tracking**
-- ✅ Added interactive MudBlazor donut charts for stat cards (Devices, Supply, Services)
-- ✅ Device health tracking with defective status detection
-- ✅ Supply status breakdown (good/low/critical inventory levels)
-- ✅ Fixed MudBlazor interop script loading from NuGet package
+**Latest Update: Real Azure IoT Hub Connectivity**
+- ✅ Edge Gateway connects to Azure IoT Hub (Regional tier)
+- ✅ Dual publishing: Local MQTT + Azure IoT Hub simultaneously
+- ✅ Device Twin support for cloud-to-device configuration
+- ✅ Direct Methods: EmergencyStop, Reboot, GetDiagnostics
+- ✅ Treatment Center & Supply Center logical interfaces
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)
@@ -68,6 +69,14 @@ A production-grade global-scale platform demonstrating:
 - ✅ Multi-region deployment patterns
 - ✅ Architecture documentation and dashboards
 
+**Phase 8: Azure IoT Hub Integration (v2.2)** - ✅ COMPLETE
+- ✅ Real Azure IoT Hub connectivity (F1 Free tier)
+- ✅ Edge Gateway dual publishing (MQTT + IoT Hub)
+- ✅ TelemetryBroadcaster for multi-subscriber pattern
+- ✅ Device Twin callbacks for configuration sync
+- ✅ Direct Method handlers (EmergencyStop, Reboot, GetDiagnostics)
+- ✅ Treatment Center & Supply Center logical interfaces
+
 ## 📐 System Architecture
 
 ### Three-Tier Global Architecture
@@ -88,6 +97,10 @@ A production-grade global-scale platform demonstrating:
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │  Treatment • Coordination • Analytics • Transform • FHIR API   │  │
 │  │  AI Engine • Treatment Center Layer • Supply Center • Regional DB│  │
+│  │  ┌─────────────────────────────────────────────────────────────┐│  │
+│  │  │         🔷 AZURE IOT HUB (Central Regional Hub)            ││  │
+│  │  │  Treatment Center Interface │ Supply Center Interface      ││  │
+│  │  └─────────────────────────────────────────────────────────────┘│  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────┬───────────────────────────────────────────┘
                               │
@@ -353,6 +366,6 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.1.2
+**Current Version:** v2.2.0
 **Last Updated:** 2026-02-04
-**Status:** Production Ready - Dashboard Visual Enhancements
+**Status:** Production Ready - Azure IoT Hub Integration

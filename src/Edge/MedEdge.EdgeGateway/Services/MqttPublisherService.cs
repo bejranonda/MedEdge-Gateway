@@ -30,11 +30,11 @@ public class MqttPublisherService : BackgroundService
     public MqttPublisherService(
         ILogger<MqttPublisherService> logger,
         IOptions<MqttPublisherOptions> options,
-        Channel<TelemetryMessage> telemetryChannel)
+        TelemetryBroadcaster telemetryBroadcaster)
     {
         _logger = logger;
         _options = options.Value;
-        _telemetryChannel = telemetryChannel;
+        _telemetryChannel = telemetryBroadcaster.Subscribe();
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
