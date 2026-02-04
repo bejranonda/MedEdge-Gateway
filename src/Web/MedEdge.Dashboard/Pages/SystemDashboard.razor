@@ -956,25 +956,25 @@
     <!-- Statistics Cards -->
     <div class="stat-cards">
         <div class="stat-card" @onclick="@(() => ShowNodeDetails("medical-devices"))">
-            <div class="stat-icon" style="width: 44px; height: 44px; font-size: 20px;">📱</div>
+            <MudChart ChartType="ChartType.Donut" InputData="@DeviceChartDataInput" InputLabels="@DeviceChartLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#ef4444", "#f59e0b" } })" Width="100px" Height="100px" />
             <div class="stat-content">
                 <div class="stat-label">Total Devices</div>
                 <div class="stat-value" style="font-size: 24px;">@totalDevices</div>
-                <div class="stat-subtitle">@onlineDevices online</div>
+                <div class="stat-subtitle">@onlineDevices online | @defectiveDevices defective</div>
             </div>
         </div>
 
         <div class="stat-card" @onclick="@(() => ShowNodeDetails("supply-center"))">
-            <div class="stat-icon" style="width: 44px; height: 44px; font-size: 20px;">📦</div>
+            <MudChart ChartType="ChartType.Donut" InputData="@SupplyChartDataInput" InputLabels="@SupplyChartLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" } })" Width="100px" Height="100px" />
             <div class="stat-content">
                 <div class="stat-label">Supply Center</div>
                 <div class="stat-value" style="font-size: 24px;">@supplyItemsCount</div>
-                <div class="stat-subtitle">@lowSupplyCount items low</div>
+                <div class="stat-subtitle">@lowSupplyCount low | @criticalSupplyCount critical</div>
             </div>
         </div>
 
         <div class="stat-card" @onclick="@(() => ShowNodeDetails("services"))">
-            <div class="stat-icon" style="width: 44px; height: 44px; font-size: 20px;">⚡</div>
+            <MudChart ChartType="ChartType.Donut" InputData="@ServiceChartDataInput" InputLabels="@ServiceChartLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#ef4444" } })" Width="100px" Height="100px" />
             <div class="stat-content">
                 <div class="stat-label">Services</div>
                 <div class="stat-value" style="font-size: 24px;">@healthyServices/@totalServices</div>
@@ -1974,9 +1974,27 @@
     private int totalUpdates = 0;
     private int supplyItemsCount = 8;
     private int lowSupplyCount = 2;
+    private int goodSupplyCount = 0;
+    private int criticalSupplyCount = 0;
     private int predictedRestock = 3;
     private List<SupplyItem> supplyItems = new();
     private int activeMonitors = 3;
+
+    // Chart data properties
+    private int defectiveDevices = 0;
+    private int unhealthyServices = 0;
+
+    // Device chart — Donut: InputData double[] and InputLabels string[]
+    private double[] DeviceChartDataInput => new double[] { onlineDevices, offlineDevices, defectiveDevices };
+    private string[] DeviceChartLabels => new string[] { "Online", "Offline", "Defective" };
+
+    // Supply chart — Donut: InputData double[] and InputLabels string[]
+    private double[] SupplyChartDataInput => new double[] { goodSupplyCount, lowSupplyCount, criticalSupplyCount };
+    private string[] SupplyChartLabels => new string[] { "Good", "Low", "Critical" };
+
+    // Services chart — Donut: InputData double[] and InputLabels string[]
+    private double[] ServiceChartDataInput => new double[] { healthyServices, unhealthyServices };
+    private string[] ServiceChartLabels => new string[] { "Healthy", "Unhealthy" };
 
     // Treatment Center data
     private int activeSessions = 8;
@@ -2001,6 +2019,7 @@
         public string SerialNumber { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
         public bool IsOnline { get; set; }
+        public bool IsDefective { get; set; }
         public DateTime LastSeen { get; set; }
         public string? RiskLevel { get; set; }
     }
@@ -2143,7 +2162,9 @@
         };
 
         supplyItemsCount = supplyItems.Count;
-        lowSupplyCount = supplyItems.Count(s => s.LevelClass == "low" || s.LevelClass == "critical");
+        lowSupplyCount = supplyItems.Count(s => s.LevelClass == "low");
+        criticalSupplyCount = supplyItems.Count(s => s.LevelClass == "critical");
+        goodSupplyCount = supplyItems.Count(s => s.LevelClass == "good");
     }
 
     private async Task RefreshAll()
@@ -2199,6 +2220,7 @@
                             SerialNumber = d.SerialNumber ?? "N/A",
                             Type = d.Type ?? "Unknown",
                             IsOnline = d.IsOnline ?? false,
+                            IsDefective = false,
                             LastSeen = d.LastTelemetryTime ?? DateTime.UtcNow,
                             RiskLevel = d.RiskLevel ?? "Low"
                         }).ToList();
@@ -2211,8 +2233,9 @@
             }
 
             totalDevices = edgeDevices.Count;
-            onlineDevices = edgeDevices.Count(d => d.IsOnline);
+            onlineDevices = edgeDevices.Count(d => d.IsOnline && !d.IsDefective);
             offlineDevices = edgeDevices.Count(d => !d.IsOnline);
+            defectiveDevices = edgeDevices.Count(d => d.IsDefective);
 
             // Set initial vitals device from online devices
             if (string.IsNullOrEmpty(currentDeviceSerial) || !edgeDevices.Any(d => d.DeviceId == currentDeviceSerial))
@@ -2240,10 +2263,16 @@
     {
         return new List<EdgeDevice>
         {
-            new EdgeDevice { DeviceId = "dialysis-modern-001", SerialNumber = "DM-001", Type = "Dialysis Machine", IsOnline = true, LastSeen = DateTime.UtcNow.AddSeconds(-5), RiskLevel = "Low" },
-            new EdgeDevice { DeviceId = "dialysis-legacy-001", SerialNumber = "DL-001", Type = "Dialysis Machine", IsOnline = true, LastSeen = DateTime.UtcNow.AddSeconds(-10), RiskLevel = "Low" },
-            new EdgeDevice { DeviceId = "infusion-pump-001", SerialNumber = "IP-001", Type = "Infusion Pump", IsOnline = false, LastSeen = DateTime.UtcNow.AddMinutes(-5), RiskLevel = "Moderate" },
-            new EdgeDevice { DeviceId = "ventilator-001", SerialNumber = "VT-001", Type = "Ventilator", IsOnline = true, LastSeen = DateTime.UtcNow.AddSeconds(-3), RiskLevel = "Low" }
+            new EdgeDevice { DeviceId = "dialysis-modern-001", SerialNumber = "DM-001", Type = "Dialysis Machine", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-5), RiskLevel = "Low" },
+            new EdgeDevice { DeviceId = "dialysis-legacy-001", SerialNumber = "DL-001", Type = "Dialysis Machine", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-10), RiskLevel = "Low" },
+            new EdgeDevice { DeviceId = "infusion-pump-001", SerialNumber = "IP-001", Type = "Infusion Pump", IsOnline = false, IsDefective = false, LastSeen = DateTime.UtcNow.AddMinutes(-5), RiskLevel = "Moderate" },
+            new EdgeDevice { DeviceId = "ventilator-001", SerialNumber = "VT-001", Type = "Ventilator", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-3), RiskLevel = "Low" },
+            new EdgeDevice { DeviceId = "patient-monitor-001", SerialNumber = "PM-001", Type = "Patient Monitor", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-15), RiskLevel = "Low" },
+            new EdgeDevice { DeviceId = "dialysis-modern-002", SerialNumber = "DM-002", Type = "Dialysis Machine", IsOnline = false, IsDefective = true, LastSeen = DateTime.UtcNow.AddMinutes(-15), RiskLevel = "High" },
+            new EdgeDevice { DeviceId = "infusion-pump-002", SerialNumber = "IP-002", Type = "Infusion Pump", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-8), RiskLevel = "Low" },
+            new EdgeDevice { DeviceId = "ventilator-002", SerialNumber = "VT-002", Type = "Ventilator", IsOnline = false, IsDefective = false, LastSeen = DateTime.UtcNow.AddHours(-1), RiskLevel = "Moderate" },
+            new EdgeDevice { DeviceId = "dialysis-legacy-002", SerialNumber = "DL-002", Type = "Dialysis Machine", IsOnline = true, IsDefective = true, LastSeen = DateTime.UtcNow.AddSeconds(-20), RiskLevel = "High" },
+            new EdgeDevice { DeviceId = "patient-monitor-002", SerialNumber = "PM-002", Type = "Patient Monitor", IsOnline = true, IsDefective = false, LastSeen = DateTime.UtcNow.AddSeconds(-12), RiskLevel = "Low" }
         };
     }
 
@@ -2289,6 +2318,7 @@
             }
         }
         healthyServices = services.Count(s => s.Status == "Online" || s.Status == "Running" || s.Status == "Connected");
+        unhealthyServices = totalServices - healthyServices;
         await Task.CompletedTask;
     }
 
