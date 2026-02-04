@@ -890,6 +890,14 @@
         padding-top: 16px;
     }
 
+    .hierarchy-third-row {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding-top: 16px;
+    }
+
     .gateway-connector {
         position: relative;
     }
@@ -983,11 +991,11 @@
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon" style="width: 44px; height: 44px; font-size: 20px;">📊</div>
+            <MudChart ChartType="ChartType.Bar" InputData="@throughputChartData" InputLabels="@throughputChartLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#009639", "#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7" } })" Width="100px" Height="80px" />
             <div class="stat-content">
                 <div class="stat-label">Throughput</div>
                 <div class="stat-value" style="font-size: 24px;">@dataThroughput</div>
-                <div class="stat-subtitle">points/min</div>
+                <div class="stat-subtitle">points/min (6 min)</div>
             </div>
         </div>
     </div>
@@ -1169,7 +1177,7 @@
 
                             <!-- Azure IoT Hub (Central Regional Hub) -->
                             <div class="subgroup-container" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); border: 2px solid #60a5fa; margin: 16px 0;">
-                                <div class="subgroup-label" style="color: white; font-weight: 700;">🔷 AZURE IOT HUB (Central Regional Hub)</div>
+                                <div class="subgroup-label" style="color: white; background: transparent; font-weight: 700;">🔷 AZURE IOT HUB (Central Regional Hub)</div>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 12px;">
                                     <div class="workflow-node @(GetNodeStatus("azure-iot-hub"))" @onclick="@(() => ShowNodeDetails("azure-iot-hub"))" style="background: rgba(255,255,255,0.95); min-width: 200px;">
                                         <div class="node-icon" style="background: #0078d4;">
@@ -1235,26 +1243,13 @@
                                                 <div class="node-name">Edge Gateway</div>
                                                 <div class="node-status">
                                                     <span class="status-dot @(GetNodeHealthClass("edge-gateway-hospital"))"></span>
-                                                    [Hospital] → Local
+                                                    [Treatment] → Local
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!-- Second Row: Connected Elements -->
                                         <div class="hierarchy-second-row">
-                                            <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
-                                                <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #a855f7;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
-                                                </div>
-                                                <div class="node-name">Medical Devices + Controller</div>
-                                                <div class="node-status">
-                                                    <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
-                                                    @onlineDevices/@totalDevices • Modbus
-                                                </div>
-                                            </div>
-
-                                            <div class="connecting-line">├</div>
-
                                             <div class="workflow-node @(GetNodeStatus("monitoring-center"))" @onclick="@(() => ShowNodeDetails("monitoring-center"))">
                                                 <div class="node-icon @(GetNodeHealthClass("monitoring-center"))" style="background: #a855f7;">
                                                     <MudIcon Icon="@Icons.Material.Filled.MonitorHeart" />
@@ -1275,7 +1270,67 @@
                                                 <div class="node-name">MQTT Broker</div>
                                                 <div class="node-status">
                                                     <span class="status-dot @(GetNodeHealthClass("mqtt-broker"))"></span>
-                                                    Connect to [Hospital] Gateway
+                                                    Connect to [Treatment] Gateway
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Third Row: Medical Devices + Controller -->
+                                        <div class="hierarchy-third-row">
+                                            <div class="workflow-node @(GetNodeStatus("medical-devices"))" @onclick="@(() => ShowNodeDetails("medical-devices"))">
+                                                <div class="node-icon @(GetNodeHealthClass("medical-devices"))" style="background: #a855f7;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" />
+                                                </div>
+                                                <div class="node-name">Medical Devices + Controller</div>
+                                                <div class="node-status">
+                                                    <span class="status-dot @(GetNodeHealthClass("medical-devices"))"></span>
+                                                    @onlineDevices/@totalDevices • Modbus
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Fourth: Devices Group with Charts -->
+                                        <div class="subgroup-container" style="margin-top: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid #a855f7; border-radius: 12px; padding: 12px;">
+                                            <div class="subgroup-label" style="color: #a855f7; font-size: 11px; font-weight: 600; margin-bottom: 8px;">🔧 Devices</div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <!-- Infusion Pumps -->
+                                                <div class="workflow-node" style="padding: 8px; background: rgba(255,255,255,0.9);">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="flex: 1;">
+                                                            <div class="node-name" style="font-size: 12px;">💉 Infusion Pumps</div>
+                                                            <div class="node-status" style="font-size: 10px;">
+                                                                <span class="status-dot healthy"></span>
+                                                                @infusionPumpCount units • Flow: @infusionFlowRate ml/min
+                                                            </div>
+                                                        </div>
+                                                        <MudChart ChartType="ChartType.Bar" InputData="@infusionPumpChartData" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" } })" Width="60px" Height="30px" />
+                                                    </div>
+                                                </div>
+                                                <!-- Dialysis Machines -->
+                                                <div class="workflow-node" style="padding: 8px; background: rgba(255,255,255,0.9);">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="flex: 1;">
+                                                            <div class="node-name" style="font-size: 12px;">🩺 Dialysis Machines</div>
+                                                            <div class="node-status" style="font-size: 10px;">
+                                                                <span class="status-dot healthy"></span>
+                                                                @dialysisMachineCount units • Flow: @dialysisFlowRate ml/min
+                                                            </div>
+                                                        </div>
+                                                        <MudChart ChartType="ChartType.Bar" InputData="@dialysisMachineChartData" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" } })" Width="60px" Height="30px" />
+                                                    </div>
+                                                </div>
+                                                <!-- Water Filtration Systems -->
+                                                <div class="workflow-node" style="padding: 8px; background: rgba(255,255,255,0.9);">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="flex: 1;">
+                                                            <div class="node-name" style="font-size: 12px;">💧 Water Filtration</div>
+                                                            <div class="node-status" style="font-size: 10px;">
+                                                                <span class="status-dot healthy"></span>
+                                                                @waterFiltrationCount units • Flow: @filtrationFlowRate L/min
+                                                            </div>
+                                                        </div>
+                                                        <MudChart ChartType="ChartType.Bar" InputData="@waterFiltrationChartData" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" } })" Width="60px" Height="30px" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2034,6 +2089,30 @@
     // Services chart — Donut: InputData double[] and InputLabels string[]
     private double[] ServiceChartDataInput => new double[] { healthyServices, unhealthyServices };
     private string[] ServiceChartLabels => new string[] { "Healthy", "Unhealthy" };
+
+    // Device counts and flow rates
+    private int infusionPumpCount = 8;
+    private int dialysisMachineCount = 5;
+    private int waterFiltrationCount = 3;
+    private string infusionFlowRate = "125";
+    private string dialysisFlowRate = "350";
+    private string filtrationFlowRate = "2.5";
+
+    // Device mini bar charts — InputData double[]
+    private double[] infusionPumpChartData => new double[] { 80, 95, 110, 125, 100, 90 };
+    private double[] dialysisMachineChartData => new double[] { 300, 320, 350, 340, 360, 350 };
+    private double[] waterFiltrationChartData => new double[] { 2.2, 2.4, 2.5, 2.5, 2.4, 2.5 };
+
+    // Throughput bar chart — InputData double[] and InputLabels string[]
+    private double[] throughputChartData => new double[] {
+        double.Parse(dataThroughput) * 0.8,
+        double.Parse(dataThroughput) * 0.9,
+        double.Parse(dataThroughput) * 0.95,
+        double.Parse(dataThroughput) * 1.0,
+        double.Parse(dataThroughput) * 1.05,
+        double.Parse(dataThroughput) * 1.1
+    };
+    private string[] throughputChartLabels => new string[] { "-5m", "-4m", "-3m", "-2m", "-1m", "Now" };
 
     // Treatment Center data
     private int activeSessions = 8;
