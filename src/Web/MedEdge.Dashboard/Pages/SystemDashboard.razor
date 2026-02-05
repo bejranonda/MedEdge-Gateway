@@ -2171,21 +2171,16 @@
     private double[] waterFiltrationChartData => new double[] { 1400, 1450, 1500, 1480, 1520, 1500 };
 
     // Throughput bar chart — InputData double[] and InputLabels string[]
+    private List<double> throughputHistory = new List<double>();
     private List<ChartSeries> throughputChartSeries => new List<ChartSeries>()
     {
         new ChartSeries()
         {
             Name = "Throughput",
-            Data = new double[] {
-                double.Parse(dataThroughput) * 0.92,
-                double.Parse(dataThroughput) * 1.08,
-                double.Parse(dataThroughput) * 0.96,
-                double.Parse(dataThroughput) * 1.04,
-                double.Parse(dataThroughput) * 0.95,
-                double.Parse(dataThroughput) * 1.0
-            }
+            Data = throughputHistory.ToArray()
         }
     };
+
     private string[] throughputChartLabels => new string[] { "", "", "", "", "", "" };
 
     // Treatment Center data
@@ -2248,6 +2243,14 @@
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.LoadConfigurationAsync();
+        
+        // Pre-fill throughput history
+        var rnd = new Random();
+        for(int i=0; i<6; i++) 
+        {
+            throughputHistory.Add(rnd.Next(800, 1500));
+        }
+
         InitializeServices();
         InitializeSupplyItems();
         await RefreshAll();
@@ -2388,6 +2391,11 @@
             incomingMessages = random.Next(40, 80);
             outgoingMessages = random.Next(35, 70);
             dataThroughput = (random.Next(800, 1500)).ToString();
+            
+            // Update history
+            throughputHistory.Add(double.Parse(dataThroughput));
+            if (throughputHistory.Count > 6) throughputHistory.RemoveAt(0);
+
             gatewayHealth = gatewayMessages > 50 ? "healthy" : "warning";
             gatewayStatusText = gatewayHealth == "healthy" ? "Operational" : "Degraded";
         }
