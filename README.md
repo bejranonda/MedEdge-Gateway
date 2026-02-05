@@ -16,11 +16,11 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.2 RELEASED - Enhanced Dashboard Visualization**
+**✅ v2.2.3 RELEASED - Minimal Throughput Visualization**
 
-**Latest Update: Enhanced Client Group Visualization**
-- ✅ New Devices subgroup with mini bar charts (Infusion Pumps, Dialysis, Filtration)
-- ✅ Throughput bar chart showing 6-minute historical data
+- ✅ Minimal Throughput line chart (Premium look: No axis/labels/values)
+- ✅ Extended Throughput history (50 data points, ~2.5 min history)
+- ✅ Real-time data fluctuation with history tracking
 - ✅ Azure IoT Hub label visibility improved with text shadow
 - ✅ Edge Gateway renamed to [Treatment] → Local
 - ✅ Medical Devices + Controller moved to bottom row
@@ -195,12 +195,14 @@ Local Edge Models → Regional Aggregation → Global Training
 
 ## 🎨 Dashboard Features
 
-- **System Dashboard (v2.2.2)**
+- **System Dashboard (v2.2.3)**
   - **Enhanced Client Group Visualization**: Reorganized hierarchical layout with dedicated Devices subgroup
     - Infusion Pumps (8 units, 125 ml/min) with mini bar chart
     - Dialysis Machines (5 units, 350 ml/min) with mini bar chart
     - Water Filtration Systems (3 units, 2.5 L/min) with mini bar chart
-  - **Throughput Bar Chart**: 6-minute historical data visualization showing data magnitude
+  - **Minimal Throughput Line Chart**: Clean, single green trend line with **zero axis labels, values, or grid clutter** for a premium aesthetic
+  - **Dynamic History Tracking**: Tracks the last **50 data points** (~2.5 minutes) of real throughput history
+  - **Authentic Fluctuation**: Real-time jagged line visualization showing actual data volatility
   - **Azure IoT Hub Visualization**: Improved visibility with text shadow on blue gradient
     - Shows hub name and real-time connection status
     - Treatment Center & Supply Center interfaces displayed as logical groupings
@@ -377,6 +379,7 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.2.2
-**Last Updated:** 2026-02-04
-**Status:** Production Ready - Enhanced Dashboard Visualization
+**Current Version:** v2.2.3
+**Last Updated:** 2026-02-05
+**Status:** Production Ready - Minimal Throughput Visualization
+

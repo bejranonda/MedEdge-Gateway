@@ -5,6 +5,23 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.3] - 2026-02-05
+
+### Added
+
+#### Dashboard Optimization
+- **Minimal Throughput Visualization**: Implemented an ultra-clean line chart with no axes, labels, or grid lines for a more focused user experience
+- **Time-Series History Tracking**: New history tracking logic for system throughput showing real-time fluctuations
+- **Extended History Buffer**: Increased historical viewport to the last 50 data points (approx. 2.5 minutes of live data)
+- **CSS-Based Axis Hiding**: Added scoped CSS to ensure absolute removal of chart text elements for a premium minimal aesthetic
+
+### Changed
+
+#### Visualization Logic
+- **Real-Time Fluctuation**: Replaced static multipliers with authentic history tracking, ensuring the line profile evolves naturally as throughput changes
+- **Streamlined Card UI**: Simplified the Throughput card subtitle for a cleaner look (removed time window label)
+
+
 ## [2.2.2] - 2026-02-04
 
 ### Added
