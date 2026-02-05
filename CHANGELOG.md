@@ -5,6 +5,15 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.7] - 2026-02-05
+
+### Added
+
+#### Optimization & Interaction
+- **Simulation Refinement**: Reduced simulated fleet to **30 Devices** (15 Infusion, 10 Dialysis, 5 Filtration) for manageable demonstration
+- **Interactive Tooltips**: Added robust hover tooltips to device status donut charts ("Healthy: 12 | Warning: 2 | Offline: 1")
+- **Metrics Accuracy**: Fixed logic for "Defective" and "Offline" device summation in the top bar to align exactly with chart data
+
 ## [2.2.6] - 2026-02-05
 
 ### Added

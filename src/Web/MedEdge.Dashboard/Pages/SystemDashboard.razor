@@ -1330,14 +1330,16 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionPressure mmHg</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudChart ChartType="ChartType.Donut" InputData="@_infusionStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_infusionStatusData[0]} | Warning: {_infusionStatusData[1]} | Offline: {_infusionStatusData[2]}")" Arrow="true" Placement="Placement.Left">
+                                                                <MudChart ChartType="ChartType.Donut" InputData="@_infusionStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            </MudTooltip>
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">Volume</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionVolume mL</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@infusionSeries" XAxisLabels="@GetEmptyLabels(8)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
+                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@infusionSeries" XAxisLabels="@GetEmptyLabels(15)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1360,14 +1362,16 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisDialysateFlow mL/min</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudChart ChartType="ChartType.Donut" InputData="@_dialysisStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_dialysisStatusData[0]} | Warning: {_dialysisStatusData[1]} | Offline: {_dialysisStatusData[2]}")" Arrow="true" Placement="Placement.Left">
+                                                                <MudChart ChartType="ChartType.Donut" InputData="@_dialysisStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            </MudTooltip>
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">UF Rate</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisUFRate mL/h</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@dialysisSeries" XAxisLabels="@GetEmptyLabels(5)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
+                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@dialysisSeries" XAxisLabels="@GetEmptyLabels(10)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1390,14 +1394,16 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationPressure psi</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudChart ChartType="ChartType.Donut" InputData="@_filtrationStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_filtrationStatusData[0]} | Warning: {_filtrationStatusData[1]} | Offline: {_filtrationStatusData[2]}")" Arrow="true" Placement="Placement.Left">
+                                                                <MudChart ChartType="ChartType.Donut" InputData="@_filtrationStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            </MudTooltip>
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">TDS</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationTDS ppm</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@filtrationSeries" XAxisLabels="@GetEmptyLabels(3)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
+                                                            <MudChart ChartType="ChartType.Line" ChartSeries="@filtrationSeries" XAxisLabels="@GetEmptyLabels(5)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true, LineStrokeWidth = 3 })" Width="100%" Height="40px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2159,10 +2165,10 @@
     private double[] ServiceChartDataInput => new double[] { healthyServices, unhealthyServices };
     private string[] ServiceChartLabels => new string[] { "Healthy", "Unhealthy" };
 
-    // Device counts and parameters (Simulated Scale: 1000 Total)
-    private int infusionPumpCount = 500;
-    private int dialysisMachineCount = 300;
-    private int waterFiltrationCount = 200;
+    // Device counts and parameters (Simulated Scale: 30 Total)
+    private int infusionPumpCount = 15;
+    private int dialysisMachineCount = 10;
+    private int waterFiltrationCount = 5;
     
     // Infusion Pump parameters
     private string infusionFlowRate = "125";      // mL/h
@@ -2182,20 +2188,20 @@
     private int filtrationFilterLife = 85;        // percentage
 
     // Device Status Data for Donut Charts
-    private double[] _infusionStatusData = new double[] { 450, 40, 10 };
-    private double[] _dialysisStatusData = new double[] { 270, 20, 10 };
-    private double[] _filtrationStatusData = new double[] { 180, 15, 5 };
+    private double[] _infusionStatusData = new double[] { 12, 2, 1 };
+    private double[] _dialysisStatusData = new double[] { 8, 1, 1 };
+    private double[] _filtrationStatusData = new double[] { 4, 1, 0 };
     private string[] _deviceStatusLabels = new string[] { "Healthy", "Warning", "Offline" };
 
     // Simulated Device IDs
-    private string currentInfusionId = "INF-024";
-    private string currentDialysisId = "DIA-108";
-    private string currentFiltrationId = "WFS-007";
+    private string currentInfusionId = "INF-012";
+    private string currentDialysisId = "DIA-008";
+    private string currentFiltrationId = "WFS-004";
 
     // Device mini bar charts (Sparklines) — InputData double[]
-    private double[] _infusionData = new double[8];
-    private double[] _dialysisData = new double[5];
-    private double[] _filtrationData = new double[3];
+    private double[] _infusionData = new double[15];
+    private double[] _dialysisData = new double[10];
+    private double[] _filtrationData = new double[5];
 
     private List<ChartSeries> infusionSeries => new List<ChartSeries> { new ChartSeries { Name = "Fleet", Data = _infusionData } };
     private List<ChartSeries> dialysisSeries => new List<ChartSeries> { new ChartSeries { Name = "Fleet", Data = _dialysisData } };
@@ -2445,38 +2451,43 @@
         var rnd = new Random();
         
         // Use new arrays to ensure Blazor detects the change
-        _infusionData = Enumerable.Range(0, 8).Select(_ => 125.0 + rnd.Next(-15, 15)).ToArray();
-        _dialysisData = Enumerable.Range(0, 5).Select(_ => 350.0 + rnd.Next(-30, 30)).ToArray();
-        _filtrationData = Enumerable.Range(0, 3).Select(_ => 1500.0 + rnd.Next(-50, 50)).ToArray();
+        _infusionData = Enumerable.Range(0, 15).Select(_ => 125.0 + rnd.Next(-15, 15)).ToArray();
+        _dialysisData = Enumerable.Range(0, 10).Select(_ => 350.0 + rnd.Next(-30, 30)).ToArray();
+        _filtrationData = Enumerable.Range(0, 5).Select(_ => 1500.0 + rnd.Next(-50, 50)).ToArray();
 
-        // Update Status Distributions (Donut Charts) with slight fluctuation
-        int infHealthy = 450 + rnd.Next(-5, 5);
-        int infWarning = 40 + rnd.Next(-2, 2);
-        int infOffline = 500 - infHealthy - infWarning;
+        // Update Status Distributions (Donut Charts) for 30 devices scale
+        int infHealthy = 12 + rnd.Next(-1, 2);
+        if (infHealthy > 15) infHealthy = 15;
+        int infWarning = rnd.Next(0, 2);
+        int infOffline = 15 - infHealthy - infWarning;
+        if (infOffline < 0) { infOffline = 0; infWarning = 15 - infHealthy; }
         _infusionStatusData = new double[] { infHealthy, infWarning, infOffline };
 
-        int diaHealthy = 270 + rnd.Next(-3, 3);
-        int diaWarning = 20 + rnd.Next(-1, 1);
-        int diaOffline = 300 - diaHealthy - diaWarning;
+        int diaHealthy = 8 + rnd.Next(-1, 2);
+        if (diaHealthy > 10) diaHealthy = 10;
+        int diaWarning = rnd.Next(0, 2);
+        int diaOffline = 10 - diaHealthy - diaWarning;
+        if (diaOffline < 0) { diaOffline = 0; diaWarning = 10 - diaHealthy; }
         _dialysisStatusData = new double[] { diaHealthy, diaWarning, diaOffline };
         
-        int filHealthy = 180 + rnd.Next(-2, 2);
-        int filWarning = 15 + rnd.Next(-1, 1);
-        int filOffline = 200 - filHealthy - filWarning;
+        int filHealthy = 4 + rnd.Next(0, 2);
+        if (filHealthy > 5) filHealthy = 5;
+        int filWarning = 5 - filHealthy;
+        int filOffline = 0;
         _filtrationStatusData = new double[] { filHealthy, filWarning, filOffline };
 
         // Simulate switching between devices for the detailed view
-        currentInfusionId = $"INF-{rnd.Next(1, 501):D3}";
+        currentInfusionId = $"INF-{rnd.Next(1, 16):D3}";
         infusionFlowRate = (125 + rnd.Next(-2, 3)).ToString();
         infusionPressure = (250 + rnd.Next(-10, 10)).ToString();
         infusionVolume = (int.Parse(infusionVolume) + rnd.Next(0, 5)).ToString();
 
-        currentDialysisId = $"DIA-{rnd.Next(1, 301):D3}";
+        currentDialysisId = $"DIA-{rnd.Next(1, 11):D3}";
         dialysisBloodFlow = (350 + rnd.Next(-5, 5)).ToString();
         dialysisDialysateFlow = (600 + rnd.Next(-10, 10)).ToString();
         dialysisUFRate = (750 + rnd.Next(-15, 15)).ToString();
 
-        currentFiltrationId = $"WFS-{rnd.Next(1, 201):D3}";
+        currentFiltrationId = $"WFS-{rnd.Next(1, 6):D3}";
         filtrationFlowRate = (1500 + rnd.Next(-20, 20)).ToString();
         filtrationPressure = (50 + rnd.Next(-2, 3)).ToString();
         filtrationTDS = (5 + rnd.Next(0, 2)).ToString();
@@ -2521,13 +2532,14 @@
                 edgeDevices = GetMockDevices();
             }
 
-            // Simulation Override for Demo Scale (1000 devices)
-            totalDevices = 1000;
-            // Fluctuate counts slightly
-            var r = new Random();
-            onlineDevices = 950 + r.Next(-5, 5);
-            defectiveDevices = 20 + r.Next(-2, 2);
-            offlineDevices = totalDevices - onlineDevices - defectiveDevices;
+            // Simulation Override for Demo Scale (30 devices)
+            totalDevices = 30;
+            // Fluctuate counts slightly based on chart data
+            onlineDevices = (int)(_infusionStatusData[0] + _dialysisStatusData[0] + _filtrationStatusData[0]);
+            // Calculate warning + offline as 'defective/attention needed' effectively for the summary or just offline
+            offlineDevices = (int)(_infusionStatusData[2] + _dialysisStatusData[2] + _filtrationStatusData[2]);
+            // Defective could be 'Warning' state in this context or explicitly tracked
+            defectiveDevices = (int)(_infusionStatusData[1] + _dialysisStatusData[1] + _filtrationStatusData[1]);
 
             // Set initial vitals device from online devices
             if (string.IsNullOrEmpty(currentDeviceSerial) || !edgeDevices.Any(d => d.DeviceId == currentDeviceSerial))
