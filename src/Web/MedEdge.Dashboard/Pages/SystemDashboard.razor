@@ -991,7 +991,19 @@
         </div>
 
         <div class="stat-card">
-            <MudChart ChartType="ChartType.Bar" InputData="@throughputChartData" InputLabels="@throughputChartLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#009639", "#22c55e", "#4ade80", "#86efac", "#bbf7d0", "#dcfce7" } })" Width="100px" Height="80px" />
+            <MudChart ChartType="ChartType.Line" 
+                      ChartSeries="@throughputChartSeries" 
+                      XAxisLabels="@throughputChartLabels" 
+                      ChartOptions="@(new ChartOptions{ 
+                          ChartPalette = new[] { "#009639" },
+                          YAxisTicks = 0,
+                          YAxisLines = false,
+                          XAxisLines = false,
+                          DisableLegend = true,
+                          LineStrokeWidth = 4
+                      })" 
+                      Width="100px" 
+                      Height="80px" />
             <div class="stat-content">
                 <div class="stat-label">Throughput</div>
                 <div class="stat-value" style="font-size: 24px;">@dataThroughput</div>
@@ -2153,13 +2165,20 @@
     private double[] waterFiltrationChartData => new double[] { 1400, 1450, 1500, 1480, 1520, 1500 };
 
     // Throughput bar chart — InputData double[] and InputLabels string[]
-    private double[] throughputChartData => new double[] {
-        double.Parse(dataThroughput) * 0.8,
-        double.Parse(dataThroughput) * 0.9,
-        double.Parse(dataThroughput) * 0.95,
-        double.Parse(dataThroughput) * 1.0,
-        double.Parse(dataThroughput) * 1.05,
-        double.Parse(dataThroughput) * 1.1
+    private List<ChartSeries> throughputChartSeries => new List<ChartSeries>()
+    {
+        new ChartSeries()
+        {
+            Name = "Throughput",
+            Data = new double[] {
+                double.Parse(dataThroughput) * 0.8,
+                double.Parse(dataThroughput) * 0.9,
+                double.Parse(dataThroughput) * 0.95,
+                double.Parse(dataThroughput) * 1.0,
+                double.Parse(dataThroughput) * 1.05,
+                double.Parse(dataThroughput) * 1.1
+            }
+        }
     };
     private string[] throughputChartLabels => new string[] { "-5m", "-4m", "-3m", "-2m", "-1m", "Now" };
 
