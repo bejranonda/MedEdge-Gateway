@@ -5,6 +5,15 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.5] - 2026-02-05
+
+### Added
+
+#### Scaled Simulation
+- **1000-Device Scale**: Increased total simulated device count to 1000 (500 Infusion, 300 Dialysis, 200 Filtration) to demonstrate enterprise-grade capabilities
+- **Device Status Distribution**: Added real-time Donut charts to each device group card showing Healthy/Warning/Offline status distribution
+- **Top Bar Alignment**: synchronized top bar statistics with the new 1000-device scale
+
 ## [2.2.4] - 2026-02-05
 
 ### Added

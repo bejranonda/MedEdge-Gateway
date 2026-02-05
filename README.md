@@ -16,10 +16,13 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.4 RELEASED - Integrated Device Sparklines**
+**✅ v2.2.5 RELEASED - Enterprise Scale & Visuals**
 
-- ✅ Aligned device group charts with actual counts (8, 5, 3 units)
-- ✅ Fixed device chart visibility with high-performance Sparkline (Line) charts
+- ✅ Scaled simulation to **1000 Total Devices** (Top Bar Updated)
+- ✅ Added **Status Donut Charts** to each device group (Healthy/Warning/Offline)
+- ✅ Aligned device group counts (500 Infusion, 300 Dialysis, 200 Filtration)
+- ✅ Minimal Sparklines retained for telemetry trends
+- ✅ High-Performance rendering for scaled dataset
 - ✅ Robust array-reference data binding for reliable SVG updates
 - ✅ Extended Throughput history (50 data points, ~2.5 min history)
 - ✅ Realistic device simulation with medically accurate parameters

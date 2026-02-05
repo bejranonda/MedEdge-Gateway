@@ -1317,7 +1317,7 @@
                                                         <div class="node-name" style="font-size: 12px; font-weight: 600;">💉 Infusion Pumps (@infusionPumpCount units)</div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
-                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 10px;">
+                                                    <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
                                                         <div>
                                                             <div style="color: #64748b;">Flow Rate</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionFlowRate mL/h</div>
@@ -1325,6 +1325,9 @@
                                                         <div>
                                                             <div style="color: #64748b;">Pressure</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionPressure mmHg</div>
+                                                        </div>
+                                                        <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
+                                                            <MudChart ChartType="ChartType.Donut" InputData="@_infusionStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">Volume</div>
@@ -1341,7 +1344,7 @@
                                                         <div class="node-name" style="font-size: 12px; font-weight: 600;">🩺 Dialysis Machines (@dialysisMachineCount units)</div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
-                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 10px;">
+                                                    <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
                                                         <div>
                                                             <div style="color: #64748b;">Blood Flow</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisBloodFlow mL/min</div>
@@ -1349,6 +1352,9 @@
                                                         <div>
                                                             <div style="color: #64748b;">Dialysate Flow</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisDialysateFlow mL/min</div>
+                                                        </div>
+                                                        <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
+                                                            <MudChart ChartType="ChartType.Donut" InputData="@_dialysisStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">UF Rate</div>
@@ -1365,7 +1371,7 @@
                                                         <div class="node-name" style="font-size: 12px; font-weight: 600;">💧 Water Filtration (@waterFiltrationCount units)</div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
-                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 10px;">
+                                                    <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
                                                         <div>
                                                             <div style="color: #64748b;">Flow Rate</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationFlowRate L/h</div>
@@ -1373,6 +1379,9 @@
                                                         <div>
                                                             <div style="color: #64748b;">Pressure</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationPressure psi</div>
+                                                        </div>
+                                                        <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
+                                                            <MudChart ChartType="ChartType.Donut" InputData="@_filtrationStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
                                                         </div>
                                                         <div>
                                                             <div style="color: #64748b;">TDS</div>
@@ -2141,10 +2150,10 @@
     private double[] ServiceChartDataInput => new double[] { healthyServices, unhealthyServices };
     private string[] ServiceChartLabels => new string[] { "Healthy", "Unhealthy" };
 
-    // Device counts and parameters
-    private int infusionPumpCount = 8;
-    private int dialysisMachineCount = 5;
-    private int waterFiltrationCount = 3;
+    // Device counts and parameters (Simulated Scale: 1000 Total)
+    private int infusionPumpCount = 500;
+    private int dialysisMachineCount = 300;
+    private int waterFiltrationCount = 200;
     
     // Infusion Pump parameters
     private string infusionFlowRate = "125";      // mL/h
@@ -2163,7 +2172,13 @@
     private string filtrationTDS = "5";           // ppm (Total Dissolved Solids)
     private int filtrationFilterLife = 85;        // percentage
 
-    // Device mini bar charts — InputData double[]
+    // Device Status Data for Donut Charts
+    private double[] _infusionStatusData = new double[] { 450, 40, 10 };
+    private double[] _dialysisStatusData = new double[] { 270, 20, 10 };
+    private double[] _filtrationStatusData = new double[] { 180, 15, 5 };
+    private string[] _deviceStatusLabels = new string[] { "Healthy", "Warning", "Offline" };
+
+    // Device mini bar charts (Sparklines) — InputData double[]
     private double[] _infusionData = new double[8];
     private double[] _dialysisData = new double[5];
     private double[] _filtrationData = new double[3];
@@ -2419,6 +2434,22 @@
         _infusionData = Enumerable.Range(0, 8).Select(_ => 125.0 + rnd.Next(-15, 15)).ToArray();
         _dialysisData = Enumerable.Range(0, 5).Select(_ => 350.0 + rnd.Next(-30, 30)).ToArray();
         _filtrationData = Enumerable.Range(0, 3).Select(_ => 1500.0 + rnd.Next(-50, 50)).ToArray();
+
+        // Update Status Distributions (Donut Charts) with slight fluctuation
+        int infHealthy = 450 + rnd.Next(-5, 5);
+        int infWarning = 40 + rnd.Next(-2, 2);
+        int infOffline = 500 - infHealthy - infWarning;
+        _infusionStatusData = new double[] { infHealthy, infWarning, infOffline };
+
+        int diaHealthy = 270 + rnd.Next(-3, 3);
+        int diaWarning = 20 + rnd.Next(-1, 1);
+        int diaOffline = 300 - diaHealthy - diaWarning;
+        _dialysisStatusData = new double[] { diaHealthy, diaWarning, diaOffline };
+        
+        int filHealthy = 180 + rnd.Next(-2, 2);
+        int filWarning = 15 + rnd.Next(-1, 1);
+        int filOffline = 200 - filHealthy - filWarning;
+        _filtrationStatusData = new double[] { filHealthy, filWarning, filOffline };
     }
 
     private string[] GetEmptyLabels(int count)
@@ -2458,10 +2489,13 @@
                 edgeDevices = GetMockDevices();
             }
 
-            totalDevices = edgeDevices.Count;
-            onlineDevices = edgeDevices.Count(d => d.IsOnline && !d.IsDefective);
-            offlineDevices = edgeDevices.Count(d => !d.IsOnline);
-            defectiveDevices = edgeDevices.Count(d => d.IsDefective);
+            // Simulation Override for Demo Scale (1000 devices)
+            totalDevices = 1000;
+            // Fluctuate counts slightly
+            var r = new Random();
+            onlineDevices = 950 + r.Next(-5, 5);
+            defectiveDevices = 20 + r.Next(-2, 2);
+            offlineDevices = totalDevices - onlineDevices - defectiveDevices;
 
             // Set initial vitals device from online devices
             if (string.IsNullOrEmpty(currentDeviceSerial) || !edgeDevices.Any(d => d.DeviceId == currentDeviceSerial))
