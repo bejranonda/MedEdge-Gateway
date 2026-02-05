@@ -1331,7 +1331,7 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionVolume mL</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Bar" InputData="@infusionPumpChartData" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" } })" Width="60px" Height="25px" />
+                                                            <MudChart ChartType="ChartType.Bar" InputData="@infusionPumpChartData" InputLabels="@GetEmptyLabels(infusionPumpChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1354,9 +1354,8 @@
                                                             <div style="color: #64748b;">UF Rate</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisUFRate mL/h</div>
                                                         </div>
-                                                        <div>
-                                                            <div style="color: #64748b;">Treatment</div>
-                                                            <div style="font-weight: 600; color: #a855f7;">@dialysisTreatmentTime min</div>
+                                                        <div style="display: flex; align-items: flex-end;">
+                                                            <MudChart ChartType="ChartType.Bar" InputData="@dialysisMachineChartData" InputLabels="@GetEmptyLabels(dialysisMachineChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1379,9 +1378,8 @@
                                                             <div style="color: #64748b;">TDS</div>
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationTDS ppm</div>
                                                         </div>
-                                                        <div>
-                                                            <div style="color: #64748b;">Filter Life</div>
-                                                            <div style="font-weight: 600; color: #a855f7;">@filtrationFilterLife%</div>
+                                                        <div style="display: flex; align-items: flex-end;">
+                                                            <MudChart ChartType="ChartType.Bar" InputData="@waterFiltrationChartData" InputLabels="@GetEmptyLabels(waterFiltrationChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2425,6 +2423,11 @@
         for(int i=0; i<_infusionData.Length; i++) _infusionData[i] = 125 + rnd.Next(-15, 15);
         for(int i=0; i<_dialysisData.Length; i++) _dialysisData[i] = 350 + rnd.Next(-30, 30);
         for(int i=0; i<_filtrationData.Length; i++) _filtrationData[i] = 1500 + rnd.Next(-50, 50);
+    }
+
+    private string[] GetEmptyLabels(int count)
+    {
+        return Enumerable.Repeat("", count).ToArray();
     }
 
     private async Task LoadEdgeDevices()
