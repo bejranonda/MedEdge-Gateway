@@ -2181,7 +2181,7 @@
         }
     };
 
-    private string[] throughputChartLabels => new string[] { "", "", "", "", "", "" };
+    private string[] throughputChartLabels => throughputHistory.Select(_ => "").ToArray();
 
     // Treatment Center data
     private int activeSessions = 8;
@@ -2246,7 +2246,7 @@
         
         // Pre-fill throughput history
         var rnd = new Random();
-        for(int i=0; i<6; i++) 
+        for(int i=0; i<50; i++) 
         {
             throughputHistory.Add(rnd.Next(800, 1500));
         }
@@ -2394,7 +2394,7 @@
             
             // Update history
             throughputHistory.Add(double.Parse(dataThroughput));
-            if (throughputHistory.Count > 6) throughputHistory.RemoveAt(0);
+            if (throughputHistory.Count > 50) throughputHistory.RemoveAt(0);
 
             gatewayHealth = gatewayMessages > 50 ? "healthy" : "warning";
             gatewayStatusText = gatewayHealth == "healthy" ? "Operational" : "Degraded";
