@@ -16,15 +16,15 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.3 RELEASED - Minimal Throughput Visualization**
+**✅ v2.2.4 RELEASED - Integrated Device Sparklines**
 
-- ✅ Minimal Throughput line chart (Premium look: No axis/labels/values)
+- ✅ Aligned device group charts with actual counts (8, 5, 3 units)
+- ✅ Fixed device chart visibility with high-performance Sparkline (Line) charts
+- ✅ Robust array-reference data binding for reliable SVG updates
 - ✅ Extended Throughput history (50 data points, ~2.5 min history)
-- ✅ Real-time data fluctuation with history tracking
-- ✅ Azure IoT Hub label visibility improved with text shadow
-- ✅ Edge Gateway renamed to [Treatment] → Local
-- ✅ Medical Devices + Controller moved to bottom row
 - ✅ Realistic device simulation with medically accurate parameters
+- ✅ Azure IoT Hub label visibility improved with text shadow
+- ✅ Minimal Throughput line chart (Premium look: No axis/labels/values)
 
 **Phase 1: FHIR API Foundation** - ✅ COMPLETE
 - ✅ Clean Architecture (9 projects, 3-layer design)

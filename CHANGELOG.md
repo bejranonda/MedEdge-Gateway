@@ -5,6 +5,21 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.4] - 2026-02-05
+
+### Added
+
+#### Device Population Visualization
+- **Unit Alignment**: Refined device group charts to accurately reflect the population counts (8 units, 5 units, 3 units)
+- **High-Performance Sparklines**: Replaced bar charts with sparklines (Line charts) for better visibility and performance in small grid cells
+- **Array-Reference Binding**: Implemented new array reference generation for every data update, ensuring MudBlazor reliably detects telemetry changes
+
+### Changed
+
+#### Simulation Logic
+- **Independent Telemetry**: Updated simulation to generate unique data profiles for every individual device (bar/point) within a fleet
+- **Sparkline Aesthetics**: Optimized sparkline dimensions (120x40px) and removed grid clutter for a cohesive dashboard look
+
 ## [2.2.3] - 2026-02-05
 
 ### Added
