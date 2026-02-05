@@ -16,16 +16,16 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.8 RELEASED - Global Context**
+**✅ v2.3.0 RELEASED - Enterprise Hybrid Simulation**
 
-- ✅ Global Fleet Simulation (**4000 Total Devices**) in Top Bar
-- ✅ Local Focused View (**30 Devices**) in Device Panel
-- ✅ Fixed Tooltip positioning on status charts
-
-- ✅ Scaled simulation to **1000 Total Devices** (Top Bar Updated)
-- ✅ Added **Status Donut Charts** to each device group (Healthy/Warning/Offline)
-- ✅ Aligned device group counts (500 Infusion, 300 Dialysis, 200 Filtration)
-- ✅ Minimal Sparklines retained for telemetry trends
+- ✅ **4000 Global Devices** simulated in Top Bar context
+- ✅ **30 Local Devices** simulated for high-reactivity dashboard view
+- ✅ **Aggregated Global Analytics** in detail panels
+- ✅ Context-aware **Donut Tooltips** for status breakdown
+- ✅ Accurate **Defective/Offline** cross-check logic
+- ✅ Dynamic **Device ID Switching** (Fleet scanning simulation)
+- ✅ **Fluctuating Telemetry** matched to simulated IDs
+- ✅ Scaled simulation to **30 Total Devices** for demo clarity
 - ✅ High-Performance rendering for scaled dataset
 - ✅ Robust array-reference data binding for reliable SVG updates
 - ✅ Extended Throughput history (50 data points, ~2.5 min history)

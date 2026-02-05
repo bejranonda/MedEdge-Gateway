@@ -5,6 +5,16 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-02-06
+
+### Added
+
+#### Enterprise Hybrid Simulation
+- **Global-Local Scale**: Implemented a hybrid simulation model with **4000 global devices** (Top Bar) and **30 local devices** (Interactive Panel) to demonstrate large-scale management with high-performance local monitoring
+- **Global Fleet Analytics**: Replaced placeholder device lists with rich, aggregated statistics for the entire 4000-device fleet in the detail panels
+- **Precision UX**: Fixed `MudTooltip` positioning logic for donut charts to ensure context-aware placement directly adjacent to the visualizers
+- **Telemetry Realism**: Verified and synchronized defective/offline device counts across global and local contexts
+
 ## [2.2.8] - 2026-02-05
 
 ### Added
