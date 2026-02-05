@@ -1313,8 +1313,11 @@
                                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                                 <!-- Infusion Pumps -->
                                                 <div class="workflow-node" style="padding: 10px; background: rgba(255,255,255,0.9);">
-                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                                        <div class="node-name" style="font-size: 12px; font-weight: 600;">💉 Infusion Pumps (@infusionPumpCount units)</div>
+                                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
+                                                        <div>
+                                                            <div class="node-name" style="font-size: 12px; font-weight: 600;">💉 Infusion Pumps (@infusionPumpCount units)</div>
+                                                            <div style="font-size: 9px; color: #a855f7; font-family: var(--mud-typography-font-family-monospace); letter-spacing: 0.5px;">ID: @currentInfusionId</div>
+                                                        </div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
                                                     <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
@@ -1340,8 +1343,11 @@
                                                 </div>
                                                 <!-- Dialysis Machines -->
                                                 <div class="workflow-node" style="padding: 10px; background: rgba(255,255,255,0.9);">
-                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                                        <div class="node-name" style="font-size: 12px; font-weight: 600;">🩺 Dialysis Machines (@dialysisMachineCount units)</div>
+                                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
+                                                        <div>
+                                                            <div class="node-name" style="font-size: 12px; font-weight: 600;">🩺 Dialysis Machines (@dialysisMachineCount units)</div>
+                                                            <div style="font-size: 9px; color: #a855f7; font-family: var(--mud-typography-font-family-monospace); letter-spacing: 0.5px;">ID: @currentDialysisId</div>
+                                                        </div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
                                                     <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
@@ -1367,8 +1373,11 @@
                                                 </div>
                                                 <!-- Water Filtration Systems -->
                                                 <div class="workflow-node" style="padding: 10px; background: rgba(255,255,255,0.9);">
-                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                                        <div class="node-name" style="font-size: 12px; font-weight: 600;">💧 Water Filtration (@waterFiltrationCount units)</div>
+                                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
+                                                        <div>
+                                                            <div class="node-name" style="font-size: 12px; font-weight: 600;">💧 Water Filtration (@waterFiltrationCount units)</div>
+                                                            <div style="font-size: 9px; color: #a855f7; font-family: var(--mud-typography-font-family-monospace); letter-spacing: 0.5px;">ID: @currentFiltrationId</div>
+                                                        </div>
                                                         <span class="status-dot healthy"></span>
                                                     </div>
                                                     <div style="display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 6px; font-size: 10px;">
@@ -2178,6 +2187,11 @@
     private double[] _filtrationStatusData = new double[] { 180, 15, 5 };
     private string[] _deviceStatusLabels = new string[] { "Healthy", "Warning", "Offline" };
 
+    // Simulated Device IDs
+    private string currentInfusionId = "INF-024";
+    private string currentDialysisId = "DIA-108";
+    private string currentFiltrationId = "WFS-007";
+
     // Device mini bar charts (Sparklines) — InputData double[]
     private double[] _infusionData = new double[8];
     private double[] _dialysisData = new double[5];
@@ -2450,7 +2464,25 @@
         int filWarning = 15 + rnd.Next(-1, 1);
         int filOffline = 200 - filHealthy - filWarning;
         _filtrationStatusData = new double[] { filHealthy, filWarning, filOffline };
+
+        // Simulate switching between devices for the detailed view
+        currentInfusionId = $"INF-{rnd.Next(1, 501):D3}";
+        infusionFlowRate = (125 + rnd.Next(-2, 3)).ToString();
+        infusionPressure = (250 + rnd.Next(-10, 10)).ToString();
+        infusionVolume = (int.Parse(infusionVolume) + rnd.Next(0, 5)).ToString();
+
+        currentDialysisId = $"DIA-{rnd.Next(1, 301):D3}";
+        dialysisBloodFlow = (350 + rnd.Next(-5, 5)).ToString();
+        dialysisDialysateFlow = (600 + rnd.Next(-10, 10)).ToString();
+        dialysisUFRate = (750 + rnd.Next(-15, 15)).ToString();
+
+        currentFiltrationId = $"WFS-{rnd.Next(1, 201):D3}";
+        filtrationFlowRate = (1500 + rnd.Next(-20, 20)).ToString();
+        filtrationPressure = (50 + rnd.Next(-2, 3)).ToString();
+        filtrationTDS = (5 + rnd.Next(0, 2)).ToString();
+
     }
+
 
     private string[] GetEmptyLabels(int count)
     {

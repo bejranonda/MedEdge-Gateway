@@ -5,6 +5,15 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.6] - 2026-02-05
+
+### Added
+
+#### UX & Simulation Realism
+- **Device ID Toggling**: Added dynamic Device ID display (e.g., `INF-123`) that updates with every telemetry refresh to simulate cycle-monitoring across the entire fleet
+- **Dynamic Metrics**: Device telemetry values now fluctuate uniquely for each ID, creating a more realistic "scanning" effect
+- **Detailed Tooltips**: Enabled hover interactions for status donuts to show precise device counts
+
 ## [2.2.5] - 2026-02-05
 
 ### Added

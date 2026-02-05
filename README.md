@@ -16,7 +16,10 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.5 RELEASED - Enterprise Scale & Visuals**
+**✅ v2.2.6 RELEASED - Enhanced Device UX**
+
+- ✅ Dynamic **Device ID Switching** (Simulate fleet scanning)
+- ✅ **Fluctuating Telemetry** matched to simulated IDs
 
 - ✅ Scaled simulation to **1000 Total Devices** (Top Bar Updated)
 - ✅ Added **Status Donut Charts** to each device group (Healthy/Warning/Offline)
