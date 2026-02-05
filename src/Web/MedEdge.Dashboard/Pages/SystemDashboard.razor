@@ -1331,7 +1331,7 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionVolume mL</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Bar" InputData="@infusionPumpChartData" InputLabels="@GetEmptyLabels(infusionPumpChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
+                                                            <MudChart ChartType="ChartType.Bar" ChartSeries="@infusionSeries" XAxisLabels="@GetEmptyLabels(_infusionData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1355,7 +1355,7 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisUFRate mL/h</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Bar" InputData="@dialysisMachineChartData" InputLabels="@GetEmptyLabels(dialysisMachineChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
+                                                            <MudChart ChartType="ChartType.Bar" ChartSeries="@dialysisSeries" XAxisLabels="@GetEmptyLabels(_dialysisData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1379,7 +1379,7 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationTDS ppm</div>
                                                         </div>
                                                         <div style="display: flex; align-items: flex-end;">
-                                                            <MudChart ChartType="ChartType.Bar" InputData="@waterFiltrationChartData" InputLabels="@GetEmptyLabels(waterFiltrationChartData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
+                                                            <MudChart ChartType="ChartType.Bar" ChartSeries="@filtrationSeries" XAxisLabels="@GetEmptyLabels(_filtrationData.Length)" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#a855f7" }, DisableLegend = true })" Width="100%" Height="35px" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2168,9 +2168,9 @@
     private double[] _dialysisData = new double[0];
     private double[] _filtrationData = new double[0];
 
-    private double[] infusionPumpChartData => _infusionData;
-    private double[] dialysisMachineChartData => _dialysisData;
-    private double[] waterFiltrationChartData => _filtrationData;
+    private List<ChartSeries> infusionSeries => new List<ChartSeries> { new ChartSeries { Name = "Infusion", Data = _infusionData } };
+    private List<ChartSeries> dialysisSeries => new List<ChartSeries> { new ChartSeries { Name = "Dialysis", Data = _dialysisData } };
+    private List<ChartSeries> filtrationSeries => new List<ChartSeries> { new ChartSeries { Name = "Filtration", Data = _filtrationData } };
 
     // Throughput bar chart — InputData double[] and InputLabels string[]
     private List<double> throughputHistory = new List<double>();
