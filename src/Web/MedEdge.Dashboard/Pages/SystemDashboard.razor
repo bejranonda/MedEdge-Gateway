@@ -1330,8 +1330,10 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@infusionPressure mmHg</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudTooltip Text="@($"Healthy: {_infusionStatusData[0]} | Warning: {_infusionStatusData[1]} | Offline: {_infusionStatusData[2]}")" Arrow="true" Placement="Placement.Left">
-                                                                <MudChart ChartType="ChartType.Donut" InputData="@_infusionStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_infusionStatusData[0]} | Warning: {_infusionStatusData[1]} | Offline: {_infusionStatusData[2]}")" Arrow="true" Placement="Placement.Right">
+                                                                <div style="width: 50px; height: 50px;">
+                                                                    <MudChart ChartType="ChartType.Donut" InputData="@_infusionStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                                </div>
                                                             </MudTooltip>
                                                         </div>
                                                         <div>
@@ -1362,8 +1364,10 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@dialysisDialysateFlow mL/min</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudTooltip Text="@($"Healthy: {_dialysisStatusData[0]} | Warning: {_dialysisStatusData[1]} | Offline: {_dialysisStatusData[2]}")" Arrow="true" Placement="Placement.Left">
-                                                                <MudChart ChartType="ChartType.Donut" InputData="@_dialysisStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_dialysisStatusData[0]} | Warning: {_dialysisStatusData[1]} | Offline: {_dialysisStatusData[2]}")" Arrow="true" Placement="Placement.Right">
+                                                                <div style="width: 50px; height: 50px;">
+                                                                    <MudChart ChartType="ChartType.Donut" InputData="@_dialysisStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                                </div>
                                                             </MudTooltip>
                                                         </div>
                                                         <div>
@@ -1394,8 +1398,10 @@
                                                             <div style="font-weight: 600; color: #a855f7;">@filtrationPressure psi</div>
                                                         </div>
                                                         <div style="grid-row: span 2; display: flex; align-items: center; justify-content: center;">
-                                                            <MudTooltip Text="@($"Healthy: {_filtrationStatusData[0]} | Warning: {_filtrationStatusData[1]} | Offline: {_filtrationStatusData[2]}")" Arrow="true" Placement="Placement.Left">
-                                                                <MudChart ChartType="ChartType.Donut" InputData="@_filtrationStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                            <MudTooltip Text="@($"Healthy: {_filtrationStatusData[0]} | Warning: {_filtrationStatusData[1]} | Offline: {_filtrationStatusData[2]}")" Arrow="true" Placement="Placement.Right">
+                                                                <div style="width: 50px; height: 50px;">
+                                                                    <MudChart ChartType="ChartType.Donut" InputData="@_filtrationStatusData" InputLabels="@_deviceStatusLabels" ChartOptions="@(new ChartOptions{ ChartPalette = new[] { "#22c55e", "#f59e0b", "#ef4444" }, DisableLegend = true })" Width="50px" Height="50px" />
+                                                                </div>
                                                             </MudTooltip>
                                                         </div>
                                                         <div>
@@ -1535,19 +1541,28 @@
 
                     @if (selectedNodeDetails.NodeId == "medical-devices")
                     {
-                        <MudText Typo="Typo.body2" Class="mb-4">Connected medical devices + integrated controller</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-4">Global Networked Device Statistics</MudText>
                         <div class="device-list">
-                            @foreach (var device in edgeDevices.Take(5))
-                            {
-                                <div class="device-item">
-                                    <div class="device-status @(device.IsOnline ? "online" : "offline")"></div>
-                                    <div class="device-info">
-                                        <div class="device-name">@device.DeviceId</div>
-                                        <div class="device-type">@device.Type</div>
-                                    </div>
-                                    <div class="device-risk @(device.RiskLevel?.ToLower() ?? "low")">@device.RiskLevel</div>
-                                </div>
-                            }
+                            <div class="detail-card mb-2" style="border-left-color: #22c55e;">
+                                <div class="detail-title">Global Fleet</div>
+                                <div class="detail-value" style="font-size: 18px;">@totalDevices</div>
+                                <div class="detail-subtitle">Active devices</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #8b5cf6;">
+                                <div class="detail-title">Infusion Pumps</div>
+                                <div class="detail-value" style="font-size: 18px;">@((int)(totalDevices * 0.5))</div>
+                                <div class="detail-subtitle">50% of fleet</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #3b82f6;">
+                                <div class="detail-title">Dialysis</div>
+                                <div class="detail-value" style="font-size: 18px;">@((int)(totalDevices * 0.3))</div>
+                                <div class="detail-subtitle">30% of fleet</div>
+                            </div>
+                            <div class="detail-card mb-2" style="border-left-color: #f59e0b;">
+                                <div class="detail-title">Filtration</div>
+                                <div class="detail-value" style="font-size: 18px;">@((int)(totalDevices * 0.2))</div>
+                                <div class="detail-subtitle">20% of fleet</div>
+                            </div>
                         </div>
                     }
 
@@ -2533,13 +2548,18 @@
             }
 
             // Simulation Override for Demo Scale (30 devices)
-            totalDevices = 30;
-            // Fluctuate counts slightly based on chart data
-            onlineDevices = (int)(_infusionStatusData[0] + _dialysisStatusData[0] + _filtrationStatusData[0]);
-            // Calculate warning + offline as 'defective/attention needed' effectively for the summary or just offline
-            offlineDevices = (int)(_infusionStatusData[2] + _dialysisStatusData[2] + _filtrationStatusData[2]);
-            // Defective could be 'Warning' state in this context or explicitly tracked
-            defectiveDevices = (int)(_infusionStatusData[1] + _dialysisStatusData[1] + _filtrationStatusData[1]);
+            // Simulation Override for Demo Scale (4000 devices for Top Bar context)
+            totalDevices = 4000;
+            // Calculate distributions for the 4000 figure based on percentages observed in local sample
+            // Note: The local group variables (infusionPumpCount etc.) remain at 30 for the view
+            
+            var r = new Random();
+            double onlineRatio = 0.92; // 92% online normally
+            double defectRatio = 0.03; // 3% defective
+            
+            onlineDevices = (int)(totalDevices * onlineRatio) + r.Next(-10, 10);
+            defectiveDevices = (int)(totalDevices * defectRatio) + r.Next(-2, 2);
+            offlineDevices = totalDevices - onlineDevices - defectiveDevices;
 
             // Set initial vitals device from online devices
             if (string.IsNullOrEmpty(currentDeviceSerial) || !edgeDevices.Any(d => d.DeviceId == currentDeviceSerial))

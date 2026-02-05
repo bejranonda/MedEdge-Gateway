@@ -16,11 +16,11 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.2.7 RELEASED - Precision & Interaction**
+**✅ v2.2.8 RELEASED - Global Context**
 
-- ✅ Refined simulation to **30 Total Devices** for demo clarity
-- ✅ Interactive **Tooltips** on Donut Charts with exact status breakdown
-- ✅ Accurate alignment of Top Bar stats with individual device group data
+- ✅ Global Fleet Simulation (**4000 Total Devices**) in Top Bar
+- ✅ Local Focused View (**30 Devices**) in Device Panel
+- ✅ Fixed Tooltip positioning on status charts
 
 - ✅ Scaled simulation to **1000 Total Devices** (Top Bar Updated)
 - ✅ Added **Status Donut Charts** to each device group (Healthy/Warning/Offline)

@@ -5,6 +5,15 @@ All notable changes to the MedEdge-Gateway project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.8] - 2026-02-05
+
+### Added
+
+#### Global vs Local Scale
+- **Decoupled Simulation**: "Total Devices" metric now reflects a global fleet of **4000 units**, while the "Devices" panel maintains a focused **30-unit** local simulation view
+- **Tooltip Positioning**: Fixed CSS for Donut Charts to ensure tooltips appear directly over the chart instead of the page corner
+- **Global Context Panel**: Updated the "Medical Devices + Controller" details panel to show the distribution of the full 4000-unit fleet
+
 ## [2.2.7] - 2026-02-05
 
 ### Added
