@@ -2166,9 +2166,13 @@
     private int filtrationFilterLife = 85;        // percentage
 
     // Device mini bar charts — InputData double[]
-    private double[] infusionPumpChartData => new double[] { 80, 95, 110, 125, 100, 90 };
-    private double[] dialysisMachineChartData => new double[] { 300, 320, 350, 340, 360, 350 };
-    private double[] waterFiltrationChartData => new double[] { 1400, 1450, 1500, 1480, 1520, 1500 };
+    private double[] _infusionData = new double[0];
+    private double[] _dialysisData = new double[0];
+    private double[] _filtrationData = new double[0];
+
+    private double[] infusionPumpChartData => _infusionData;
+    private double[] dialysisMachineChartData => _dialysisData;
+    private double[] waterFiltrationChartData => _filtrationData;
 
     // Throughput bar chart — InputData double[] and InputLabels string[]
     private List<double> throughputHistory = new List<double>();
@@ -2250,6 +2254,12 @@
         {
             throughputHistory.Add(rnd.Next(800, 1500));
         }
+
+        // Initialize device simulation arrays
+        _infusionData = new double[infusionPumpCount];
+        _dialysisData = new double[dialysisMachineCount];
+        _filtrationData = new double[waterFiltrationCount];
+        UpdateDeviceGroupData();
 
         InitializeServices();
         InitializeSupplyItems();
@@ -2376,6 +2386,8 @@
             CheckServiceHealth(),
             UpdateSupplyLevels()
         );
+        
+        UpdateDeviceGroupData();
 
         totalUpdates++;
         lastUpdateTime = DateTime.UtcNow;
@@ -2403,6 +2415,16 @@
         {
             Snackbar.Add($"Error refreshing gateway stats: {ex.Message}", Severity.Error);
         }
+    }
+
+    private void UpdateDeviceGroupData()
+    {
+        var rnd = new Random();
+        
+        // Simulating individual device values
+        for(int i=0; i<_infusionData.Length; i++) _infusionData[i] = 125 + rnd.Next(-15, 15);
+        for(int i=0; i<_dialysisData.Length; i++) _dialysisData[i] = 350 + rnd.Next(-30, 30);
+        for(int i=0; i<_filtrationData.Length; i++) _filtrationData[i] = 1500 + rnd.Next(-50, 50);
     }
 
     private async Task LoadEdgeDevices()
