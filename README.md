@@ -386,7 +386,7 @@ Built as a portfolio project demonstrating expertise in:
 
 ---
 
-**Current Version:** v2.2.3
-**Last Updated:** 2026-02-05
-**Status:** Production Ready - Minimal Throughput Visualization
+**Current Version:** v2.3.0
+**Last Updated:** 2026-02-06
+**Status:** Production Ready - Enterprise Hybrid Simulation
 
