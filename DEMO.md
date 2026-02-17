@@ -1,7 +1,14 @@
 # MedEdge Gateway - Live Demo Walkthrough
 
+> **⚠️ DEMONSTRATION ONLY**
+>
+> This walkthrough demonstrates the capabilities of the MedEdge platform as a **technology showcase**.
+> All device data is simulated. This system is not intended for clinical or production use.
+
+---
+
 **Duration:** 10 minutes
-**Audience:** Stakeholders, Clinicians, IT Professionals
+**Audience:** Technical Evaluators, IT Professionals, Stakeholders
 **Prerequisites:** Docker Compose deployed and running
 
 ---
@@ -421,4 +428,5 @@ Post-demo survey questions:
 
 **Demo Version:** 1.0
 **Last Updated:** 2026-01-16
-**Status:** Production-Ready
+**Status:** Technology Demonstration
+**Purpose:** Portfolio Demo - Showcasing Medical IoT Concepts

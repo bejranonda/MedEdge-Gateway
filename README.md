@@ -1,9 +1,17 @@
 # MedEdge - Medical Device IoT & Treatment Center Platform
 
-> **Enterprise-Grade Global-Scale Medical Device IoT Platform**
-> **Three-Tier Architecture: Local → Regional → Global | HIPAA/GDPR Compliant | Federated AI**
+> **⚠️ DEMO PROJECT - For Demonstration Purposes Only**
+>
+> This is a **demonstration project** showcasing concepts and technologies applicable to the medical industry.
+> It is **NOT** intended for clinical use, patient care, or production deployment.
+> All data is simulated and no real patient information is processed.
 
-A production-grade global-scale platform demonstrating:
+---
+
+> **Technology Demonstration Platform for Medical IoT Applications**
+> **Three-Tier Architecture: Local → Regional → Global | FHIR R4 | Azure IoT Hub**
+
+A demonstration platform showcasing:
 - **Global-Regional-Local Architecture** — Three-tier deployment with data sovereignty
 - **Treatment Center Management** — Hierarchical organization (Zones → Stations → Devices)
 - **Federated AI Learning** — Privacy-preserving ML model training
@@ -18,7 +26,11 @@ A production-grade global-scale platform demonstrating:
 
 ## 🎯 Project Status
 
-**✅ v2.3.0 RELEASED - Enterprise Hybrid Simulation**
+> **📋 DEMO PORTFOLIO PROJECT**
+> This project demonstrates technical capabilities and architecture patterns for medical device IoT systems.
+> It serves as a showcase for healthcare technology concepts and software engineering expertise.
+
+**✅ v2.3.0 RELEASED - Demonstration Platform**
 
 - ✅ **4000 Global Devices** simulated in Top Bar context
 - ✅ **30 Local Devices** simulated for high-reactivity dashboard view
@@ -315,14 +327,16 @@ POST   /fhir/Observation          # Create observation
 
 ## 🔒 Security & Compliance
 
-### Security Framework
+> **⚠️ Important Disclaimer:** This section describes security and compliance **concepts** that would be implemented in a production medical device system. This demo project does **not** have actual HIPAA/GDPR certification or compliance validation.
+
+### Security Framework (Demonstrated Concepts)
 - **Device Layer**: TPM 2.0 + X.509 certificates
 - **Edge Layer**: TLS 1.3 for all communications, local attestation
 - **Regional Layer**: VPC isolation, private endpoints, Azure Firewall
 - **Global Layer**: DDoS protection, Web Application Firewall
 - **Data Layer**: Encryption at rest (AES-256), encryption in transit (TLS 1.3)
 
-### Compliance Framework
+### Compliance Framework (Demonstrated Patterns)
 - **HIPAA**: Business Associate Agreement (BAA) compliant cloud regions
 - **GDPR**: Data residency by EU/UK region, consent management
 - **FDA 21 CFR Part 11**: Electronic records, electronic signatures
@@ -375,7 +389,7 @@ MIT License - See LICENSE file for details
 
 ## 👨‍💻 Author
 
-Built as a portfolio project demonstrating expertise in:
+Built as a **portfolio demonstration project** showcasing expertise in:
 - Global-scale medical device IoT architecture
 - Three-tier deployment with data sovereignty
 - Federated AI learning and privacy-preserving ML
@@ -390,5 +404,6 @@ Built as a portfolio project demonstrating expertise in:
 
 **Current Version:** v2.3.0
 **Last Updated:** 2026-02-06
-**Status:** Production Ready - Enterprise Hybrid Simulation
+**Status:** Demo/Portfolio Project - Technology Demonstration
+**Purpose:** Showcasing medical IoT architecture concepts and software engineering capabilities
 

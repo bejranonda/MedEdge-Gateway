@@ -1,5 +1,12 @@
 # MedEdge Gateway - Quick Start Guide
 
+> **⚠️ DEMONSTRATION PROJECT**
+>
+> This is a **technology demonstration** showcasing medical device IoT architecture concepts.
+> All data is simulated. Not for clinical or production use.
+
+---
+
 ## ⚡ How It Works (90 Seconds)
 
 MedEdge Gateway is a real-time clinical monitoring platform for dialysis machines:
