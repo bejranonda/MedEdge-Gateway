@@ -14,6 +14,8 @@ A production-grade global-scale platform demonstrating:
 - **Supply Chain Intelligence** — AI-powered demand forecasting
 - **Hardware Security** — TPM 2.0 attestation, X.509 certificates
 
+<img width="1062" height="1771" alt="image" src="https://github.com/user-attachments/assets/f8d18665-c1a8-4b21-8d7c-ab67dae55b9a" />
+
 ## 🎯 Project Status
 
 **✅ v2.3.0 RELEASED - Enterprise Hybrid Simulation**
